@@ -398,6 +398,12 @@ body{background:var(--s900)}
 .sec--star .grid.v .card:nth-child(5) .card__bd{transition-delay:.50s}
 .sec--star .grid.v .card:nth-child(5) .card__ft{transition-delay:.56s}
 @media (prefers-reduced-motion:reduce){.sec--star .card__img,.sec--star .card__bd,.sec--star .card__ft{transform:none;opacity:1;transition:none}}
+/* Sticky H2 для блока Решений */
+.sec--star > .ctr > div.mb6[data-a]{position:sticky;top:80px;z-index:3;background:rgba(244,245,247,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);margin-left:calc(var(--gutter)*-1);margin-right:calc(var(--gutter)*-1);padding:1rem var(--gutter) 1.25rem;border-bottom:1px solid rgba(148,102,187,.08)}
+.sec--star > .ctr{position:relative}
+/* Магнитные карточки решений */
+.sec--star .card{will-change:transform;transition:transform .35s cubic-bezier(.4,0,.2,1),box-shadow .35s}
+.sec--star .card.magnet-on{transition:transform .1s linear,box-shadow .35s}
 /* прячем старые per-section блобы на home — они больше не нужны */
 #p-home .hero-blobs-layer--off,#p-home .hero-blobs-continue{display:none}
 /* секции прозрачные, чтобы #p-home фон + blobs просвечивали */
@@ -1779,6 +1785,23 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
       it.style.setProperty('--my',(ny*depth)+'px');
     });
   }
+})();
+// Магнитные карточки Решений — тянутся к курсору subtle
+(function(){
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  document.querySelectorAll('.sec--star .card').forEach(card=>{
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const dx=(e.clientX-r.left-r.width/2)*.1;
+      const dy=(e.clientY-r.top-r.height/2)*.12;
+      card.classList.add('magnet-on');
+      card.style.transform='translate('+dx+'px,'+dy+'px)';
+    });
+    card.addEventListener('mouseleave',()=>{
+      card.classList.remove('magnet-on');
+      card.style.transform='';
+    });
+  });
 })();
 // Магнитная CTA — кнопки-аттракторы слегка тянутся к курсору
 (function(){
