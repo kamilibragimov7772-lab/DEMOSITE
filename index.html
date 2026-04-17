@@ -470,24 +470,36 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
   animation:waveMove 12s ease-in-out infinite}
 @keyframes waveMove{0%,100%{background-position:0 0}50%{background-position:30px 0}}
 @media(prefers-reduced-motion:reduce){#p-home > section.sec--lt:first-of-type::before{animation:none}}
-/* ─── typing hero — char-by-char fade без layout shift ─── */
+/* ─── typing hero — char-by-char без inline-block (не ломает перенос) ─── */
 .typing-cursor{display:inline-block;width:.08em;height:.95em;margin-left:.06em;background:var(--c-a);vertical-align:-0.12em;animation:typingBlink 1.1s steps(1) infinite}
 @keyframes typingBlink{0%,50%{opacity:1}51%,100%{opacity:0}}
-.hero__t[data-typing] .t-char{opacity:0;display:inline-block;transition:opacity .14s linear}
+.hero__t[data-typing] .t-char{opacity:0;transition:opacity .14s linear}
 .hero__t[data-typing].t-typed .t-char{opacity:1}
-.hero__t[data-typing] .t-factory-wrap{position:relative;display:inline-block;white-space:nowrap}
-.hero__t[data-typing] .t-factory{position:absolute;left:0;top:50%;transform:translate(-50%,-50%) scale(0);display:inline-flex;align-items:center;justify-content:center;width:1.2em;height:1.2em;opacity:0;transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .3s;z-index:2;filter:drop-shadow(0 2px 8px rgba(148,102,187,.45))}
-.hero__t[data-typing] .t-factory svg{width:100%;height:100%}
-.hero__t[data-typing] .t-factory-spark{opacity:0;animation:sparkPop 1.4s ease-out infinite}
-.hero__t[data-typing] .t-factory-spark:nth-child(n+3){animation-delay:.4s}
-@keyframes sparkPop{0%{opacity:0;transform:translateY(0)}30%{opacity:1}80%{opacity:0;transform:translateY(-4px)}100%{opacity:0}}
-.hero__t[data-typing] .t-word{display:inline-block;opacity:0;transform:scale(.3) translateX(-30%);transition:transform .6s cubic-bezier(.34,1.56,.64,1),opacity .4s}
-.hero__t.f-show .t-factory{opacity:1;transform:translate(-50%,-50%) scale(1)}
-.hero__t.f-pulse .t-factory{animation:factoryShake .6s ease-in-out}
-@keyframes factoryShake{0%,100%{transform:translate(-50%,-50%) scale(1) rotate(0)}25%{transform:translate(-50%,-50%) scale(1.08) rotate(-4deg)}75%{transform:translate(-50%,-50%) scale(1.08) rotate(4deg)}}
-.hero__t.w-emit .t-word{opacity:1;transform:scale(1) translateX(0)}
-.hero__t.f-hide .t-factory{opacity:0;transform:translate(-50%,-50%) scale(.2) rotate(120deg);transition:transform .5s ease-in,opacity .4s}
-@media(prefers-reduced-motion:reduce){.hero__t[data-typing] .t-char{opacity:1;transition:none}.hero__t[data-typing] .t-factory{display:none}.hero__t[data-typing] .t-word{opacity:1;transform:none;transition:none}.typing-cursor{display:none}}
+/* First-letter wrapper = место буквы П / иконки завода */
+.hero__t[data-typing] .t-firstletter{display:inline-block;position:relative;vertical-align:baseline;width:1em;height:1.05em;overflow:visible}
+.hero__t[data-typing] .t-factory{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0) rotate(-40deg);transition:transform .55s cubic-bezier(.34,1.56,.64,1),opacity .35s}
+.hero__t[data-typing] .t-factory svg{width:1.4em;height:1.4em;filter:drop-shadow(0 2px 10px rgba(148,102,187,.55))}
+.hero__t[data-typing] .t-factory-body{transform-box:fill-box;transform-origin:center}
+.hero__t[data-typing] .t-letter{display:inline-block;opacity:0;transform:scale(.3) translateY(10px);transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .4s;font:inherit}
+/* Заводские дым, искры, колесо — включаются когда завод активен */
+.hero__t.f-work .t-factory-smoke circle{animation:smokeRise 1.8s ease-out infinite}
+.hero__t.f-work .t-factory-smoke circle:nth-child(2){animation-delay:.4s}
+.hero__t.f-work .t-factory-smoke circle:nth-child(3){animation-delay:.85s}
+.hero__t.f-work .t-factory-sparks circle{animation:sparkPop 1.2s ease-out infinite}
+.hero__t.f-work .t-factory-sparks circle:nth-child(2){animation-delay:.35s}
+.hero__t.f-work .t-factory-sparks circle:nth-child(3){animation-delay:.7s}
+.hero__t.f-work .t-factory-gear{animation:gearSpin 2s linear infinite;transform-box:fill-box;transform-origin:center}
+.hero__t.f-work .t-factory-body{animation:factoryBounce 1.1s ease-in-out infinite}
+@keyframes factoryBounce{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-1px) scale(1.015)}}
+@keyframes smokeRise{0%{opacity:0;transform:translateY(2px) scale(.7)}30%{opacity:.6}80%{opacity:.1}100%{opacity:0;transform:translateY(-18px) scale(1.5)}}
+@keyframes sparkPop{0%{opacity:0;transform:translate(0,0) scale(.3)}30%{opacity:1}80%{opacity:0;transform:translate(-3px,-4px) scale(1.5)}100%{opacity:0}}
+@keyframes gearSpin{to{transform:rotate(360deg)}}
+/* Завод появляется */
+.hero__t.f-show .t-factory{opacity:1;transform:scale(1) rotate(0)}
+/* Финал: завод morph в букву П */
+.hero__t.f-morph .t-factory{opacity:0;transform:scale(.3) rotate(180deg);transition:transform .55s cubic-bezier(.7,0,.84,0),opacity .35s}
+.hero__t.f-morph .t-letter{opacity:1;transform:scale(1) translateY(0)}
+@media(prefers-reduced-motion:reduce){.hero__t[data-typing] .t-char,.hero__t[data-typing] .t-letter{opacity:1;transform:none;transition:none}.hero__t[data-typing] .t-factory{display:none}.typing-cursor{display:none}}
 /* ─── shine-sweep на product cards при hover ─── */
 .pcard{isolation:isolate}
 .pcard::before{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s cubic-bezier(.4,0,.2,1);border-radius:inherit;mix-blend-mode:overlay}
@@ -569,7 +581,7 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
   <div class="hero-blob hero-blob--deep"></div>
 </div>
 <div class="hero__bg">TERMY</div><div class="ctr"><div class="hero__ct" data-a>
-<h1 class="hero__t" data-typing><span class="t-part" data-t="Термоупаковка от&nbsp;"></span><span class="t-factory-wrap"><span class="t-factory" aria-hidden="true"><svg viewBox="0 0 24 24" width="1em" height="1em"><path d="M3 21V11l5 3V11l5 3V7l8 5v9z" fill="none" stroke="#9466BB" stroke-width="1.5" stroke-linejoin="round"/><path d="M3 21h18" stroke="#9466BB" stroke-width="1.5" stroke-linecap="round"/><circle class="t-factory-spark" cx="8" cy="7" r=".7" fill="#C77D3E"/><circle class="t-factory-spark" cx="13" cy="4" r=".6" fill="#C77D3E" style="animation-delay:.3s"/></svg></span><span class="t-word">производителя</span></span><span class="t-part" data-t=". Сохраняем ваш товар. Защищаем вашу&nbsp;репутацию."></span></h1>
+<h1 class="hero__t" data-typing><span class="t-part" data-t="Термоупаковка от&nbsp;"></span><span class="t-firstletter"><span class="t-factory" aria-hidden="true"><svg viewBox="0 0 40 48"><g class="t-factory-body"><path d="M3 42V22l9 6V22l9 6V13l16 10v19z" fill="none" stroke="#9466BB" stroke-width="2" stroke-linejoin="round"/><path d="M1 42h38" stroke="#9466BB" stroke-width="2" stroke-linecap="round"/><rect x="6" y="34" width="5" height="6" fill="#9466BB" opacity=".35"/><rect x="14" y="34" width="5" height="6" fill="#9466BB" opacity=".35"/><rect x="22" y="34" width="5" height="6" fill="#9466BB" opacity=".35"/><circle cx="33" cy="29" r="3" class="t-factory-gear" fill="none" stroke="#9466BB" stroke-width="1.5" stroke-dasharray="2 2"/></g><g class="t-factory-smoke"><circle cx="8" cy="18" r="2" fill="#9466BB" opacity="0"/><circle cx="11" cy="14" r="2.4" fill="#9466BB" opacity="0"/><circle cx="9" cy="9" r="2.8" fill="#9466BB" opacity="0"/></g><g class="t-factory-sparks"><circle cx="17" cy="26" r=".8" fill="#C77D3E" opacity="0"/><circle cx="25" cy="20" r=".7" fill="#C77D3E" opacity="0"/><circle cx="33" cy="17" r=".9" fill="#C77D3E" opacity="0"/></g></svg></span><span class="t-letter">П</span></span><span class="t-rest" data-t="роизводителя. Сохраняем ваш товар. Защищаем вашу&nbsp;репутацию."></span></h1>
 <p class="hero__sub">Термопакеты, аккумуляторы холода SHOCK®, термокороба LinerBox® — от&nbsp;1&nbsp;коробки, с&nbsp;отгрузкой за&nbsp;24&nbsp;часа</p>
 <div class="hero__acts"><a href="#cta" class="btn btn--p btn--lg">Получить оптовый прайс</a><a href="#cta" class="btn btn--s btn--lg">Заказать образцы</a></div>
 </div>
@@ -1776,40 +1788,33 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
     });
   });
 })();
-// Typing-hero: char-by-char fade + factory-word reveal
+// Typing-hero: char-by-char + factory work + morph в букву П
 (function(){
   if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
   const h=document.querySelector('#p-home .hero--home .hero__t[data-typing]');if(!h)return;
-  // превращаем data-t атрибуты в <span.t-char> для posimetric fade
-  const parts=h.querySelectorAll('.t-part[data-t]');
-  parts.forEach(part=>{
-    const txt=part.getAttribute('data-t');
-    // заменяем HTML entity &nbsp; на \u00A0, затем делим на символы
-    const decoded=txt.replace(/&nbsp;/g,'\u00A0');
-    const chars=[...decoded];
-    part.innerHTML=chars.map(c=>`<span class="t-char">${c==='\u00A0'?'&nbsp;':c}</span>`).join('');
+  // data-t → <span.t-char> посимвольно
+  h.querySelectorAll('[data-t]').forEach(part=>{
+    const decoded=part.getAttribute('data-t').replace(/&nbsp;/g,'\u00A0');
+    part.innerHTML=[...decoded].map(c=>`<span class="t-char">${c==='\u00A0'?'&nbsp;':c}</span>`).join('');
   });
-  // вычисляем delays для char'ов: сначала part[0], потом пауза под factory reveal, потом part[1]
-  const CHAR_MS=32;
-  const firstChars=parts[0]?parts[0].querySelectorAll('.t-char'):[];
-  const lastChars=parts[1]?parts[1].querySelectorAll('.t-char'):[];
+  const CHAR_MS=38;
+  const firstPart=h.querySelector('.t-part');
+  const restPart=h.querySelector('.t-rest');
+  const firstChars=firstPart?firstPart.querySelectorAll('.t-char'):[];
+  const restChars=restPart?restPart.querySelectorAll('.t-char'):[];
   firstChars.forEach((c,i)=>{c.style.transitionDelay=(i*CHAR_MS)+'ms';});
-  const firstDur=firstChars.length*CHAR_MS;
-  // factory: появляется через firstDur+150, пульс 600ms, word emit 300ms, hide 500ms
-  const factoryDelay=firstDur+150;
-  const pulseDelay=factoryDelay+400;
-  const emitDelay=pulseDelay+500;
-  const hideDelay=emitDelay+400;
-  // последняя часть печатается после hideDelay
-  lastChars.forEach((c,i)=>{c.style.transitionDelay=(hideDelay+i*CHAR_MS)+'ms';});
-  // запуск — setTimeout вместо rAF (rAF не фиырает на фон-вкладках)
+  const firstDur=firstChars.length*CHAR_MS;         // 17*38 = 646ms
+  const factoryDelay=firstDur+100;                  // завод появляется
+  const workDelay=factoryDelay+500;                 // начинает работать (дым, искры)
+  const morphDelay=workDelay+1600;                  // morph в букву П
+  // Остаток "роизводителя..." начинает печататься сразу за morph (буква П уже есть)
+  restChars.forEach((c,i)=>{c.style.transitionDelay=(morphDelay+200+i*CHAR_MS)+'ms';});
   setTimeout(()=>{
     h.classList.add('t-typed');
     setTimeout(()=>h.classList.add('f-show'),factoryDelay);
-    setTimeout(()=>h.classList.add('f-pulse'),pulseDelay);
-    setTimeout(()=>h.classList.add('w-emit'),emitDelay);
-    setTimeout(()=>h.classList.add('f-hide'),hideDelay);
-  },50);
+    setTimeout(()=>h.classList.add('f-work'),workDelay);
+    setTimeout(()=>h.classList.add('f-morph'),morphDelay);
+  },60);
 })();
 // Scroll progress bar
 (function(){
