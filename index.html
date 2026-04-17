@@ -398,6 +398,26 @@ body{background:var(--s900)}
 .sec--star .grid.v .card:nth-child(5) .card__bd{transition-delay:.50s}
 .sec--star .grid.v .card:nth-child(5) .card__ft{transition-delay:.56s}
 @media (prefers-reduced-motion:reduce){.sec--star .card__img,.sec--star .card__bd,.sec--star .card__ft{transform:none;opacity:1;transition:none}}
+/* ─── Horizontal scroll gallery для блока Кейсы ─── */
+.sec--cases-hscroll{padding:0!important;height:320vh;position:relative}
+.cases-hscroll__pin{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;padding:6vh 0 3vh;background:var(--s100)}
+.cases-hscroll__header{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:2rem;flex-wrap:wrap}
+.cases-hscroll__header h2{margin:0}
+.cases-hscroll__hint{font-size:var(--xs-fs);color:var(--t3);letter-spacing:.1em;text-transform:uppercase;display:flex;align-items:center;gap:.5rem}
+.cases-hscroll__hint span{display:inline-block;font-size:1.2em;animation:hintBounce 2s ease-in-out infinite}
+@keyframes hintBounce{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(4px);opacity:1}}
+.cases-hscroll__track{display:flex;gap:2rem;padding:0 8vw;align-items:stretch;will-change:transform}
+.cases-hscroll__track > .card{flex:0 0 clamp(320px,36vw,460px);margin:0}
+.cases-hscroll__cta{position:absolute;bottom:2vh;left:50%;transform:translateX(-50%);z-index:3}
+@media(max-width:900px){
+  .sec--cases-hscroll{height:auto;padding:var(--sec-py) 0!important}
+  .cases-hscroll__pin{position:static;height:auto;padding:0}
+  .cases-hscroll__track{flex-direction:column;padding:0 var(--gutter)}
+  .cases-hscroll__track > .card{flex:1}
+  .cases-hscroll__cta{position:static;transform:none;margin-top:1.5rem;text-align:center}
+  .cases-hscroll__header{padding:0 var(--gutter)}
+}
+@media(prefers-reduced-motion:reduce){.cases-hscroll__track{transform:none!important}.cases-hscroll__hint span{animation:none}}
 /* 3D-tilt on scroll для pcards в блоке Продукция */
 .sec--video .grid.g4{perspective:1400px;perspective-origin:50% 30%}
 .sec--video .pcard{transform-style:preserve-3d;transition:box-shadow .35s}
@@ -603,10 +623,10 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 <a href="/products/termorukzak.html" class="pcard"><div class="pcard__img"><img src="img/products/termorukzak.webp" alt="Термошопперы TERMY" style="width:100%;height:100%;object-fit:contain" loading="lazy"></div><div class="pcard__bd"><span class="pcard__ser">5 размеров</span><div class="pcard__nm">Термошопперы</div><div class="pcard__sp"><span>11 цветов</span><span>от 100 шт</span></div><div class="pcard__pr">Запросить цену</div></div></a>
 </div></div></section>
 
-<!-- ═══ HOMEPAGE BLOCK 5: Trust/Кейсы — PLACEHOLDER ═══ -->
-<section class="sec sec--lt"><div class="ctr">
-<div class="tc mb6" data-a><span class="label mb1" style="display:block">Результаты</span><h2>Кейсы и доказательства</h2></div>
-<div class="grid g4" data-a>
+<!-- ═══ HOMEPAGE BLOCK 5: Trust/Кейсы — HORIZONTAL SCROLL ═══ -->
+<section class="sec sec--lt sec--cases-hscroll"><div class="cases-hscroll__pin">
+<div class="cases-hscroll__header ctr"><div data-a><span class="label mb1" style="display:block">Результаты</span><h2>Кейсы и доказательства</h2></div><div class="cases-hscroll__hint">Скролли <span>↓</span></div></div>
+<div class="cases-hscroll__track" data-a>
 <div class="card"><div class="card__img cs-hero cs-delivery"><span class="cs-hero__num">+3…+7°C</span><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="csT1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#7EC8E8"/><stop offset="1" stop-color="#2D6EA8"/></linearGradient></defs><g><circle cx="100" cy="158" r="22" fill="url(#csT1)" opacity=".85"/><rect x="92" y="48" width="16" height="100" rx="8" fill="rgba(255,255,255,.18)"/><rect class="cs-therm-fill" x="94" y="64" width="12" height="82" rx="6" fill="url(#csT1)"/><rect x="84" y="44" width="32" height="10" rx="5" fill="rgba(255,255,255,.35)"/><g fill="#A7D8F0" opacity=".9"><path class="cs-snow" d="M35 20l3 0l0 10l-3 0Zm-5 5l13 0l0 3l-13 0Z"/><path class="cs-snow" d="M160 55l3 0l0 10l-3 0Zm-5 5l13 0l0 3l-13 0Z"/><path class="cs-snow" d="M40 110l3 0l0 10l-3 0Zm-5 5l13 0l0 3l-13 0Z"/><path class="cs-snow" d="M165 135l3 0l0 10l-3 0Zm-5 5l13 0l0 3l-13 0Z"/></g></g></svg></div><div class="card__bd"><div class="card__lbl">Доставка еды</div><div class="card__tl">+3…+7°C на вручении, до 4 часов</div><p class="card__tx">Федеральная e-grocery: Standart 42×50 + 2× SHOCK® 450 на заказ. Снижение рекламаций по температуре.</p></div></div>
 
 <div class="card"><div class="card__img cs-hero cs-cycles"><span class="cs-hero__num">×30</span><svg viewBox="0 0 200 200" aria-hidden="true"><g class="cs-ring" fill="none" stroke="#E8A878" stroke-width="3" stroke-linecap="round"><circle cx="100" cy="100" r="72" stroke-dasharray="12 18" opacity=".55"/><circle cx="100" cy="100" r="58" stroke-dasharray="4 10" opacity=".75"/></g><g class="cs-box"><rect x="62" y="68" width="76" height="70" rx="6" fill="#C77D3E"/><rect x="62" y="68" width="76" height="14" rx="4" fill="#8C5428"/><path d="M62 88h76M100 68v70" stroke="rgba(0,0,0,.25)" stroke-width="2"/><circle cx="100" cy="108" r="10" fill="rgba(255,255,255,.2)"/></g><text class="cs-counter" x="100" y="168">30</text></svg></div><div class="card__bd"><div class="card__lbl">Доставка еды</div><div class="card__tl">30 циклов на одном пакете</div><p class="card__tx">Курьерская служба: термошоппер 260×260×170 + термопакет Standart. Ресурс ≥ 30 доставок.</p></div></div>
@@ -615,7 +635,7 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 
 <div class="card"><div class="card__img cs-hero cs-brand"><span class="cs-hero__num">500 шт</span><svg viewBox="0 0 200 200" aria-hidden="true"><rect x="52" y="52" width="96" height="96" rx="10" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.22)" stroke-width="2"/><g transform="translate(100 100)"><circle class="cs-ink cs-ink-c" cx="-14" cy="-10" r="22"/><circle class="cs-ink cs-ink-m" cx="14" cy="-10" r="22"/><circle class="cs-ink cs-ink-y" cx="0" cy="14" r="22"/><path class="cs-ink cs-ink-k" d="M-18 4 L0 -20 L18 4 Z M-8 -4 L8 -4 L2 10 L-2 10 Z" fill-rule="evenodd"/></g></svg></div><div class="card__bd"><div class="card__lbl">Брендирование</div><div class="card__tl">500 шт, 4 цвета, 3 недели</div><p class="card__tx">Premium FMCG: Standart 42×50, шелкография 4 цвета, бесплатный макет. Логотип на лицевой стороне.</p></div></div>
 </div>
-<div class="tc mt4" data-a><a href="/cases/" class="btn btn--s">Все кейсы →</a></div>
+<div class="cases-hscroll__cta"><a href="/cases/" class="btn btn--s">Все кейсы →</a></div>
 </div></section>
 
 <!-- ═══ HOMEPAGE BLOCK 6: Брендирование — bg #131619 ═══ -->
@@ -1789,6 +1809,47 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
       it.style.setProperty('--my',(ny*depth)+'px');
     });
   }
+})();
+// Horizontal scroll + scroll-linked SVG для блока Кейсы
+(function(){
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  if(window.matchMedia&&window.matchMedia('(max-width:900px)').matches)return;
+  const sec=document.querySelector('.sec--cases-hscroll');if(!sec)return;
+  const track=sec.querySelector('.cases-hscroll__track');if(!track)return;
+  // scroll-linked SVG элементы
+  const therm=sec.querySelector('.cs-therm-fill');
+  const ring=sec.querySelector('.cs-ring');
+  const ringFg=sec.querySelector('.cs-ring circle:last-child');
+  const vial=sec.querySelector('.cs-vial-liq');
+  const clock=sec.querySelector('.cs-clock-hand');
+  const inks=sec.querySelectorAll('.cs-ink');
+  let rafId=null;
+  function update(){
+    rafId=null;
+    const r=sec.getBoundingClientRect();
+    const vh=window.innerHeight;
+    const total=sec.offsetHeight-vh;
+    const passed=Math.max(0,-r.top);
+    const p=Math.max(0,Math.min(1,passed/total));
+    // translate track — двигается влево пропорционально scroll через секцию
+    const trackW=track.scrollWidth;
+    const viewW=sec.offsetWidth;
+    const maxShift=Math.max(0,trackW-viewW+48);
+    track.style.transform='translate3d('+(-maxShift*p)+'px,0,0)';
+    // SVG-прогресс: термометр fill-up
+    if(therm){therm.style.transformOrigin='center bottom';therm.style.transform='scaleY('+(.3+.7*p)+')';}
+    // rings — скорость ≈ p
+    if(ring){ring.style.transform='rotate('+(p*360)+'deg)';ring.style.transformOrigin='100px 100px';}
+    // vial liquid fill
+    if(vial){vial.style.transformOrigin='center bottom';vial.style.transform='scaleY('+(.3+.7*p)+')';}
+    // clock-hand крутится
+    if(clock){clock.setAttribute('transform','rotate('+(p*360)+')');}
+    // CMYK inks pulse
+    inks.forEach((ink,i)=>{const ph=p*Math.PI*2+i*Math.PI/2;ink.style.opacity=String(.55+.4*Math.abs(Math.sin(ph)));});
+  }
+  window.addEventListener('scroll',()=>{if(!rafId)rafId=requestAnimationFrame(update);},{passive:true});
+  window.addEventListener('resize',()=>{if(!rafId)rafId=requestAnimationFrame(update);});
+  update();
 })();
 // 3D-tilt on scroll для pcards в блоке Продукция
 (function(){
