@@ -513,11 +513,11 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 
 <!-- ═══ HOMEPAGE BLOCK 1b: Proof-bar ═══ -->
 <div class="tstrip" style="position:relative;overflow:hidden"><div class="hero-blobs-continue" aria-hidden="true"><div class="hero-blob hero-blob--brand"></div><div class="hero-blob hero-blob--warm"></div><div class="hero-blob hero-blob--cool"></div><div class="hero-blob hero-blob--deep"></div></div><div class="ctr" style="position:relative;z-index:2"><div class="tstrip__in" data-a>
-<div class="tstrip__it"><span class="tstrip__num">от 49₽</span><span class="tstrip__txt">за штуку</span></div>
-<div class="tstrip__it"><span class="tstrip__num">от 1</span><span class="tstrip__txt">коробки</span></div>
-<div class="tstrip__it"><span class="tstrip__num">24 ч</span><span class="tstrip__txt">отгрузка МСК</span></div>
-<div class="tstrip__it"><span class="tstrip__num">от 500 шт</span><span class="tstrip__txt">брендирование</span></div>
-<div class="tstrip__it"><span class="tstrip__num">ISO 9001</span><span class="tstrip__txt">сертифицировано</span></div>
+<div class="tstrip__it"><span class="tstrip__num" data-count="49" data-pre="от&nbsp;" data-post="₽">от 49₽</span><span class="tstrip__txt">за штуку</span></div>
+<div class="tstrip__it"><span class="tstrip__num" data-count="1" data-pre="от&nbsp;">от 1</span><span class="tstrip__txt">коробки</span></div>
+<div class="tstrip__it"><span class="tstrip__num" data-count="24" data-post="&nbsp;ч">24 ч</span><span class="tstrip__txt">отгрузка МСК</span></div>
+<div class="tstrip__it"><span class="tstrip__num" data-count="500" data-pre="от&nbsp;" data-post="&nbsp;шт">от 500 шт</span><span class="tstrip__txt">брендирование</span></div>
+<div class="tstrip__it"><span class="tstrip__num" data-count="9001" data-pre="ISO&nbsp;">ISO 9001</span><span class="tstrip__txt">сертифицировано</span></div>
 </div></div></div>
 
 <!-- ═══ HOMEPAGE BLOCK 2: Почему TERMY — bg #131619 ═══ -->
@@ -1676,6 +1676,9 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
     // Re-init animations
     const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('v');obs.unobserve(x.target)}})},{threshold:.12});
     el.querySelectorAll('[data-a]').forEach(e=>{e.classList.remove('v');obs.observe(e)});
+    // Count-up для статистики (tstrip)
+    const countObs=new IntersectionObserver(entries=>{entries.forEach(en=>{if(!en.isIntersecting)return;const node=en.target;const target=parseInt(node.dataset.count,10);const pre=node.dataset.pre||'';const post=node.dataset.post||'';const dur=1400;const start=performance.now();function tick(t){const p=Math.min(1,(t-start)/dur);const eased=1-Math.pow(1-p,3);const val=Math.round(target*eased);node.innerHTML=pre+val.toLocaleString('ru-RU')+post;if(p<1)requestAnimationFrame(tick);}requestAnimationFrame(tick);countObs.unobserve(node);});},{threshold:.4});
+    el.querySelectorAll('.tstrip__num[data-count]').forEach(n=>{const pre=n.dataset.pre||'';const post=n.dataset.post||'';n.innerHTML=pre+'0'+post;countObs.observe(n);});
     // Close mobile nav
     document.getElementById('hamBtn').classList.remove('open');
     document.getElementById('mobileNav').classList.remove('open');
