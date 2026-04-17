@@ -433,6 +433,12 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 .reasons .tc:hover .reason-ic::after{opacity:1}
 .reasons .tc:hover .reason-ic svg{transform:scale(1.08) rotate(-3deg)}
 @media(prefers-reduced-motion:reduce){.reason-ic,.reason-ic svg{transition:none}}
+/* ─── shine-sweep на product cards при hover ─── */
+.pcard{isolation:isolate}
+.pcard::before{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s cubic-bezier(.4,0,.2,1);border-radius:inherit;mix-blend-mode:overlay}
+.pcard{position:relative}
+.pcard:hover::before{transform:translateX(120%)}
+@media(prefers-reduced-motion:reduce){.pcard::before{display:none}}
 /* ─── scroll-progress bar — тонкая линия сверху ─── */
 .scroll-prog{position:fixed;top:0;left:0;right:0;height:2px;z-index:200;pointer-events:none;background:transparent}
 .scroll-prog__b{height:100%;width:0;background:linear-gradient(90deg,#6428A0,#9466BB 60%,#C77D3E);transition:width .12s linear;box-shadow:0 0 8px rgba(148,102,187,.6)}
