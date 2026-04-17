@@ -1676,6 +1676,8 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
     // Re-init animations
     const obs=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('v');obs.unobserve(x.target)}})},{threshold:.12});
     el.querySelectorAll('[data-a]').forEach(e=>{e.classList.remove('v');obs.observe(e)});
+    // Параллакс общего слоя блобов на скролл
+    (function(){const blobs=el.querySelector('.shared-blobs');if(!blobs)return;let rafId=null;function update(){const y=window.scrollY;blobs.style.transform='translate3d(0,'+(y*-0.35)+'px,0)';rafId=null;}window.addEventListener('scroll',()=>{if(!rafId)rafId=requestAnimationFrame(update);},{passive:true});update();})();
     // Count-up для статистики (tstrip)
     const countObs=new IntersectionObserver(entries=>{entries.forEach(en=>{if(!en.isIntersecting)return;const node=en.target;const target=parseInt(node.dataset.count,10);const pre=node.dataset.pre||'';const post=node.dataset.post||'';const dur=1400;const start=performance.now();function tick(t){const p=Math.min(1,(t-start)/dur);const eased=1-Math.pow(1-p,3);const val=Math.round(target*eased);node.innerHTML=pre+val.toLocaleString('ru-RU')+post;if(p<1)requestAnimationFrame(tick);}requestAnimationFrame(tick);countObs.unobserve(node);});},{threshold:.4});
     el.querySelectorAll('.tstrip__num[data-count]').forEach(n=>{const pre=n.dataset.pre||'';const post=n.dataset.post||'';n.innerHTML=pre+'0'+post;countObs.observe(n);});
