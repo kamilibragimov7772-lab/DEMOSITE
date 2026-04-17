@@ -433,6 +433,10 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 .reasons .tc:hover .reason-ic::after{opacity:1}
 .reasons .tc:hover .reason-ic svg{transform:scale(1.08) rotate(-3deg)}
 @media(prefers-reduced-motion:reduce){.reason-ic,.reason-ic svg{transition:none}}
+/* ─── scroll-progress bar — тонкая линия сверху ─── */
+.scroll-prog{position:fixed;top:0;left:0;right:0;height:2px;z-index:200;pointer-events:none;background:transparent}
+.scroll-prog__b{height:100%;width:0;background:linear-gradient(90deg,#6428A0,#9466BB 60%,#C77D3E);transition:width .12s linear;box-shadow:0 0 8px rgba(148,102,187,.6)}
+@media(prefers-reduced-motion:reduce){.scroll-prog__b{transition:none}}
 /* ─── падающие ✻ снежинки бренда — фикс слой поверх страницы ─── */
 .snowfall{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
 .snowfall span{position:absolute;top:-10%;color:#9466BB;opacity:0;font-family:"Inter",sans-serif;font-weight:500;user-select:none;animation:snowDrift linear infinite}
@@ -1666,6 +1670,7 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 <a href="tel:+78001011525" class="btn" style="background:var(--c-black);color:#fff">📞 Позвонить</a>
 <a href="#cta" class="btn btn--p" id="stkCta">Расчёт</a>
 </div></div>
+<div class="scroll-prog" aria-hidden="true"><div class="scroll-prog__b"></div></div>
 <div class="snowfall" aria-hidden="true"></div>
 <script>
 (function(){
@@ -1684,6 +1689,13 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
     s.style.cssText='left:'+left+'vw;font-size:'+size+'px;animation-duration:'+dur+'s;animation-delay:'+delay+'s;--drift:'+drift+';--spin:'+spin+';';
     host.appendChild(s);
   }
+})();
+// Scroll progress bar
+(function(){
+  const bar=document.querySelector('.scroll-prog__b');if(!bar)return;
+  let rafId=null;
+  function update(){rafId=null;const h=document.documentElement.scrollHeight-window.innerHeight;const p=h>0?Math.min(100,(window.scrollY/h)*100):0;bar.style.width=p+'%';}
+  window.addEventListener('scroll',()=>{if(!rafId)rafId=requestAnimationFrame(update);},{passive:true});update();
 })();
 // Shrinking header — сжимается при scroll>120
 (function(){
