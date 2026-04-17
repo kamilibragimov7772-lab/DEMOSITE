@@ -1680,6 +1680,21 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
     host.appendChild(s);
   }
 })();
+// Магнитная CTA — кнопки-аттракторы слегка тянутся к курсору
+(function(){
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const selectors='.btn--p.btn--lg,.hdr__cta,#stkCta';
+  document.querySelectorAll(selectors).forEach(btn=>{
+    btn.style.willChange='transform';btn.style.transition='transform .25s cubic-bezier(.4,0,.2,1)';
+    btn.addEventListener('mousemove',e=>{
+      const r=btn.getBoundingClientRect();
+      const dx=(e.clientX-r.left-r.width/2)*.25;
+      const dy=(e.clientY-r.top-r.height/2)*.35;
+      btn.style.transform='translate('+dx+'px,'+dy+'px)';
+    });
+    btn.addEventListener('mouseleave',()=>{btn.style.transform='translate(0,0)';});
+  });
+})();
 </script>
 
 <script>
