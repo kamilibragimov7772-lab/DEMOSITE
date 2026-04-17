@@ -433,6 +433,10 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 .reasons .tc:hover .reason-ic::after{opacity:1}
 .reasons .tc:hover .reason-ic svg{transform:scale(1.08) rotate(-3deg)}
 @media(prefers-reduced-motion:reduce){.reason-ic,.reason-ic svg{transition:none}}
+/* ─── typing hero — мигающий курсор после H1 ─── */
+.typing-cursor{display:inline-block;width:.08em;height:.95em;margin-left:.06em;background:var(--c-a);vertical-align:-0.12em;animation:typingBlink 1.1s steps(1) infinite}
+@keyframes typingBlink{0%,50%{opacity:1}51%,100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.typing-cursor{display:none}}
 /* ─── shine-sweep на product cards при hover ─── */
 .pcard{isolation:isolate}
 .pcard::before{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.25) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s cubic-bezier(.4,0,.2,1);border-radius:inherit;mix-blend-mode:overlay}
@@ -1695,6 +1699,20 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
     s.style.cssText='left:'+left+'vw;font-size:'+size+'px;animation-duration:'+dur+'s;animation-delay:'+delay+'s;--drift:'+drift+';--spin:'+spin+';';
     host.appendChild(s);
   }
+})();
+// Typing-hero — печатает H1 homepage по буквам
+(function(){
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const h=document.querySelector('#p-home .hero--home .hero__t');if(!h)return;
+  const orig=h.innerHTML;const plain=h.textContent;
+  h.innerHTML='<span class="typing-cursor" aria-hidden="true"></span>';
+  let i=0;
+  function step(){
+    if(i>=plain.length){h.innerHTML=orig+'<span class="typing-cursor" aria-hidden="true"></span>';return;}
+    h.innerHTML=plain.slice(0,++i).replace(/ /g,'&nbsp;')+'<span class="typing-cursor" aria-hidden="true"></span>';
+    setTimeout(step,22+Math.random()*30);
+  }
+  setTimeout(step,250);
 })();
 // Scroll progress bar
 (function(){
