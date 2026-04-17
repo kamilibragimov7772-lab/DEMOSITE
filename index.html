@@ -1710,11 +1710,11 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 // Morph-blob: при hover карточки последний blob тянется к ней (глубже слой, быстрее hover)
 (function(){
   if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-  const blobLayer=el.querySelector('.shared-blobs');if(!blobLayer)return;
+  const blobLayer=document.querySelector('.shared-blobs');if(!blobLayer)return;
   const blob=blobLayer.querySelector('.hero-blob--deep');if(!blob)return;
   const origAnim=getComputedStyle(blob).animation;
   let restoreTimer=null;
-  const cards=el.querySelectorAll('.card, .pcard, .reasons .tc');
+  const cards=document.querySelectorAll('.card, .pcard, .reasons .tc');
   cards.forEach(card=>{
     card.addEventListener('mouseenter',()=>{
       clearTimeout(restoreTimer);
