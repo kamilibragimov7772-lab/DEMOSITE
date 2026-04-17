@@ -433,6 +433,13 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 .reasons .tc:hover .reason-ic::after{opacity:1}
 .reasons .tc:hover .reason-ic svg{transform:scale(1.08) rotate(-3deg)}
 @media(prefers-reduced-motion:reduce){.reason-ic,.reason-ic svg{transition:none}}
+/* ─── wave divider: мягкий волновой переход между dark-кластером и sec--lt ─── */
+#p-home > section.sec--lt:first-of-type{padding-top:0;margin-top:0}
+#p-home > section.sec--lt:first-of-type::before{content:"";display:block;width:100%;height:60px;margin-bottom:-1px;background:
+  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 60' preserveAspectRatio='none'><path d='M0 30 Q 150 5 300 30 T 600 30 T 900 30 T 1200 30 L1200 60 L0 60 Z' fill='%23F4F5F7'/></svg>") center/100% 100% no-repeat;
+  animation:waveMove 12s ease-in-out infinite}
+@keyframes waveMove{0%,100%{background-position:0 0}50%{background-position:30px 0}}
+@media(prefers-reduced-motion:reduce){#p-home > section.sec--lt:first-of-type::before{animation:none}}
 /* ─── typing hero — мигающий курсор после H1 ─── */
 .typing-cursor{display:inline-block;width:.08em;height:.95em;margin-left:.06em;background:var(--c-a);vertical-align:-0.12em;animation:typingBlink 1.1s steps(1) infinite}
 @keyframes typingBlink{0%,50%{opacity:1}51%,100%{opacity:0}}
