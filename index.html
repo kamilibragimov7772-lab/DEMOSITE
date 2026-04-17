@@ -398,6 +398,10 @@ body{background:var(--s900)}
 .sec--star .grid.v .card:nth-child(5) .card__bd{transition-delay:.50s}
 .sec--star .grid.v .card:nth-child(5) .card__ft{transition-delay:.56s}
 @media (prefers-reduced-motion:reduce){.sec--star .card__img,.sec--star .card__bd,.sec--star .card__ft{transform:none;opacity:1;transition:none}}
+/* 3D-tilt on scroll для pcards в блоке Продукция */
+.sec--video .grid.g4{perspective:1400px;perspective-origin:50% 30%}
+.sec--video .pcard{transform-style:preserve-3d;transition:box-shadow .35s}
+@media(prefers-reduced-motion:reduce){.sec--video .pcard{transform:none!important}}
 /* Sticky H2 для блока Решений */
 .sec--star > .ctr > div.mb6[data-a]{position:sticky;top:80px;z-index:3;background:rgba(244,245,247,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);margin-left:calc(var(--gutter)*-1);margin-right:calc(var(--gutter)*-1);padding:1rem var(--gutter) 1.25rem;border-bottom:1px solid rgba(148,102,187,.08)}
 .sec--star > .ctr{position:relative}
@@ -1785,6 +1789,28 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
       it.style.setProperty('--my',(ny*depth)+'px');
     });
   }
+})();
+// 3D-tilt on scroll для pcards в блоке Продукция
+(function(){
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const cards=document.querySelectorAll('.sec--video .pcard');if(!cards.length)return;
+  let rafId=null;
+  function update(){
+    rafId=null;
+    const vh=window.innerHeight;
+    cards.forEach(card=>{
+      const r=card.getBoundingClientRect();
+      const cy=r.top+r.height/2;
+      const off=(cy-vh/2)/vh; // -1 при верху viewport, +1 при нижне
+      const clamped=Math.max(-1,Math.min(1,off));
+      const tilt=clamped*8; // ±8deg
+      const scale=1-Math.abs(clamped)*.04;
+      card.style.transform='rotateX('+(-tilt)+'deg) scale('+scale+')';
+    });
+  }
+  window.addEventListener('scroll',()=>{if(!rafId)rafId=requestAnimationFrame(update);},{passive:true});
+  window.addEventListener('resize',()=>{if(!rafId)rafId=requestAnimationFrame(update);});
+  update();
 })();
 // Магнитные карточки Решений — тянутся к курсору subtle
 (function(){
