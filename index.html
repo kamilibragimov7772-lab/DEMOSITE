@@ -1680,6 +1680,26 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
     host.appendChild(s);
   }
 })();
+// Mouse-parallax на hero-продуктах — разный depth даёт 3D-ощущение
+(function(){
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const visual=document.querySelector('.hero__visual');if(!visual)return;
+  const items=visual.querySelectorAll('.prod-item');if(!items.length)return;
+  let rafId=null,lastE=null;
+  visual.addEventListener('mousemove',e=>{lastE=e;if(!rafId)rafId=requestAnimationFrame(apply);});
+  visual.addEventListener('mouseleave',()=>{items.forEach(it=>{it.style.setProperty('--mx','0px');it.style.setProperty('--my','0px');});});
+  function apply(){
+    rafId=null;if(!lastE)return;
+    const r=visual.getBoundingClientRect();
+    const nx=(lastE.clientX-r.left-r.width/2)/r.width;
+    const ny=(lastE.clientY-r.top-r.height/2)/r.height;
+    items.forEach((it,i)=>{
+      const depth=(i%2===0?1:-1)*(8+i*4);
+      it.style.setProperty('--mx',(nx*depth)+'px');
+      it.style.setProperty('--my',(ny*depth)+'px');
+    });
+  }
+})();
 // Магнитная CTA — кнопки-аттракторы слегка тянутся к курсору
 (function(){
   if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
