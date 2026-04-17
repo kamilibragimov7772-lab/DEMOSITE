@@ -428,6 +428,11 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 .reasons .tc:hover .reason-ic::after{opacity:1}
 .reasons .tc:hover .reason-ic svg{transform:scale(1.08) rotate(-3deg)}
 @media(prefers-reduced-motion:reduce){.reason-ic,.reason-ic svg{transition:none}}
+/* ─── падающие ✻ снежинки бренда — фикс слой поверх страницы ─── */
+.snowfall{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.snowfall span{position:absolute;top:-10%;color:#9466BB;opacity:0;font-family:"Inter",sans-serif;font-weight:500;user-select:none;animation:snowDrift linear infinite}
+@keyframes snowDrift{0%{transform:translate3d(0,-10vh,0) rotate(0);opacity:0}10%{opacity:.14}90%{opacity:.14}100%{transform:translate3d(var(--drift,20px),110vh,0) rotate(var(--spin,360deg));opacity:0}}
+@media(prefers-reduced-motion:reduce){.snowfall{display:none}}
 .feat-pill__ic svg{width:30px;height:30px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:transform .3s}
 .feat-pill__tx{font-size:.95rem;line-height:1.4;color:var(--t1);margin:0}
 .feat-pill__tx b{color:#9466BB;font-weight:700}
@@ -1656,6 +1661,26 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 <a href="tel:+78001011525" class="btn" style="background:var(--c-black);color:#fff">📞 Позвонить</a>
 <a href="#cta" class="btn btn--p" id="stkCta">Расчёт</a>
 </div></div>
+<div class="snowfall" aria-hidden="true"></div>
+<script>
+(function(){
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const host=document.querySelector('.snowfall');if(!host)return;
+  const N=14;
+  for(let i=0;i<N;i++){
+    const s=document.createElement('span');
+    s.textContent='✻';
+    const size=8+Math.random()*22;
+    const dur=14+Math.random()*18;
+    const delay=-Math.random()*dur;
+    const left=Math.random()*100;
+    const drift=(Math.random()*60-30)+'px';
+    const spin=(180+Math.random()*360)+'deg';
+    s.style.cssText='left:'+left+'vw;font-size:'+size+'px;animation-duration:'+dur+'s;animation-delay:'+delay+'s;--drift:'+drift+';--spin:'+spin+';';
+    host.appendChild(s);
+  }
+})();
+</script>
 
 <script>
 (function(){
