@@ -478,14 +478,21 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 /* "роизводителя" стартует сдвинутым ВЛЕВО (из центра завода) и летит на место */
 .hero__t[data-typing] .t-word-rest .t-char{display:inline-block;transform:translateX(-1.2em) scale(.4)}
 .hero__t[data-typing].t-typed .t-word-rest .t-char{transform:translateX(0) scale(1)}
+/* главная — весь текст на 10% меньше */
+#p-home .hero__t{font-size:calc(clamp(2.25rem,5vw,3.75rem) * .9)}
+#p-home h2{font-size:calc(clamp(1.375rem,3vw,2rem) * .9)}
+#p-home h3{font-size:calc(1.25rem * .9)}
+#p-home h4{font-size:calc(1.05rem * .9)}
+#p-home .hero__sub,#p-home p,#p-home .muted,#p-home .card__tx,#p-home .card__tl,#p-home .pcard__nm,#p-home .pcard__pr{font-size:.9em}
+#p-home .label,#p-home .tstrip__txt,#p-home .pcard__ser,#p-home .card__lbl{font-size:.68rem}
 /* nowrap-обёртка всего слова "Производителя" — чтобы не ломалось на перенос */
-.hero__t[data-typing] .t-prod-nowrap{white-space:nowrap;display:inline}
-/* First-letter wrapper = место буквы П / иконки завода (занимает примерно ширину П) */
-.hero__t[data-typing] .t-firstletter{display:inline-block;position:relative;vertical-align:baseline;width:.62em;height:.85em;overflow:visible}
-.hero__t[data-typing] .t-factory{position:absolute;left:50%;top:50%;width:1.5em;height:1.5em;transform:translate(-50%,-50%) scale(0) rotate(-40deg);display:flex;align-items:center;justify-content:center;opacity:0;transition:transform .55s cubic-bezier(.34,1.56,.64,1),opacity .35s}
+.hero__t[data-typing] .t-prod-nowrap{white-space:nowrap}
+/* .t-firstletter = inline-контейнер, в который кладётся буква П (в потоке, резервирует место) + завод (absolute, поверх) */
+.hero__t[data-typing] .t-firstletter{position:relative;display:inline-block;vertical-align:baseline}
+.hero__t[data-typing] .t-letter{display:inline-block;opacity:0;transform:scale(.3) translateY(.15em);transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .4s;font:inherit;line-height:inherit}
+.hero__t[data-typing] .t-factory{position:absolute;left:50%;top:50%;width:1.25em;height:1.25em;transform:translate(-50%,-50%) scale(0) rotate(-40deg);display:flex;align-items:center;justify-content:center;opacity:0;transition:transform .55s cubic-bezier(.34,1.56,.64,1),opacity .35s;pointer-events:none}
 .hero__t[data-typing] .t-factory svg{width:100%;height:100%;filter:drop-shadow(0 2px 10px rgba(148,102,187,.55))}
 .hero__t[data-typing] .t-factory-body{transform-box:fill-box;transform-origin:center}
-.hero__t[data-typing] .t-letter{position:absolute;left:0;top:0;opacity:0;transform:scale(.3) translateY(10px);transition:transform .5s cubic-bezier(.34,1.56,.64,1),opacity .4s;font:inherit;line-height:1}
 /* Заводские дым, искры, колесо — включаются когда завод активен */
 .hero__t.f-work .t-factory-smoke circle{animation:smokeRise 1.8s ease-out infinite}
 .hero__t.f-work .t-factory-smoke circle:nth-child(2){animation-delay:.4s}
