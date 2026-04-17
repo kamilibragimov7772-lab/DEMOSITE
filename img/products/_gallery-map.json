@@ -1,0 +1,272 @@
+{
+  "bubblpak-120x210": {
+    "main": "bubblpak-120x210.webp",
+    "extra": [
+      "bubblpak-120x210-2.webp",
+      "bubblpak-120x210-3.webp",
+      "bubblpak-120x210-4.webp"
+    ]
+  },
+  "bubblpak-140x220": {
+    "main": "bubblpak-140x220.webp",
+    "extra": [
+      "bubblpak-140x220-2.webp",
+      "bubblpak-140x220-3.webp",
+      "bubblpak-140x220-4.webp"
+    ]
+  },
+  "bubblpak-150x210": {
+    "main": "bubblpak-150x210.webp",
+    "extra": [
+      "bubblpak-150x210-2.webp",
+      "bubblpak-150x210-3.webp",
+      "bubblpak-150x210-4.webp"
+    ]
+  },
+  "bubblpak-180x260": {
+    "main": "bubblpak-180x260.webp",
+    "extra": [
+      "bubblpak-180x260-2.webp",
+      "bubblpak-180x260-3.webp",
+      "bubblpak-180x260-4.webp"
+    ]
+  },
+  "bubblpak": {
+    "main": "bubblpak.webp",
+    "extra": [
+      "bubblpak-2.webp",
+      "bubblpak-3.webp",
+      "bubblpak-4.webp",
+      "bubblpak-5.webp"
+    ]
+  },
+  "bubblpak-200x270": {
+    "main": "bubblpak-200x270.webp",
+    "extra": [
+      "bubblpak-200x270-2.webp",
+      "bubblpak-200x270-3.webp",
+      "bubblpak-200x270-4.webp"
+    ]
+  },
+  "bubblpak-220x260": {
+    "main": "bubblpak-220x260.webp",
+    "extra": [
+      "bubblpak-220x260-2.webp",
+      "bubblpak-220x260-3.webp",
+      "bubblpak-220x260-4.webp"
+    ]
+  },
+  "bubblpak-220x330": {
+    "main": "bubblpak-220x330.webp",
+    "extra": [
+      "bubblpak-220x330-2.webp",
+      "bubblpak-220x330-3.webp",
+      "bubblpak-220x330-4.webp"
+    ]
+  },
+  "bubblpak-240x330": {
+    "main": "bubblpak-240x330.webp",
+    "extra": [
+      "bubblpak-240x330-2.webp",
+      "bubblpak-240x330-3.webp",
+      "bubblpak-240x330-4.webp"
+    ]
+  },
+  "bubblpak-300x440": {
+    "main": "bubblpak-300x440.webp",
+    "extra": [
+      "bubblpak-300x440-2.webp",
+      "bubblpak-300x440-3.webp",
+      "bubblpak-300x440-4.webp"
+    ]
+  },
+  "bubblpak-350x470": {
+    "main": "bubblpak-350x470.webp",
+    "extra": [
+      "bubblpak-350x470-2.webp",
+      "bubblpak-350x470-3.webp"
+    ]
+  },
+  "linerbox-16l": {
+    "main": "linerbox-16l.webp",
+    "extra": []
+  },
+  "linerbox-24l": {
+    "main": "linerbox-24l.webp",
+    "extra": []
+  },
+  "linerbox-40l": {
+    "main": "linerbox-40l.webp",
+    "extra": []
+  },
+  "shock-1100": {
+    "main": "shock-1100.webp",
+    "extra": [
+      "shock-1100-2.webp",
+      "shock-1100-3.webp",
+      "shock-1100-4.webp"
+    ]
+  },
+  "shock-300-cool": {
+    "main": "shock-300-cool.webp",
+    "extra": [
+      "shock-300-cool-2.webp",
+      "shock-300-cool-3.webp",
+      "shock-300-cool-4.webp"
+    ]
+  },
+  "shock-300-freeze": {
+    "main": "shock-300-freeze.webp",
+    "extra": [
+      "shock-300-freeze-2.webp",
+      "shock-300-freeze-3.webp",
+      "shock-300-freeze-4.webp"
+    ]
+  },
+  "shock-300-gel": {
+    "main": "shock-300-gel.webp",
+    "extra": [
+      "shock-300-gel-2.webp",
+      "shock-300-gel-3.webp",
+      "shock-300-gel-4.webp"
+    ]
+  },
+  "shock-450-cool": {
+    "main": "shock-450-cool.webp",
+    "extra": [
+      "shock-450-cool-2.webp",
+      "shock-450-cool-3.webp",
+      "shock-450-cool-4.webp"
+    ]
+  },
+  "shock-450-freeze": {
+    "main": "shock-450-freeze.webp",
+    "extra": [
+      "shock-450-freeze-2.webp",
+      "shock-450-freeze-3.webp",
+      "shock-450-freeze-4.webp"
+    ]
+  },
+  "shock-450-gel": {
+    "main": "shock-450-gel.webp",
+    "extra": [
+      "shock-450-gel-2.webp",
+      "shock-450-gel-3.webp",
+      "shock-450-gel-4.webp"
+    ]
+  },
+  "shock-600-cool": {
+    "main": "shock-600-cool.webp",
+    "extra": [
+      "shock-600-cool-2.webp",
+      "shock-600-cool-3.webp",
+      "shock-600-cool-4.webp"
+    ]
+  },
+  "shock-600-freeze": {
+    "main": "shock-600-freeze.webp",
+    "extra": [
+      "shock-600-freeze-2.webp",
+      "shock-600-freeze-3.webp",
+      "shock-600-freeze-4.webp"
+    ]
+  },
+  "shock-600-gel": {
+    "main": "shock-600-gel.webp",
+    "extra": [
+      "shock-600-gel-2.webp",
+      "shock-600-gel-3.webp",
+      "shock-600-gel-4.webp"
+    ]
+  },
+  "termopaket-32x35": {
+    "main": "termopaket-32x35.webp",
+    "extra": [
+      "termopaket-32x35-2.webp"
+    ]
+  },
+  "termopaket-42x45": {
+    "main": "termopaket-42x45.webp",
+    "extra": [
+      "termopaket-42x45-2.webp"
+    ]
+  },
+  "termopaket-42x50": {
+    "main": "termopaket-42x50.webp",
+    "extra": [
+      "termopaket-42x50-2.webp"
+    ]
+  },
+  "termopaket-60x55": {
+    "main": "termopaket-60x55.webp",
+    "extra": [
+      "termopaket-60x55-2.webp"
+    ]
+  },
+  "termopaket-light-42x50": {
+    "main": "termopaket-light-42x50.webp",
+    "extra": [
+      "termopaket-light-42x50-2.webp",
+      "termopaket-light-42x50-3.webp",
+      "termopaket-light-42x50-4.webp"
+    ]
+  },
+  "termopaket-light-60x55": {
+    "main": "termopaket-light-60x55.webp",
+    "extra": [
+      "termopaket-light-60x55-2.webp",
+      "termopaket-light-60x55-3.webp",
+      "termopaket-light-60x55-4.webp"
+    ]
+  },
+  "termopaket-pro-42x45": {
+    "main": "termopaket-pro-42x45.webp",
+    "extra": [
+      "termopaket-pro-42x45-2.webp",
+      "termopaket-pro-42x45-3.webp",
+      "termopaket-pro-42x45-4.webp"
+    ]
+  },
+  "termopaket-pro-max-60x55": {
+    "main": "termopaket-pro-max-60x55.webp",
+    "extra": [
+      "termopaket-pro-max-60x55-2.webp",
+      "termopaket-pro-max-60x55-3.webp",
+      "termopaket-pro-max-60x55-4.webp"
+    ]
+  },
+  "termopaket-s-dnom": {
+    "main": "termopaket-s-dnom.webp",
+    "extra": [
+      "termopaket-s-dnom-2.webp",
+      "termopaket-s-dnom-3.webp",
+      "termopaket-s-dnom-4.webp",
+      "termopaket-s-dnom-5.webp"
+    ]
+  },
+  "termopaket-s-dnom-60x55": {
+    "main": "termopaket-s-dnom-60x55.webp",
+    "extra": [
+      "termopaket-s-dnom-60x55-2.webp",
+      "termopaket-s-dnom-60x55-3.webp",
+      "termopaket-s-dnom-60x55-4.webp"
+    ]
+  },
+  "termopaket-zip-lock": {
+    "main": "termopaket-zip-lock.webp",
+    "extra": [
+      "termopaket-zip-lock-2.webp",
+      "termopaket-zip-lock-3.webp",
+      "termopaket-zip-lock-4.webp"
+    ]
+  },
+  "termorukzak": {
+    "main": "termorukzak.webp",
+    "extra": [
+      "termorukzak-2.webp",
+      "termorukzak-3.webp",
+      "termorukzak-4.webp",
+      "termorukzak-5.webp"
+    ]
+  }
+}

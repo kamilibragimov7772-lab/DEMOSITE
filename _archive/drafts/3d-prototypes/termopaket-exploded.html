@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Termy — 3-слойный термопакет, разборная 3D-анимация</title>
+<style>
+  :root {
+    --brand-1: #6428A0;
+    --brand-2: #9466BB;
+    --ink: #f5f0ff;
+    --muted: #b5a6d4;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, "Segoe UI", Inter, Roboto, sans-serif;
+    color: var(--ink);
+    background: #0a0518;
+  }
+  #scene {
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 40%, #1f1340 0%, #0a0518 55%, #050210 100%);
+  }
+  #scene canvas { display: block; }
+  #ui {
+    position: fixed;
+    top: 28px;
+    left: 32px;
+    max-width: 320px;
+    z-index: 10;
+    pointer-events: none;
+  }
+  #ui h1 {
+    margin: 0 0 6px 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    background: linear-gradient(90deg, #c9a8ff, #f5e8ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  #ui p.subtitle {
+    margin: 0 0 18px 0;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 400;
+  }
+  #ui button {
+    pointer-events: auto;
+    display: inline-block;
+    padding: 11px 20px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.01em;
+    box-shadow:
+      0 6px 18px rgba(100, 40, 160, 0.45),
+      0 1px 0 rgba(255, 255, 255, 0.12) inset;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  #ui button:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 10px 24px rgba(148, 102, 187, 0.55),
+      0 1px 0 rgba(255, 255, 255, 0.18) inset;
+  }
+  #ui button:active { transform: translateY(0); }
+  #ui .hint {
+    margin: 16px 0 0 2px;
+    font-size: 11px;
+    color: #6e5d8f;
+    line-height: 1.6;
+  }
+  #brand {
+    position: fixed;
+    bottom: 22px;
+    left: 32px;
+    font-size: 11px;
+    color: #4e4070;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    z-index: 10;
+  }
+  #brand b { color: #8a75b3; font-weight: 700; }
+  /* CSS2D labels */
+  .layer-label {
+    color: #f5f0ff;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(30, 16, 60, 0.65);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+  .layer-label.visible { opacity: 1; }
+  .layer-label .num {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    text-align: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+    color: #fff;
+    font-weight: 700;
+    font-size: 10px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .layer-label strong { font-weight: 600; }
+  .layer-label em { color: var(--muted); font-style: normal; font-size: 11px; margin-left: 6px; }
+</style>
+</head>
+<body>
+  <div id="scene"></div>
+  <div id="ui">
+    <h1>Термопакет Termy</h1>
+    <p class="subtitle">Трёхслойный 42×45 · металлизированный ПЭ + ВПЭ/ВПП + ПВД</p>
+    <button id="btn">Разобрать слои</button>
+    <p class="hint">
+      Перетащите мышью, чтобы повернуть<br>
+      Колесо — приблизить
+    </p>
+  </div>
+  <div id="brand"><b>TERMY</b> &nbsp;·&nbsp; прототип · 2026</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.min.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+
+const container = document.getElementById('scene');
+
+// Renderer
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x000000, 0);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.15;
+container.appendChild(renderer.domElement);
+
+// CSS2D overlay for labels
+const labelRenderer = new CSS2DRenderer();
+labelRenderer.setSize(window.innerWidth, window.innerHeight);
+labelRenderer.domElement.style.position = 'fixed';
+labelRenderer.domElement.style.top = '0';
+labelRenderer.domElement.style.left = '0';
+labelRenderer.domElement.style.pointerEvents = 'none';
+container.appendChild(labelRenderer.domElement);
+
+// Scene + camera
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.set(3.5, 1.8, 8.5);
+camera.lookAt(0, 0, 0);
+
+// Lights — tuned for matte/metallic contrast on the stacked layers
+scene.add(new THREE.HemisphereLight(0xcfb8ff, 0x1a0a2e, 0.55));
+
+const keyLight = new THREE.DirectionalLight(0xffffff, 1.6);
+keyLight.position.set(5, 7, 6);
+scene.add(keyLight);
+
+const rimLight = new THREE.PointLight(0xff8fc8, 1.4, 20, 1.2);
+rimLight.position.set(-4, 2, -3);
+scene.add(rimLight);
+
+const fillLight = new THREE.PointLight(0x6aa8ff, 0.6, 20, 1.5);
+fillLight.position.set(4, -2, 3);
+scene.add(fillLight);
+
+// Build the bag shape — almost square (42×45), small corner radius on all four corners
+const BAG_W = 2.10;   // half width
+const BAG_H = 2.25;   // half height
+const BAG_R = 0.12;   // corner radius
+
+function buildBagShape() {
+  const w = BAG_W, h = BAG_H, r = BAG_R;
+  const s = new THREE.Shape();
+  s.moveTo(-w, h - r);
+  s.quadraticCurveTo(-w, h, -w + r, h);
+  s.lineTo(w - r, h);
+  s.quadraticCurveTo(w, h, w, h - r);
+  s.lineTo(w, -h + r);
+  s.quadraticCurveTo(w, -h, w - r, -h);
+  s.lineTo(-w + r, -h);
+  s.quadraticCurveTo(-w, -h, -w, -h + r);
+  s.lineTo(-w, h - r);
+  return s;
+}
+
+const bagShape = buildBagShape();
+
+// Per-layer geometry — outer/inner are thin films, middle is the thick insulation bulk
+function makeBagGeom(depth) {
+  const g = new THREE.ExtrudeGeometry(bagShape, {
+    depth,
+    bevelEnabled: true,
+    bevelThickness: 0.008,
+    bevelSize: 0.012,
+    bevelSegments: 3,
+    curveSegments: 28,
+  });
+  g.center();
+  return g;
+}
+
+const outerGeom = makeBagGeom(0.05);
+const midGeom   = makeBagGeom(0.16);
+const innerGeom = makeBagGeom(0.05);
+
+// ---------- Front decal — procedural canvas reproducing the real 42×45 print ----------
+function roundRect(g, x, y, w, h, r) {
+  g.beginPath();
+  g.moveTo(x + r, y);
+  g.lineTo(x + w - r, y);
+  g.quadraticCurveTo(x + w, y, x + w, y + r);
+  g.lineTo(x + w, y + h - r);
+  g.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  g.lineTo(x + r, y + h);
+  g.quadraticCurveTo(x, y + h, x, y + h - r);
+  g.lineTo(x, y + r);
+  g.quadraticCurveTo(x, y, x + r, y);
+}
+
+function buildFrontDecalTexture() {
+  const W = 1024;
+  const H = 1100;     // slight portrait to match the 42×45 aspect
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d');
+
+  g.clearRect(0, 0, W, H);
+
+  // Soft white frost wash — makes the print pop against the metallized silver base
+  g.fillStyle = 'rgba(255, 255, 255, 0.16)';
+  g.fillRect(40, 40, W - 80, H - 80);
+
+  // Termy logo — big, top-left
+  g.fillStyle = '#6428A0';
+  g.font = '800 168px "Inter", "Segoe UI", -apple-system, sans-serif';
+  g.textBaseline = 'alphabetic';
+  g.fillText('termy', 90, 250);
+  // Purple asterisk mark after the logo
+  g.fillStyle = '#9466BB';
+  g.font = '800 120px "Inter", sans-serif';
+  g.fillText('*', 600, 210);
+
+  // Purple slogan block
+  g.fillStyle = '#6428A0';
+  roundRect(g, 85, 300, 640, 220, 12);
+  g.fill();
+  g.fillStyle = '#ffffff';
+  g.font = '800 50px "Inter", sans-serif';
+  g.fillText('СОХРАНЯЮ', 115, 370);
+  g.fillText('ХОЛОД,', 115, 425);
+  g.fillText('БЕРЕГУ ТЕПЛО', 115, 490);
+
+  // Sub-caption
+  g.fillStyle = '#2a1748';
+  g.font = '600 28px "Inter", sans-serif';
+  g.fillText('Термопакет трёхслойный', 90, 570);
+
+  // Specs block
+  g.font = '700 32px "Inter", sans-serif';
+  g.fillText('РАЗМЕР: 42×45 СМ', 90, 625);
+  g.fillText('ВРЕМЯ РАБОТЫ: БОЛЕЕ 4 Ч', 90, 670);
+  g.fillText('ОБЪЁМ: 15 Л    ВЕС: 10 КГ', 90, 715);
+
+  // 4 feature icons — brand-gradient squares with captions
+  const iconColors = ['#6428A0', '#6491B4', '#9466BB', '#28A096'];
+  const iconLabels = ['ГОРЯЧЕЕ', 'ХОЛОДНОЕ', 'МЕДИЦИНА', 'ПЕРЕРАБОТКА'];
+  const iconSize = 115;
+  const iconGap = 22;
+  const iconStartX = 90;
+  const iconY = 770;
+  g.textAlign = 'center';
+  for (let i = 0; i < 4; i++) {
+    const x = iconStartX + i * (iconSize + iconGap);
+    g.fillStyle = iconColors[i];
+    roundRect(g, x, iconY, iconSize, iconSize, 14);
+    g.fill();
+    // Small white pictogram placeholder
+    g.fillStyle = 'rgba(255,255,255,0.95)';
+    g.beginPath();
+    g.arc(x + iconSize / 2, iconY + iconSize / 2 - 4, 22, 0, Math.PI * 2);
+    g.fill();
+    // Caption under icon
+    g.fillStyle = '#2a1748';
+    g.font = '600 17px "Inter", sans-serif';
+    g.fillText(iconLabels[i], x + iconSize / 2, iconY + iconSize + 24);
+  }
+  g.textAlign = 'start';
+
+  // Vertical temperature gauge — right side
+  const gX = 830;
+  const gY0 = 180;
+  const gH = 680;
+  g.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  roundRect(g, gX, gY0, 36, gH, 18);
+  g.fill();
+  // Purple filling from ~+60°C down to ~-15°C
+  g.fillStyle = '#6428A0';
+  roundRect(g, gX + 5, gY0 + gH * 0.18, 26, gH * 0.60, 13);
+  g.fill();
+  // Bulb
+  g.beginPath();
+  g.arc(gX + 18, gY0 + gH + 30, 30, 0, Math.PI * 2);
+  g.fill();
+  // Ticks + labels
+  g.strokeStyle = '#2a1748';
+  g.lineWidth = 2;
+  g.fillStyle = '#2a1748';
+  g.font = '700 20px "Inter", sans-serif';
+  const ticks = [
+    ['+100', 0.00],
+    ['+60',  0.22],
+    ['+30',  0.36],
+    ['0',    0.50],
+    ['-30',  0.64],
+    ['-60',  0.78],
+    ['-100', 0.95],
+  ];
+  for (const [label, t] of ticks) {
+    const y = gY0 + t * gH;
+    g.beginPath();
+    g.moveTo(gX + 42, y);
+    g.lineTo(gX + 62, y);
+    g.stroke();
+    g.fillText(label, gX + 70, y + 7);
+  }
+
+  // Barcode strip + TU line
+  g.fillStyle = '#2a1748';
+  for (let i = 0; i < 28; i++) {
+    const barW = (i % 3 === 0) ? 3 : 2;
+    g.fillRect(90 + i * 6, 945, barW, 40);
+  }
+  g.font = '500 14px "Inter", sans-serif';
+  g.fillText('ТУ 22.22.11-001-47645032-2022', 280, 970);
+
+  // Footer URL
+  g.fillStyle = '#6428A0';
+  g.font = '700 22px "Inter", sans-serif';
+  g.fillText('termybrand.com', 90, 1030);
+
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 8;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+const frontDecalTex = buildFrontDecalTexture();
+
+// ---------- Materials — layered bag physics ----------
+
+// Outer — metallized PE film: silvery-grey base with clearcoat
+const outerMat = new THREE.MeshPhysicalMaterial({
+  color: 0xe4e6ea,
+  metalness: 0.72,
+  roughness: 0.36,
+  clearcoat: 0.25,
+  clearcoatRoughness: 0.4,
+});
+
+// Middle — ВПЭ/ВПП foam insulation: cream-white, fully matte, this is the thick bulk
+const midMat = new THREE.MeshStandardMaterial({
+  color: 0xf3eee4,
+  metalness: 0.0,
+  roughness: 0.88,
+});
+
+// Inner — PVD liner: clean white, matte
+const innerMat = new THREE.MeshStandardMaterial({
+  color: 0xf7f7f7,
+  metalness: 0.05,
+  roughness: 0.6,
+});
+
+// ---------- Scene graph for the layered bag ----------
+const bagGroup = new THREE.Group();
+scene.add(bagGroup);
+
+const layerSpecs = [
+  { mat: outerMat, geom: outerGeom, collapsed:  0.115, exploded:  2.1, label: ['1', 'Металлизированный ПЭ', 'печать и отражение тепла'] },
+  { mat: midMat,   geom: midGeom,   collapsed:  0.000, exploded:  0.0, label: ['2', 'ВПЭ/ВПП изоляция',      'удерживает температуру 4+ часов'] },
+  { mat: innerMat, geom: innerGeom, collapsed: -0.115, exploded: -2.1, label: ['3', 'Внутренний ПВД',         'пищевой барьер, защита от влаги'] },
+];
+
+const layers = layerSpecs.map((spec, i) => {
+  const mesh = new THREE.Mesh(spec.geom, spec.mat);
+  mesh.position.z = spec.collapsed;
+  bagGroup.add(mesh);
+
+  // Label
+  const el = document.createElement('div');
+  el.className = 'layer-label';
+  el.innerHTML =
+    '<span class="num">' + spec.label[0] + '</span>' +
+    '<strong>' + spec.label[1] + '</strong>' +
+    '<em>' + spec.label[2] + '</em>';
+  const labelObj = new CSS2DObject(el);
+  labelObj.position.set(2.6, 1.6 - i * 0.6, 0);
+  mesh.add(labelObj);
+
+  return { mesh, spec, el };
+});
+
+// ---------- Front decal plane — hugs the bag outline, sits just above the outer layer ----------
+// ShapeGeometry uses the same rounded rectangle as the bag, so the decal cannot extend past the edges.
+const decalGeom = new THREE.ShapeGeometry(bagShape);
+decalGeom.center();
+// Remap UVs: shape coords (-BAG_W..+BAG_W, -BAG_H..+BAG_H) → (0..1, 0..1)
+{
+  const pos = decalGeom.attributes.position;
+  const uvArr = new Float32Array(pos.count * 2);
+  for (let i = 0; i < pos.count; i++) {
+    uvArr[i * 2]     = (pos.getX(i) + BAG_W) / (2 * BAG_W);
+    uvArr[i * 2 + 1] = (pos.getY(i) + BAG_H) / (2 * BAG_H);
+  }
+  decalGeom.setAttribute('uv', new THREE.BufferAttribute(uvArr, 2));
+}
+const decalMat = new THREE.MeshBasicMaterial({
+  map: frontDecalTex,
+  transparent: true,
+  depthWrite: false,
+});
+const decalMesh = new THREE.Mesh(decalGeom, decalMat);
+// Outer layer depth 0.05 centered → front face at local z ≈ +0.025. Sit just in front of it.
+decalMesh.position.z = 0.030;
+layers[0].mesh.add(decalMesh);
+
+// ---------- Handle — one black plastic plank with two oval finger cutouts ----------
+function buildHandleShape() {
+  const s = new THREE.Shape();
+  const halfW = 1.35;   // plank almost spans the bag width
+  // Outer outline: flat base, curved arch on top
+  s.moveTo(-halfW, 0);
+  s.lineTo(-halfW, 0.50);
+  s.quadraticCurveTo(0, 0.90, halfW, 0.50);
+  s.lineTo(halfW, 0);
+  s.lineTo(-halfW, 0);
+  // Two oval finger holes
+  const holeL = new THREE.Path();
+  holeL.ellipse(-0.48, 0.38, 0.42, 0.13, 0, 0, Math.PI * 2, false);
+  const holeR = new THREE.Path();
+  holeR.ellipse( 0.48, 0.38, 0.42, 0.13, 0, 0, Math.PI * 2, false);
+  s.holes.push(holeL, holeR);
+  return s;
+}
+
+const handleShape = buildHandleShape();
+const handleGeom = new THREE.ExtrudeGeometry(handleShape, {
+  depth: 0.05,
+  bevelEnabled: true,
+  bevelThickness: 0.006,
+  bevelSize: 0.008,
+  bevelSegments: 2,
+  curveSegments: 20,
+});
+const handleMat = new THREE.MeshPhysicalMaterial({
+  color: 0x0e0e12,
+  metalness: 0.25,
+  roughness: 0.42,
+  clearcoat: 0.4,
+  clearcoatRoughness: 0.3,
+});
+const handleMesh = new THREE.Mesh(handleGeom, handleMat);
+// Plank base sits right at the top edge of the bag (slight bite into the bag top seam)
+handleMesh.position.set(0, BAG_H - 0.02, 0.035);
+layers[0].mesh.add(handleMesh);
+
+// Floor reflection plane — subtle, just to ground the object
+const floorGeom = new THREE.CircleGeometry(6, 48);
+const floorMat = new THREE.MeshBasicMaterial({
+  color: 0x1a0f36,
+  transparent: true,
+  opacity: 0.55,
+});
+const floor = new THREE.Mesh(floorGeom, floorMat);
+floor.rotation.x = -Math.PI / 2;
+floor.position.y = -3.2;
+scene.add(floor);
+
+// Orbit controls
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.enablePan = false;
+controls.minDistance = 5;
+controls.maxDistance = 16;
+controls.minPolarAngle = Math.PI * 0.15;
+controls.maxPolarAngle = Math.PI * 0.85;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.6;
+controls.target.set(0, 0, 0);
+
+// Explode state
+let exploded = false;
+let explodeT = 0;           // actual, animated
+let explodeTarget = 0;      // 0 = collapsed, 1 = exploded
+
+const btn = document.getElementById('btn');
+btn.addEventListener('click', () => {
+  exploded = !exploded;
+  explodeTarget = exploded ? 1 : 0;
+  btn.textContent = exploded ? 'Собрать обратно' : 'Разобрать слои';
+  // Auto-rotate slower when exploded so labels are readable
+  controls.autoRotateSpeed = exploded ? 0.35 : 0.6;
+});
+
+// Resize
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  labelRenderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// Animation loop — critically damped explode transition
+function tick() {
+  // Smooth explode interpolation
+  explodeT += (explodeTarget - explodeT) * 0.09;
+
+  // Apply to each layer
+  layers.forEach(({ mesh, spec }) => {
+    const z = spec.collapsed + (spec.exploded - spec.collapsed) * explodeT;
+    mesh.position.z = z;
+  });
+
+  // Fade labels in/out based on explode progress
+  const labelVisible = explodeT > 0.35;
+  layers.forEach(({ el }) => el.classList.toggle('visible', labelVisible));
+
+  // Subtle hover breathing on the bag group
+  bagGroup.position.y = Math.sin(performance.now() * 0.0008) * 0.08;
+
+  controls.update();
+  renderer.render(scene, camera);
+  labelRenderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+tick();
+</script>
+</body>
+</html>

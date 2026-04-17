@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Прототип 01 — Mouse Parallax на Hero</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box }
+  body { font-family: 'Inter', -apple-system, sans-serif; background:#0D0F11; color:#F0F1F3; min-height:100vh }
+
+  .wrap { max-width:1280px; margin:0 auto; padding:2rem }
+  .note { background:#1A1D22; border:1px solid #2E333B; border-radius:12px; padding:1.25rem; margin-bottom:1.5rem; font-size:14px; line-height:1.6 }
+  .note strong { color:#9466BB }
+  .note code { background:#0D0F11; padding:2px 6px; border-radius:4px; font-size:12px }
+
+  .hero--home { background:linear-gradient(135deg,#6428A0,#9466BB); border-radius:16px; overflow:hidden; position:relative; min-height:560px; display:flex; align-items:center }
+  .hero__bg { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:clamp(8rem,20vw,18rem); font-weight:900; color:rgba(255,255,255,.06); letter-spacing:-0.04em; pointer-events:none; user-select:none }
+  .ctr { display:grid; grid-template-columns:1fr 1fr; gap:2rem; padding:3rem; width:100%; align-items:center; position:relative; z-index:2 }
+  .hero__ct h1 { font-size:clamp(2rem,4vw,3rem); font-weight:800; line-height:1.1; letter-spacing:-0.03em; color:#fff; margin-bottom:1rem }
+  .hero__sub { color:rgba(255,255,255,.85); font-size:1rem; line-height:1.5; margin-bottom:1.5rem }
+  .hero__acts { display:flex; gap:.75rem; flex-wrap:wrap }
+  .btn { padding:.85rem 1.5rem; border-radius:8px; font-weight:600; font-size:.95rem; text-decoration:none; border:1px solid transparent; cursor:pointer; transition:all .2s }
+  .btn--p { background:linear-gradient(135deg,#6428A0,#9466BB); color:#fff; box-shadow:0 4px 20px rgba(125,70,175,.4) }
+  .btn--p:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(125,70,175,.55) }
+  .btn--s { background:transparent; color:#fff; border-color:rgba(255,255,255,.35) }
+
+  /* --- HERO VISUAL --- */
+  .hero__visual { position:relative; height:480px; perspective:1200px }
+  .prod-stage { position:relative; width:100%; height:100%; transform-style:preserve-3d }
+
+  .prod-glow {
+    position:absolute; top:50%; left:50%;
+    width:92%; height:78%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(ellipse,rgba(148,102,187,.45) 0%,transparent 65%);
+    filter:blur(24px); z-index:0; pointer-events:none;
+    animation:prodGlowPulse 6s ease-in-out infinite
+  }
+  @keyframes prodGlowPulse { 0%,100%{opacity:.55} 50%{opacity:.9} }
+
+  .prod-item {
+    position:absolute; object-fit:contain;
+    opacity:0;
+    filter:contrast(1.12) brightness(1.04) drop-shadow(0 18px 28px rgba(0,0,0,.55));
+    will-change:transform,opacity;
+    animation-fill-mode:both;
+    transition:filter .4s cubic-bezier(0.4,0,0.2,1);
+    /* parallax переменные обновляются через JS */
+    --mx: 0px;
+    --my: 0px;
+  }
+
+  /* Каждый продукт имеет свой depth — насколько сильно реагирует на курсор */
+  .prod-item[data-prod="0"] { top:8%;  left:28%; width:44%; --start-rot:-25deg; --target-rot:-4deg; --depth:28; z-index:3; animation:prodFlyIn 1.2s cubic-bezier(0.4,0,0.2,1) .2s both, prodFloat 5.5s ease-in-out 1.6s infinite }
+  .prod-item[data-prod="1"] { top:38%; left:1%;  width:30%; --start-rot:-30deg; --target-rot:-8deg; --depth:18; z-index:2; animation:prodFlyIn 1.2s cubic-bezier(0.4,0,0.2,1) .5s both, prodFloat 6s ease-in-out 1.9s infinite }
+  .prod-item[data-prod="2"] { top:36%; left:62%; width:36%; --start-rot:25deg;  --target-rot:6deg;  --depth:22; z-index:2; animation:prodFlyIn 1.2s cubic-bezier(0.4,0,0.2,1) .8s both, prodFloat 5.8s ease-in-out 2.2s infinite }
+  .prod-item[data-prod="3"] { top:52%; left:22%; width:30%; --start-rot:-20deg; --target-rot:3deg;  --depth:34; z-index:4; animation:prodFlyIn 1.2s cubic-bezier(0.4,0,0.2,1) 1.1s both, prodFloat 6.5s ease-in-out 2.5s infinite }
+  .prod-item[data-prod="4"] { top:58%; left:50%; width:30%; --start-rot:30deg;  --target-rot:-5deg; --depth:30; z-index:4; animation:prodFlyIn 1.2s cubic-bezier(0.4,0,0.2,1) 1.4s both, prodFloat 5.2s ease-in-out 2.8s infinite }
+  .prod-item[data-prod="5"] { top:4%;  left:68%; width:24%; --start-rot:20deg;  --target-rot:8deg;  --depth:10; z-index:1; animation:prodFlyIn 1.2s cubic-bezier(0.4,0,0.2,1) 1.7s both, prodFloat 6.2s ease-in-out 3.1s infinite }
+
+  @keyframes prodFlyIn {
+    0%   { opacity:0; transform:translate(var(--mx),calc(var(--my) + 80px)) scale(.5) rotate(var(--start-rot)) }
+    60%  { opacity:1; transform:translate(var(--mx),calc(var(--my) - 10px)) scale(1.05) rotate(var(--target-rot)) }
+    100% { opacity:1; transform:translate(var(--mx),var(--my)) scale(1) rotate(var(--target-rot)) }
+  }
+  @keyframes prodFloat {
+    0%,100% { transform:translate(var(--mx),var(--my)) rotate(var(--target-rot)) }
+    50%     { transform:translate(var(--mx),calc(var(--my) - 6px)) rotate(calc(var(--target-rot) + .8deg)) }
+  }
+
+  .prod-item:hover {
+    transform:translate(var(--mx),calc(var(--my) - 6px)) rotate(var(--target-rot)) scale(1.04);
+    filter:contrast(1.15) brightness(1.08) drop-shadow(0 26px 40px rgba(0,0,0,.65));
+    z-index:10
+  }
+
+  @media(prefers-reduced-motion:reduce) {
+    .prod-item { animation:none; opacity:1; transform:rotate(var(--target-rot)) !important }
+  }
+  @media(max-width:1024px) { .prod-item[data-prod="5"] { display:none } }
+  @media(max-width:768px) {
+    .ctr { grid-template-columns:1fr }
+    .hero__visual { height:320px }
+    .prod-item[data-prod="4"], .prod-item[data-prod="5"] { display:none }
+  }
+
+  /* Debug: показываем значения смещения */
+  .debug { position:fixed; bottom:1rem; right:1rem; background:rgba(0,0,0,.8); color:#9466BB; padding:.75rem 1rem; border-radius:8px; font-family:monospace; font-size:12px; line-height:1.5; z-index:100 }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="note">
+  <strong>Прототип 01 — Mouse Parallax.</strong><br>
+  Двигай курсором <strong>внутри hero-блока</strong>. Каждое фото смещается со своей амплитудой в зависимости от <code>--depth</code> (ближние — сильнее, дальние — слабее). Параллельно работают оригинальные <code>prodFlyIn</code>, <code>prodFloat</code>, <code>prodGlowPulse</code>. При уходе курсора — плавный возврат в центр. На мобильных (&lt;768px) параллакс выключен.
+</div>
+
+<section class="hero hero--home">
+  <div class="hero__bg">TERMY</div>
+  <div class="ctr">
+    <div class="hero__ct">
+      <h1>Термоупаковка от&nbsp;производителя. Сохраняем ваш товар. Защищаем вашу&nbsp;репутацию.</h1>
+      <p class="hero__sub">Термопакеты, аккумуляторы SHOCK®, термокороба LinerBox®, термошопперы, БаблПак — от&nbsp;1&nbsp;коробки, отгрузка от&nbsp;2&nbsp;рабочих дней</p>
+      <div class="hero__acts">
+        <a href="#" class="btn btn--p">Получить оптовый прайс</a>
+        <a href="#" class="btn btn--s">Весь каталог</a>
+      </div>
+    </div>
+    <div class="hero__visual">
+      <div class="prod-stage" id="prodStage" aria-hidden="true">
+        <img class="prod-item" src="../../02_github_repo/bot-ponton/img/products/cutout/termopaket-42x45.webp" alt="Термопакет" data-prod="0">
+        <img class="prod-item" src="../../02_github_repo/bot-ponton/img/products/cutout/shock-600-cool.webp" alt="SHOCK" data-prod="1">
+        <img class="prod-item" src="../../02_github_repo/bot-ponton/img/products/cutout/linerbox-24l.webp" alt="LinerBox" data-prod="2">
+        <img class="prod-item" src="../../02_github_repo/bot-ponton/img/products/cutout/termorukzak.webp" alt="Термошоппер" data-prod="3">
+        <img class="prod-item" src="../../02_github_repo/bot-ponton/img/products/cutout/termopaket-zip-lock.webp" alt="Zip-Lock" data-prod="4">
+        <img class="prod-item" src="../../02_github_repo/bot-ponton/img/products/cutout/shock-450-gel.webp" alt="SHOCK Gel" data-prod="5">
+        <div class="prod-glow"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="debug" id="dbg">mx: 0.00 · my: 0.00</div>
+
+</div>
+
+<script>
+(function(){
+  const stage = document.getElementById('prodStage');
+  const items = stage.querySelectorAll('.prod-item');
+  const dbg = document.getElementById('dbg');
+  const hero = stage.closest('.hero');
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+  if (prefersReduced || isMobile) { if(dbg) dbg.textContent='parallax: off (reduced-motion or mobile)'; return; }
+
+  let targetX = 0, targetY = 0;  // нормализованный -1..+1
+  let currentX = 0, currentY = 0;
+  let rafId = null;
+
+  function onMove(e){
+    const r = hero.getBoundingClientRect();
+    // -1 слева, +1 справа; -1 сверху, +1 снизу
+    targetX = ((e.clientX - r.left) / r.width - 0.5) * 2;
+    targetY = ((e.clientY - r.top) / r.height - 0.5) * 2;
+  }
+  function onLeave(){ targetX = 0; targetY = 0 }
+
+  function tick(){
+    // плавное сглаживание (lerp)
+    currentX += (targetX - currentX) * 0.08;
+    currentY += (targetY - currentY) * 0.08;
+
+    items.forEach(el=>{
+      const depth = parseFloat(getComputedStyle(el).getPropertyValue('--depth')) || 20;
+      // движение в противоположную курсору сторону создаёт parallax-глубину
+      const mx = -currentX * depth;
+      const my = -currentY * depth;
+      el.style.setProperty('--mx', mx.toFixed(2)+'px');
+      el.style.setProperty('--my', my.toFixed(2)+'px');
+    });
+
+    if (dbg) dbg.textContent = `mx: ${currentX.toFixed(2)} · my: ${currentY.toFixed(2)}`;
+    rafId = requestAnimationFrame(tick);
+  }
+
+  hero.addEventListener('mousemove', onMove, {passive:true});
+  hero.addEventListener('mouseleave', onLeave);
+  tick();
+})();
+</script>
+</body>
+</html>
