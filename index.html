@@ -1700,6 +1700,31 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
     host.appendChild(s);
   }
 })();
+// Morph-blob: при hover карточки последний blob тянется к ней (глубже слой, быстрее hover)
+(function(){
+  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const blobLayer=el.querySelector('.shared-blobs');if(!blobLayer)return;
+  const blob=blobLayer.querySelector('.hero-blob--deep');if(!blob)return;
+  const origAnim=getComputedStyle(blob).animation;
+  let restoreTimer=null;
+  const cards=el.querySelectorAll('.card, .pcard, .reasons .tc');
+  cards.forEach(card=>{
+    card.addEventListener('mouseenter',()=>{
+      clearTimeout(restoreTimer);
+      const r=card.getBoundingClientRect();
+      const layerR=blobLayer.getBoundingClientRect();
+      const cx=r.left+r.width/2-layerR.left;
+      const cy=r.top+r.height/2-layerR.top;
+      blob.style.animation='none';
+      blob.style.transition='transform 1.2s cubic-bezier(.4,0,.2,1)';
+      blob.style.transform='translate('+(cx-blobLayer.offsetWidth*0.1)+'px,'+(cy-blobLayer.offsetHeight*0.48)+'px) scale(1.25)';
+    });
+    card.addEventListener('mouseleave',()=>{
+      clearTimeout(restoreTimer);
+      restoreTimer=setTimeout(()=>{blob.style.transition='';blob.style.transform='';blob.style.animation=origAnim;},200);
+    });
+  });
+})();
 // Typing-hero — печатает H1 homepage по буквам
 (function(){
   if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
