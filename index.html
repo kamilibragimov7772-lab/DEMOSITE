@@ -5446,8 +5446,28 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
     }
   });
   
-  // Init: show home, trigger animations
-  go('home');
+  // Init: определить стартовую страницу по URL (pathname или hash), иначе home
+  function resolveInitialRoute(){
+    // Сначала hash: #/products/ → /products/
+    const h=window.location.hash.replace(/^#/,'');
+    if(h&&R[h])return R[h];
+    // Потом pathname
+    let p=window.location.pathname;
+    if(p&&p!=='/'&&!p.endsWith('/'))p+='/';
+    if(R[p])return R[p];
+    return 'home';
+  }
+  go(resolveInitialRoute());
+  // shareable URLs — при клике по data-nav обновлять адресную строку
+  const _origGo=go;
+  go=function(pid){
+    _origGo(pid);
+    const url=Object.keys(R).find(k=>R[k]===pid);
+    if(url&&window.history&&history.pushState){
+      try{history.pushState({pageId:pid},'',url);}catch(e){}
+    }
+  };
+  window.addEventListener('popstate',()=>{_origGo(resolveInitialRoute());});
 })();
 </script>
 </body>
