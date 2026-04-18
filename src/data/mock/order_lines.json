@@ -1,0 +1,22 @@
+[
+  { "id": "OL-0001", "order_id": "ORD-0001", "sku_id": "PV-005", "quantity": 100, "notes": null, "demo": true },
+  { "id": "OL-0002", "order_id": "ORD-0001", "sku_id": "PV-007", "quantity": 100, "notes": null, "demo": true },
+
+  { "id": "OL-0003", "order_id": "ORD-0002", "sku_id": "PV-003", "quantity": 300, "notes": null, "demo": true },
+  { "id": "OL-0004", "order_id": "ORD-0002", "sku_id": "PV-009", "quantity": 60, "notes": null, "demo": true },
+  { "id": "OL-0005", "order_id": "ORD-0002", "sku_id": "PV-028", "quantity": 50, "notes": null, "demo": true },
+
+  { "id": "OL-0006", "order_id": "ORD-0003", "sku_id": "PV-007", "quantity": 500, "notes": "СТМ шелкография, 2 цвета", "demo": true },
+
+  { "id": "OL-0007", "order_id": "ORD-0004", "sku_id": "PV-007", "quantity": 10000, "notes": "СТМ флексо, полноцвет", "demo": true },
+  { "id": "OL-0008", "order_id": "ORD-0004", "sku_id": "PV-003", "quantity": 10000, "notes": "СТМ флексо, полноцвет", "demo": true },
+
+  { "id": "OL-0009", "order_id": "ORD-0005", "sku_id": "PV-028", "quantity": 30, "notes": null, "demo": true },
+  { "id": "OL-0010", "order_id": "ORD-0005", "sku_id": "PV-029", "quantity": 30, "notes": null, "demo": true },
+
+  { "id": "OL-0011", "order_id": "ORD-0006", "sku_id": "PV-005", "quantity": 200, "notes": null, "demo": true },
+
+  { "id": "OL-0012", "order_id": "ORD-0007", "sku_id": "PV-005", "quantity": 500, "notes": "СТМ шелкография, 3 цвета", "demo": true },
+
+  { "id": "OL-0013", "order_id": "ORD-0008", "sku_id": "PV-013", "quantity": 50, "notes": "Нестандарт с лого", "demo": true }
+]

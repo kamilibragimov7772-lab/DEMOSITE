@@ -1,0 +1,20 @@
+[
+  {
+    "id": "AM-0001",
+    "order_id": "ORD-0003",
+    "mockup_id": "MK-0001",
+    "sign_status": "not_requested",
+    "signed_at": null,
+    "scan_path": null,
+    "demo": true
+  },
+  {
+    "id": "AM-0002",
+    "order_id": "ORD-0004",
+    "mockup_id": "MK-0002",
+    "sign_status": "signed",
+    "signed_at": "2026-04-02T16:00:00Z",
+    "scan_path": "/mock/test_mockup.pdf",
+    "demo": true
+  }
+]

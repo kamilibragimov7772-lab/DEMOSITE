@@ -1,0 +1,471 @@
+[
+  {
+    "sku_id": "PV-001",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-001",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-002",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-002",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-003",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-003",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-004",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-004",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-005",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-005",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-006",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-006",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-007",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-007",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-008",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-008",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-009",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-009",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-010",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-010",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-011",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-011",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-012",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-012",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-013",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-013",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-014",
+    "printing_method_id": "PM-01",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-014",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-015",
+    "printing_method_id": "PM-02",
+    "moq_override": 22000,
+    "lead_time_override_weeks": "4–6",
+    "notes": "Только на мет.плёнке."
+  },
+  {
+    "sku_id": "PV-016",
+    "printing_method_id": "PM-02",
+    "moq_override": 25000,
+    "lead_time_override_weeks": "4–5",
+    "notes": "Только на мет.плёнке."
+  },
+  {
+    "sku_id": "PV-017",
+    "printing_method_id": "PM-02",
+    "moq_override": 25000,
+    "lead_time_override_weeks": "4–5",
+    "notes": "Только на мет.плёнке."
+  },
+  {
+    "sku_id": "PV-018",
+    "printing_method_id": "PM-02",
+    "moq_override": 25000,
+    "lead_time_override_weeks": "4–5",
+    "notes": "Только на мет.плёнке."
+  },
+  {
+    "sku_id": "PV-019",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": "Печать логотипа на коробе."
+  },
+  {
+    "sku_id": "PV-020",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": "Печать логотипа на коробе."
+  },
+  {
+    "sku_id": "PV-021",
+    "printing_method_id": "PM-02",
+    "moq_override": null,
+    "lead_time_override_weeks": null,
+    "notes": "Печать логотипа на коробе."
+  },
+  {
+    "sku_id": "PV-022",
+    "printing_method_id": "PM-01",
+    "moq_override": 1000,
+    "lead_time_override_weeks": "2–3",
+    "notes": "Этикетка с лого клиента."
+  },
+  {
+    "sku_id": "PV-023",
+    "printing_method_id": "PM-01",
+    "moq_override": 1000,
+    "lead_time_override_weeks": "2–3",
+    "notes": "Этикетка с лого клиента."
+  },
+  {
+    "sku_id": "PV-024",
+    "printing_method_id": "PM-01",
+    "moq_override": 1000,
+    "lead_time_override_weeks": "2–3",
+    "notes": "Этикетка с лого клиента."
+  },
+  {
+    "sku_id": "PV-025",
+    "printing_method_id": "PM-01",
+    "moq_override": 1000,
+    "lead_time_override_weeks": "2–3",
+    "notes": "Этикетка с лого клиента."
+  },
+  {
+    "sku_id": "PV-026",
+    "printing_method_id": "PM-01",
+    "moq_override": 1000,
+    "lead_time_override_weeks": "2–3",
+    "notes": "Этикетка с лого клиента."
+  },
+  {
+    "sku_id": "PV-027",
+    "printing_method_id": "PM-01",
+    "moq_override": 1000,
+    "lead_time_override_weeks": "2–3",
+    "notes": "Этикетка с лого клиента."
+  },
+  {
+    "sku_id": "PV-028",
+    "printing_method_id": "PM-01",
+    "moq_override": 1000,
+    "lead_time_override_weeks": "2–3",
+    "notes": "Этикетка с лого клиента."
+  },
+  {
+    "sku_id": "PV-029",
+    "printing_method_id": "PM-01",
+    "moq_override": 1000,
+    "lead_time_override_weeks": "2–3",
+    "notes": "Этикетка с лого клиента."
+  },
+  {
+    "sku_id": "PV-030",
+    "printing_method_id": "PM-01",
+    "moq_override": 1000,
+    "lead_time_override_weeks": "2–3",
+    "notes": "Этикетка с лого клиента."
+  },
+  {
+    "sku_id": "PV-031",
+    "printing_method_id": "PM-01",
+    "moq_override": 1000,
+    "lead_time_override_weeks": "2–3",
+    "notes": "Этикетка с лого клиента."
+  },
+  {
+    "sku_id": "PV-032",
+    "printing_method_id": "PM-01",
+    "moq_override": 1000,
+    "lead_time_override_weeks": "2–3",
+    "notes": "Этикетка с лого клиента."
+  },
+  {
+    "sku_id": "PV-033",
+    "printing_method_id": "PM-01",
+    "moq_override": 1000,
+    "lead_time_override_weeks": "2–3",
+    "notes": "Этикетка с лого клиента."
+  },
+  {
+    "sku_id": "PV-034",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-035",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-036",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-037",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-038",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-039",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-040",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-041",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-042",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-043",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-044",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-045",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-046",
+    "printing_method_id": "PM-02",
+    "moq_override": 44000,
+    "lead_time_override_weeks": null,
+    "notes": null
+  },
+  {
+    "sku_id": "PV-047",
+    "printing_method_id": "PM-01",
+    "moq_override": 100,
+    "lead_time_override_weeks": null,
+    "notes": "Бесплатный макет."
+  },
+  {
+    "sku_id": "PV-048",
+    "printing_method_id": "PM-01",
+    "moq_override": 100,
+    "lead_time_override_weeks": null,
+    "notes": "Бесплатный макет."
+  },
+  {
+    "sku_id": "PV-049",
+    "printing_method_id": "PM-01",
+    "moq_override": 100,
+    "lead_time_override_weeks": null,
+    "notes": "Бесплатный макет."
+  },
+  {
+    "sku_id": "PV-050",
+    "printing_method_id": "PM-01",
+    "moq_override": 100,
+    "lead_time_override_weeks": null,
+    "notes": "Бесплатный макет."
+  },
+  {
+    "sku_id": "PV-051",
+    "printing_method_id": "PM-01",
+    "moq_override": 100,
+    "lead_time_override_weeks": null,
+    "notes": "Бесплатный макет."
+  },
+  {
+    "sku_id": "PV-052",
+    "printing_method_id": "PM-01",
+    "moq_override": 36,
+    "lead_time_override_weeks": "2",
+    "notes": "Гравировка СТМ, в нашем цвете."
+  },
+  {
+    "sku_id": "PV-053",
+    "printing_method_id": "PM-01",
+    "moq_override": 36,
+    "lead_time_override_weeks": "2",
+    "notes": "Гравировка СТМ, в нашем цвете."
+  }
+]

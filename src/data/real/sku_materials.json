@@ -1,0 +1,898 @@
+[
+  {
+    "sku_id": "PV-001",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-001",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-001",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-002",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-002",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-002",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-003",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-003",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-003",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-004",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-004",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-004",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-005",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-005",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-005",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-006",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-006",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-006",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-007",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-007",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-007",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-008",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-008",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-008",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-009",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-009",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-009",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-010",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-010",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-010",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-011",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-011",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-011",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-012",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-012",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-012",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-013",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-013",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-013",
+    "material_id": "MAT-MET",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-013",
+    "material_id": "MAT-PLASTIC",
+    "function": "bottom",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-014",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-014",
+    "material_id": "MAT-VPE-1000",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-014",
+    "material_id": "MAT-MET",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-014",
+    "material_id": "MAT-PLASTIC",
+    "function": "bottom",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-015",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-016",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-016",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-017",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-017",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-018",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-018",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-019",
+    "material_id": "MAT-T24",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-019",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-019",
+    "material_id": "MAT-VPP-2CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-019",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-020",
+    "material_id": "MAT-T24",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-020",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-020",
+    "material_id": "MAT-VPP-2CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-020",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-021",
+    "material_id": "MAT-T24",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-021",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-021",
+    "material_id": "MAT-VPP-2CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-021",
+    "material_id": "MAT-PVD",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-022",
+    "material_id": "MAT-PLASTIC",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-022",
+    "material_id": "MAT-GEL",
+    "function": "coolant",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-023",
+    "material_id": "MAT-PLASTIC",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-023",
+    "material_id": "MAT-GEL",
+    "function": "coolant",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-024",
+    "material_id": "MAT-PLASTIC",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-024",
+    "material_id": "MAT-GEL",
+    "function": "coolant",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-025",
+    "material_id": "MAT-PLASTIC",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-025",
+    "material_id": "MAT-GEL",
+    "function": "coolant",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-026",
+    "material_id": "MAT-PLASTIC",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-026",
+    "material_id": "MAT-GEL",
+    "function": "coolant",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-027",
+    "material_id": "MAT-PLASTIC",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-027",
+    "material_id": "MAT-GEL",
+    "function": "coolant",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-028",
+    "material_id": "MAT-PLASTIC",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-028",
+    "material_id": "MAT-GEL",
+    "function": "coolant",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-029",
+    "material_id": "MAT-PLASTIC",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-029",
+    "material_id": "MAT-GEL",
+    "function": "coolant",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-030",
+    "material_id": "MAT-PLASTIC",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-030",
+    "material_id": "MAT-GEL",
+    "function": "coolant",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-031",
+    "material_id": "MAT-PLASTIC",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-031",
+    "material_id": "MAT-GEL",
+    "function": "coolant",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-032",
+    "material_id": "MAT-PLASTIC",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-032",
+    "material_id": "MAT-GEL",
+    "function": "coolant",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-033",
+    "material_id": "MAT-PLASTIC",
+    "function": "frame",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-033",
+    "material_id": "MAT-GEL",
+    "function": "coolant",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-034",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-034",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-035",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-035",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-036",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-036",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-037",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-037",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-038",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-038",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-039",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-039",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-040",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-040",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-041",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-041",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-042",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-042",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-043",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-043",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-044",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-044",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-045",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-045",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-046",
+    "material_id": "MAT-VPP-1CM",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-046",
+    "material_id": "MAT-MET",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-047",
+    "material_id": "MAT-BOPP",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-047",
+    "material_id": "MAT-SPAN",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-047",
+    "material_id": "MAT-BOPP",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-048",
+    "material_id": "MAT-BOPP",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-048",
+    "material_id": "MAT-SPAN",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-048",
+    "material_id": "MAT-BOPP",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-049",
+    "material_id": "MAT-BOPP",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-049",
+    "material_id": "MAT-SPAN",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-049",
+    "material_id": "MAT-BOPP",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-050",
+    "material_id": "MAT-BOPP",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-050",
+    "material_id": "MAT-SPAN",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-050",
+    "material_id": "MAT-BOPP",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-051",
+    "material_id": "MAT-BOPP",
+    "function": "layer_outer",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-051",
+    "material_id": "MAT-SPAN",
+    "function": "layer_middle",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  },
+  {
+    "sku_id": "PV-051",
+    "material_id": "MAT-BOPP",
+    "function": "layer_inner",
+    "consumption_norm_per_unit": null,
+    "tolerance_pct": null
+  }
+]

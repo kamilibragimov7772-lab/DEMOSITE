@@ -1,0 +1,89 @@
+[
+  {
+    "id": "SR-0001",
+    "customer_id": "C-001",
+    "requested_items": [
+      { "sku_id": "PV-007", "quantity": 5 },
+      { "sku_id": "PV-042", "quantity": 3 }
+    ],
+    "recipient_name": "Клиент 1 (HoReCa)",
+    "recipient_inn": "7712345001",
+    "recipient_phone": "+7 (495) 000-00-10",
+    "recipient_address": "Москва, ул. Примерная, 1",
+    "payer": "sender",
+    "payer_email": "samples@termybrand.com",
+    "channel": "cdek",
+    "telegram_ref": "https://t.me/c/termy_samples_op/100",
+    "tracking_number": null,
+    "approved_by_rop": false,
+    "state": "requested",
+    "sent_at": null,
+    "created_at": "2026-04-17T14:00:00Z",
+    "demo": true
+  },
+  {
+    "id": "SR-0002",
+    "customer_id": "C-002",
+    "requested_items": [
+      { "sku_id": "PV-005", "quantity": 5 }
+    ],
+    "recipient_name": "Клиент 2",
+    "recipient_inn": "7712345678",
+    "recipient_phone": "+7 (495) 000-00-01",
+    "recipient_address": "Москва, склад 1",
+    "payer": "sender",
+    "payer_email": "samples@termybrand.com",
+    "channel": "cdek",
+    "telegram_ref": null,
+    "tracking_number": "CDEK-1234567890",
+    "approved_by_rop": true,
+    "state": "sent",
+    "sent_at": "2026-04-16T10:00:00Z",
+    "created_at": "2026-04-15T09:00:00Z",
+    "demo": true
+  },
+  {
+    "id": "SR-0003",
+    "customer_id": "C-004",
+    "requested_items": [
+      { "sku_id": "PV-042", "quantity": 3 },
+      { "sku_id": "PV-045", "quantity": 3 },
+      { "sku_id": "PV-048", "quantity": 3 }
+    ],
+    "recipient_name": "Производитель 1",
+    "recipient_inn": "7798765432",
+    "recipient_phone": "+7 (495) 000-00-04",
+    "recipient_address": "Подольск, склад",
+    "payer": "sender",
+    "payer_email": "prod1@example.com",
+    "channel": "russian_post",
+    "telegram_ref": null,
+    "tracking_number": "RUPOST-999",
+    "approved_by_rop": true,
+    "state": "delivered",
+    "sent_at": "2026-04-05T11:00:00Z",
+    "created_at": "2026-04-01T15:00:00Z",
+    "demo": true
+  },
+  {
+    "id": "SR-0004",
+    "customer_id": "C-003",
+    "requested_items": [
+      { "sku_id": "PV-030", "quantity": 10 }
+    ],
+    "recipient_name": "Dark Store 1",
+    "recipient_inn": "7711112233",
+    "recipient_phone": "+7 (495) 000-00-30",
+    "recipient_address": "Москва, хаб",
+    "payer": "sender",
+    "payer_email": "ds1@example.com",
+    "channel": "cdek",
+    "telegram_ref": "https://t.me/c/termy_samples_op/101",
+    "tracking_number": "CDEK-2222222222",
+    "approved_by_rop": true,
+    "state": "converted_to_deal",
+    "sent_at": "2026-03-20T10:00:00Z",
+    "created_at": "2026-03-15T12:00:00Z",
+    "demo": true
+  }
+]

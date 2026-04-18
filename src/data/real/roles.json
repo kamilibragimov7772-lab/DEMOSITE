@@ -1,0 +1,114 @@
+[
+  {
+    "id": "R-ADMIN",
+    "code": "admin",
+    "name_ru": "Администратор системы",
+    "confirmed": true,
+    "pending_validation": false,
+    "description": "Полный доступ. Управление пользователями, ролями, справочниками, audit log."
+  },
+  {
+    "id": "R-DIRECTOR",
+    "code": "director",
+    "name_ru": "Генеральный директор",
+    "confirmed": true,
+    "pending_validation": false,
+    "description": "Право подписи по Уставу. Просмотр всех разделов."
+  },
+  {
+    "id": "R-ROP",
+    "code": "rop",
+    "name_ru": "РОП (руководитель отдела продаж)",
+    "confirmed": true,
+    "pending_validation": false,
+    "description": "Согласование цен, СТМ, договоров. Одобрение крупных наборов образцов."
+  },
+  {
+    "id": "R-MANAGER",
+    "code": "manager",
+    "name_ru": "Менеджер активных продаж",
+    "confirmed": true,
+    "pending_validation": false,
+    "description": "Работа с клиентом, КП, заказ, макет, образцы, NPS."
+  },
+  {
+    "id": "R-ACCOUNTANT",
+    "code": "accountant",
+    "name_ru": "Бухгалтерия",
+    "confirmed": true,
+    "pending_validation": false,
+    "description": "УПД, акты сверок, декларации."
+  },
+  {
+    "id": "R-SECRETARY",
+    "code": "secretary",
+    "name_ru": "Секретарь",
+    "confirmed": true,
+    "pending_validation": false,
+    "description": "Почта России, несрочная документация."
+  },
+  {
+    "id": "R-DESIGNER",
+    "code": "designer",
+    "name_ru": "Дизайнер макетов",
+    "confirmed": true,
+    "pending_validation": false,
+    "description": "Работа с макетами СТМ, чек-лист валидации."
+  },
+  {
+    "id": "R-DRIVER",
+    "code": "driver",
+    "name_ru": "Водитель ТермиМобиль",
+    "confirmed": true,
+    "pending_validation": false,
+    "description": "Доставка по Москве."
+  },
+  {
+    "id": "R-PROD-HEAD",
+    "code": "prod_head_inferred",
+    "name_ru": "Начальник производства (pending validation)",
+    "confirmed": false,
+    "pending_validation": true,
+    "description": "Валидация на визите (TERMY_04A)."
+  },
+  {
+    "id": "R-PROD-MASTER",
+    "code": "prod_master_inferred",
+    "name_ru": "Мастер/бригадир (pending validation)",
+    "confirmed": false,
+    "pending_validation": true,
+    "description": "Валидация на визите."
+  },
+  {
+    "id": "R-PROD-OP",
+    "code": "prod_operator_inferred",
+    "name_ru": "Оператор участка (pending validation)",
+    "confirmed": false,
+    "pending_validation": true,
+    "description": "Валидация на визите."
+  },
+  {
+    "id": "R-PROD-PACK",
+    "code": "prod_packer_inferred",
+    "name_ru": "Упаковщик (pending validation)",
+    "confirmed": false,
+    "pending_validation": true,
+    "description": "Валидация на визите."
+  },
+  {
+    "id": "R-WAREHOUSE",
+    "code": "warehouseman_inferred",
+    "name_ru": "Кладовщик (pending validation)",
+    "confirmed": false,
+    "pending_validation": true,
+    "description": "Валидация на визите."
+  },
+  {
+    "id": "R-QC",
+    "code": "qc_inferred",
+    "name_ru": "Контролёр качества (pending validation)",
+    "confirmed": false,
+    "pending_validation": true,
+    "description": "Валидация на визите."
+  }
+]

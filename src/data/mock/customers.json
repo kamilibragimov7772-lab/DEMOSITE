@@ -1,0 +1,7 @@
+[
+  { "id": "C-001", "name": "Клиент 1 (HoReCa)", "primary_legal_entity_id": null, "bitrix_deal_id": null, "segment_id": "SEG-HORECA", "crm_status_code": "active", "public_allowed_for_mention": false, "demo": true },
+  { "id": "C-002", "name": "Клиент 2 (служба доставки)", "primary_legal_entity_id": null, "bitrix_deal_id": null, "segment_id": "SEG-DELIVERY", "crm_status_code": "in_work", "public_allowed_for_mention": false, "demo": true },
+  { "id": "C-003", "name": "Dark Store 1", "primary_legal_entity_id": null, "bitrix_deal_id": null, "segment_id": "SEG-QCOMM", "crm_status_code": "in_mailing", "public_allowed_for_mention": false, "demo": true },
+  { "id": "C-004", "name": "Производитель 1 (мясо/рыба)", "primary_legal_entity_id": null, "bitrix_deal_id": null, "segment_id": "SEG-PROD", "crm_status_code": "active", "public_allowed_for_mention": false, "demo": true },
+  { "id": "C-005", "name": "Аптечная сеть 1", "primary_legal_entity_id": null, "bitrix_deal_id": null, "segment_id": "SEG-PHARMA", "crm_status_code": "in_work", "public_allowed_for_mention": false, "demo": true }
+]

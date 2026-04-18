@@ -1,0 +1,156 @@
+[
+  {
+    "id": "CX-001",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Белый",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-002",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Светло-бежевый",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-003",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Жёлтый",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-004",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Золото",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-005",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Серебро",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-006",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Розовый",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-007",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Оранжевый",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-008",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Красный",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-009",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Бордовый",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-010",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Коричневый",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-011",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Голубой",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-012",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Голубой металлик",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-013",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Бирюзовый",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-014",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Синий",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-015",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Тёмно-синий",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-016",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Фиолетовый",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-017",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Салатовый",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-018",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Зелёный",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-019",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Тёмно-зелёный",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-020",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Чёрный",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-021",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Чёрный ПВД",
+    "available_for_method_id": null
+  },
+  {
+    "id": "CX-022",
+    "pantone_code": null,
+    "cmyk_code": null,
+    "name_ru": "Цветной ПВД",
+    "available_for_method_id": null
+  }
+]

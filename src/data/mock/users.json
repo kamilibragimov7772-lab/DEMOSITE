@@ -1,0 +1,7 @@
+[
+  { "id": "U-001", "login": "admin", "full_name": "Admin Demo", "primary_role_id": "R-ADMIN", "role_code": "admin", "status": "active", "demo": true },
+  { "id": "U-002", "login": "rop_demo", "full_name": "РОП Demo", "primary_role_id": "R-ROP", "role_code": "rop", "status": "active", "demo": true },
+  { "id": "U-003", "login": "manager_demo", "full_name": "Менеджер Demo", "primary_role_id": "R-MANAGER", "role_code": "manager", "status": "active", "demo": true },
+  { "id": "U-004", "login": "accountant_demo", "full_name": "Бухгалтерия Demo", "primary_role_id": "R-ACCOUNTANT", "role_code": "accountant", "status": "active", "demo": true },
+  { "id": "U-005", "login": "designer_demo", "full_name": "Дизайнер Demo", "primary_role_id": "R-DESIGNER", "role_code": "designer", "status": "active", "demo": true }
+]
