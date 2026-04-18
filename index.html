@@ -255,13 +255,14 @@ section.features-grid .reason-ic::after{display:none !important}
 #p-home > section.hero.hero--home > *,#p-home > section.features-grid > *,#p-home > section.cta-sec > *{position:relative;z-index:2}
 #p-home > section.hero.hero--home h1,#p-home > section.hero.hero--home h2,#p-home > section.hero.hero--home h3{color:var(--ink-on-dark)}
 #p-home > section.hero.hero--home p,#p-home > section.hero.hero--home .muted{color:var(--ink-on-dark-2,rgba(246,244,239,.75))}
-#p-home > section.features-grid{background:var(--grad-indigo);color:var(--ink-on-dark)}
-#p-home > section.features-grid h2,#p-home > section.features-grid h3,#p-home > section.features-grid h4{color:var(--ink-on-dark)}
-#p-home > section.features-grid p,#p-home > section.features-grid .feat-pill__tx{color:var(--ink-on-dark-2,rgba(246,244,239,.78))}
-#p-home > section.cta-sec{background:var(--grad-indigo);color:var(--ink-on-dark)}
-/* Светлые секции: явный paper, небольшая вариация между ними */
+/* Светлые секции сначала — затем specific overrides идут ниже */
 #p-home > section.sec--lt,#p-home > section.sec{background:var(--paper)}
 #p-home > section.sec--lt:nth-of-type(even),#p-home > section.sec:nth-of-type(even){background:var(--paper-deep)}
+/* Brand/indigo секции — более высокая специфичность */
+#p-home > section.sec.features-grid{background:var(--grad-indigo) !important;color:var(--ink-on-dark)}
+#p-home > section.sec.features-grid h2,#p-home > section.sec.features-grid h3,#p-home > section.sec.features-grid h4{color:var(--ink-on-dark)}
+#p-home > section.sec.features-grid p,#p-home > section.sec.features-grid .feat-pill__tx{color:var(--ink-on-dark-2,rgba(246,244,239,.78))}
+#p-home > section.cta-sec{background:var(--grad-indigo) !important;color:var(--ink-on-dark)}
 /* Layout */
 .ctr{max-width:var(--max-w);margin:0 auto;padding:0 var(--gutter)}.sec{padding:var(--sec-py) 0}.sec--dk{background:var(--s850);color:var(--t1)}
 .sec--lt{background:var(--s100);color:var(--t-dark)}
