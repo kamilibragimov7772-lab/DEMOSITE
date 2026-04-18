@@ -135,6 +135,27 @@ section.features-grid .reason-ic{background:rgba(255,255,255,.08) !important;bor
 section.features-grid .reason-ic::after{display:none !important}
 /* СТК (sticky mobile CTA) — тёплая бумага с purple CTA */
 .stk{background:rgba(245,242,236,.96) !important;border-top:1px solid var(--border-ink) !important}
+/* ═══ Phase 5: temperature pills для product spec badges ═══ */
+.pcard__sp span{
+  display:inline-flex;align-items:center;gap:.25em;
+  padding:.2rem .55rem;border-radius:999px;
+  font-family:var(--ff-mono);font-size:.72rem;font-weight:500;
+  font-variant-numeric:tabular-nums;letter-spacing:.01em;
+  background:rgba(15,16,20,.06);color:var(--ink-2);
+}
+.pcard__sp span[data-temp="chill"]{background:var(--grad-chill);color:#fff}
+.pcard__sp span[data-temp="frozen"]{background:var(--grad-frozen);color:#fff}
+.pcard__sp span[data-temp="deep"]{background:var(--grad-deep);color:#fff}
+.pcard__sp span[data-mode="shock"]{background:var(--grad-shock);color:#fff}
+.pcard__sp span[data-mode="eco"]{background:var(--grad-eco);color:#fff}
+/* Pill--a (бейдж ХИТ и т.п.) — переводим на shock-gradient для акцента */
+.pill--a{background:var(--grad-shock) !important;color:#fff !important;padding:.25rem .7rem !important;letter-spacing:.04em;font-weight:600;text-transform:uppercase;font-size:.68rem}
+.pill--brand{background:var(--grad-brand) !important;color:#fff !important;padding:.25rem .7rem;letter-spacing:.04em;font-weight:600;text-transform:uppercase;font-size:.68rem;border-radius:999px}
+/* .pcard__pr — цену акцентируем */
+.pcard__pr{color:var(--brand-purple-1) !important;font-weight:700 !important;font-family:var(--ff)}
+.pcard__pr small{color:var(--ink-3);font-weight:500}
+/* .pcard__ser — серия-метка */
+.pcard__ser{color:var(--brand-purple-1) !important;font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:.7rem}
 </style>
 <style>
 /* ================================================================
