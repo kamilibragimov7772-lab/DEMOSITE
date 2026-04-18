@@ -67,6 +67,75 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="design-system/termy-tokens.css">
+<style id="termy-brandbook-overrides">
+/* ═══ Phase 4: отключаем анти-брендовые элементы ═══ */
+/* Общий слой блобов (goo-filter, mix-blend, blur) — вне бренда */
+.shared-blobs,.hero-blobs-layer,.hero-blobs-continue,.hero-blobs-layer--off{display:none !important}
+/* Hero__bg гигантский ghost "TERMY" за текстом — убираем */
+.hero__bg{display:none !important}
+/* Падающие снежинки */
+.snowfall{display:none !important}
+/* Большая крутящаяся звезда в "Решениях" */
+.sec-star-bg{display:none !important}
+/* Typing H1 с заводом — возвращаем на простой H1 (мгновенный, без печати) */
+.hero__t[data-typing] .t-char,.hero__t[data-typing] .t-letter{opacity:1 !important;transform:none !important;transition:none !important}
+.hero__t[data-typing] .t-factory{display:none !important}
+.hero__t[data-typing] .t-prod-nowrap{white-space:normal}
+.typing-cursor{display:none !important}
+/* Video background multiply в "Продукция" — убираем */
+.sec--video .sec__video{display:none !important}
+.sec--video::before{display:none !important}
+/* bag-show crossfade карусель (пакеты из старого termy) — оставляем, но без drop-shadow тяжёлого */
+.bag-show__img{filter:none !important}
+/* Морфинг deep-blob за курсором карточек — выключаем (через селектор транзишнов) */
+.shared-blobs .hero-blob{animation:none !important;transform:none !important;transition:none !important}
+/* Scroll-progress bar — остаётся как единственная приемлемая, но делаем spacier/no shadow */
+.scroll-prog__b{background:var(--grad-brand) !important;box-shadow:none !important}
+/* Rotating logo-star ✻ — замедлить и сделать деликатнее */
+.hdr__logo-star{animation:none !important}
+/* Wave-divider между dark/light — не нужен (всё paper/purple/indigo теперь) */
+#p-home > section.sec--lt:first-of-type::before{display:none !important}
+/* Shine-sweep на pcard hover — убираем, это "template tell" */
+.pcard::before{display:none !important}
+/* bg paint/grain применимы только к темным секциям (purple/indigo) */
+/* Статичный фон у шапки — пусть белый, не blur */
+.hdr{background:rgba(245,242,236,.92) !important;backdrop-filter:none !important;border-bottom:1px solid var(--border-ink)}
+.hdr.shrunk{background:rgba(245,242,236,.86) !important}
+/* Nav-links и логотип — тёмными на бумаге */
+.hdr__logo span:first-child{color:var(--ink) !important}
+.hdr__logo-star{color:var(--brand-purple-1) !important}
+.hdr__nav a{color:var(--ink-2) !important}
+.hdr__nav a:hover,.hdr__nav a.on{color:var(--ink) !important}
+.hdr__ph{color:var(--ink) !important}
+/* Footer — индиго (информационный блок из брендбука) */
+.ftr{background:var(--grad-indigo) !important;color:var(--ink-on-dark) !important}
+.ftr a,.ftr__col-t,.ftr__lnk a,.ftr__btm{color:var(--ink-on-dark-2) !important}
+/* Card/pcard — белая поверхность на paper, 16-radius, тихий shadow */
+.sec--lt .card,.sec--lt .pcard,.sec .card,.sec .pcard{
+  background:#FFFFFF !important;border:1px solid var(--border-ink) !important;
+  border-radius:var(--r-lg,16px) !important;box-shadow:var(--shadow-1) !important;
+}
+.sec--lt .pcard:hover,.sec .pcard:hover{box-shadow:var(--shadow-lift) !important;transform:none !important;animation:none !important}
+.sec--lt .pcard{animation:none !important}
+/* Eyebrow-label — uppercase wide, правильный цвет на разных фонах */
+.label{text-transform:uppercase;letter-spacing:.12em;font-weight:500;color:var(--brand-purple-1)}
+section.hero .label,section.features-grid .label,section.cta-sec .label{color:rgba(255,255,255,.85)}
+/* Emoji в подписях tstrip — ломают бренд. Убираем. В HTML они как текстовые символы. */
+.tstrip__num{font-family:var(--ff-mono);font-variant-numeric:tabular-nums;color:var(--brand-purple-1) !important;font-weight:700}
+section.hero .tstrip__num,section.features-grid .tstrip__num{color:#fff !important}
+.tstrip__txt{color:var(--ink-3)}
+section.hero .tstrip__txt,section.features-grid .tstrip__txt{color:rgba(255,255,255,.7)}
+/* feat-pill (8 причин в темной секции) — белая линия глифов, правильный контраст */
+.feat-pill{background:rgba(255,255,255,.06) !important;border:1px solid rgba(255,255,255,.14) !important}
+.feat-pill__ic{background:rgba(255,255,255,.10) !important;color:#fff !important}
+.feat-pill__tx{color:var(--ink-on-dark-2) !important}
+.feat-pill__tx b{color:#fff !important}
+/* reason-ic (4 иконки в "Больше чем") — корректируем на индиго-фон */
+section.features-grid .reason-ic{background:rgba(255,255,255,.08) !important;border-color:rgba(255,255,255,.14) !important;color:#fff !important}
+section.features-grid .reason-ic::after{display:none !important}
+/* СТК (sticky mobile CTA) — тёплая бумага с purple CTA */
+.stk{background:rgba(245,242,236,.96) !important;border-top:1px solid var(--border-ink) !important}
+</style>
 <style>
 /* ================================================================
    TERMY — Wave 1 Build Base v1 Design System
