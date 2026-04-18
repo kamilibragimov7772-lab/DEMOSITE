@@ -323,6 +323,27 @@ section.features-grid .reason-ic::after{display:none !important}
 .tbl td,.tbl th{padding:.65rem 1rem;border-bottom:1px solid var(--border-ink);text-align:left;vertical-align:top}
 .tbl tr:last-child td{border-bottom:none}
 .tw{overflow-x:auto;border:1px solid var(--border-ink);border-radius:var(--r-md);background:#fff}
+/* ═══ PDP (product detail page) — импорт из bot-ponton ═══ */
+.pdp{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+@media(max-width:860px){.pdp{grid-template-columns:1fr}}
+.pdp__gallery{background:#fff;border:1px solid var(--border-ink);border-radius:var(--r-lg);aspect-ratio:1;display:flex;align-items:center;justify-content:center;padding:2rem;position:sticky;top:6rem}
+.pdp__gallery img{max-width:100%;max-height:100%;object-fit:contain}
+.pdp__cat{display:inline-block;padding:.3rem .85rem;border-radius:999px;font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff;margin-bottom:.75rem}
+.pdp__name{font-family:var(--ff);font-size:clamp(1.5rem,3vw,2rem);font-weight:700;line-height:1.18;letter-spacing:-.01em;color:var(--ink);margin:.35rem 0 1rem}
+.pdp__temps{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.25rem}
+.temp-badge{display:inline-flex;align-items:center;gap:.35em;padding:.4rem 1rem;border-radius:999px;color:#fff;font:500 .82rem/1 var(--ff);font-variant-numeric:tabular-nums}
+.temp-badge--cool{background:var(--grad-chill)}
+.temp-badge--freeze{background:var(--grad-deep)}
+.temp-badge--gel,.temp-badge--stable{background:var(--grad-frozen)}
+.pdp__desc{color:var(--ink-2);line-height:1.6;margin-bottom:1.5rem;font-size:.95rem}
+.pdp__price{font-size:1.5rem;font-weight:700;color:var(--brand-purple-1);margin-bottom:1.5rem}
+.pdp__price small{font-weight:500;color:var(--ink-3);font-size:.75rem}
+.pdp__specs{background:#fff;border:1px solid var(--border-ink);border-radius:var(--r-md);overflow:hidden;margin-bottom:1.5rem}
+.pdp__spec{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:.65rem 1rem;border-bottom:1px solid var(--border-ink);align-items:baseline}
+.pdp__spec:last-child{border-bottom:none}
+.pdp__spec-l{color:var(--ink-3);font-size:.85rem}
+.pdp__spec-r{color:var(--ink);font-size:.9rem;font-weight:500;font-variant-numeric:tabular-nums}
+.pdp__acts{display:flex;gap:.75rem;flex-wrap:wrap}
 /* Layout */
 .ctr{max-width:var(--max-w);margin:0 auto;padding:0 var(--gutter)}.sec{padding:var(--sec-py) 0}.sec--dk{background:var(--s850);color:var(--t1)}
 .sec--lt{background:var(--s100);color:var(--t-dark)}
@@ -1312,7 +1333,14 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 <div data-tabs>
 <div class="tabs"><button class="tabs__b on" data-tab="desc">Описание</button><button class="tabs__b" data-tab="specs">Характеристики</button><button class="tabs__b" data-tab="dlvr">Доставка</button><button class="tabs__b" data-tab="docs">Документы</button></div>
-<div class="tabp on" data-tab="desc"><p>Основная рабочая серия TERMY. Запатентованная анатомическая ручка-защёлка протестирована курьерами. Удерживает температуру до 4 часов — на 1 час дольше аналогов. Формат 42×50 — первый и единственный в России.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 300/450 мл — <a href="/products/shock-600-cool.html" class="accent">перейти →</a></p></div>
+<div class="tabp on" data-tab="desc"><p>Серия <b>PRO</b> — профессиональное решение для длительной транспортировки, кейтеринга, дорогих грузов и экспорта.</p>
+<ul style="margin:1rem 0;padding-left:1.25rem;line-height:1.7"><li>Состав <span class="spec-mono">Мет&nbsp;85&nbsp;/ ВПП&nbsp;10&nbsp;мм / Мет&nbsp;85&nbsp;мкм</span></li>
+<li>Утеплитель — воздушно-пузырьковая плёнка <b>10 мм</b>, в 10 раз толще, чем у обычных термопакетов</li>
+<li>Удержание температуры <b>более 6 часов</b></li>
+<li>Анатомическая чёрная ручка-защёлка</li>
+<li>МОЗ — 1 коробка, срок 2–5 раб. дн.</li></ul>
+<p>Лучший выбор для: перевозки мяса/рыбы/препаратов на <b>500+ км</b>, авиаперевозок, экспорта в ОАЭ/Сейшелы, кейтеринга на выездных мероприятиях.</p>
+<p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 600, 1000 мл — <a href="/products/akkumulyatory-holoda/" class="accent" data-nav="/products/akkumulyatory-holoda/">подобрать →</a></p></div>
 <div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
 <tr><td style="font-weight:600;width:40%">Состав</td><td>Мет 85 мкм / ВПЭ 1000 мкм / ПВД 45 мкм</td></tr>
 <tr><td style="font-weight:600">Размер</td><td>42×45 см</td></tr>
@@ -1323,7 +1351,14 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 <tr><td style="font-weight:600">Вложение</td><td>120 шт в коробе</td></tr>
 </tbody></table></div></div>
 <div class="tabp" data-tab="dlvr"><p>Серийная позиция — отгрузка 2–5 рабочих дней. По Москве за 24 ч (ТермиМобиль). По России — любой ТК. Бесплатная доставка по Москве от 5 коробок. ЭДО поддерживается.</p></div>
-<div class="tabp" data-tab="docs"><p class="muted">Спецификации и декларации будут доступны для скачивания</p></div>
+<div class="tabp" data-tab="docs"><div class="tw" style="margin-bottom:1rem"><table class="tbl"><tbody>
+<tr><td style="font-weight:600;width:50%">ТУ</td><td>22.22.11-001-47645032-2022</td></tr>
+<tr><td style="font-weight:600">Декларация соответствия</td><td>ЕАЭС № RU Д-RU.РА01.В.02543/22</td></tr>
+<tr><td style="font-weight:600">Сертификат пищевой безопасности</td><td>имеется</td></tr>
+<tr><td style="font-weight:600">Паспорт на партию</td><td>выдаётся с каждой отгрузкой</td></tr>
+<tr><td style="font-weight:600">Артикул / EAN-13</td><td>у каждой SKU индивидуальный</td></tr>
+</tbody></table></div>
+<p style="font-size:var(--sm-fs);color:var(--ink-3);margin-top:.75rem">Полный пакет документов запросите через форму ниже — вышлем на e-mail вместе с оптовым расчётом.</p></div>
 </div>
 <div class="flex gap2 mt4"><a href="#cta" class="btn btn--p btn--lg">Запросить оптовый расчёт</a><a href="#cta" class="btn btn--s btn--lg">Заказать образец</a></div>
 </div></div></div></section>
@@ -1671,12 +1706,18 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 <div data-tabs>
 <div class="tabs"><button class="tabs__b on" data-tab="desc">Описание</button><button class="tabs__b" data-tab="specs">Характеристики</button><button class="tabs__b" data-tab="dlvr">Доставка</button><button class="tabs__b" data-tab="docs">Документы</button></div>
-<div class="tabp on" data-tab="desc"><p>Эконом-серия TERMY. Оптимальное соотношение цена/качество для коротких маршрутов доставки.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 300/450 мл — <a href="/products/shock-600-cool.html" class="accent">перейти →</a></p></div>
-<div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
+<div class="tabp on" data-tab="desc"><p>Серия <b>Light</b> — эконом-сегмент для демпинга конкурентов. Облегчённая версия Standart.</p><ul style="margin:1rem 0;padding-left:1.25rem;line-height:1.7"><li>Состав <span class="spec-mono">Мет&nbsp;85 / ВПЭ&nbsp;500–1000 / ПВД&nbsp;45&nbsp;мкм</span></li><li>Удержание температуры до <b>3 часов</b></li><li>Белая квадратная ручка старого образца</li><li>Рисунок одинаковый с обеих сторон</li><li>МОЗ — 1 коробка, отгрузка 2–5 раб. дн.</li></ul><p>Подходит для коротких маршрутов, внутригородской курьерской доставки. <b>Брендирование не производится</b> — для логотипа используйте Standart или PRO.</p></div><div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
 <tr><td style="font-weight:600;width:40%">Артикул</td><td>ТП 04-1</td></tr><tr><td style="font-weight:600;width:40%">Состав</td><td>Мет 85 мкм / ВПЭ 800 мкм / ПВД 45 мкм</td></tr><tr><td style="font-weight:600;width:40%">Размер</td><td>42×50 см</td></tr><tr><td style="font-weight:600;width:40%">Объём</td><td>18 л</td></tr><tr><td style="font-weight:600;width:40%">Грузоподъёмность</td><td>до 15 кг</td></tr><tr><td style="font-weight:600;width:40%">Удержание t°</td><td>до 3 часов</td></tr><tr><td style="font-weight:600;width:40%">Ручка</td><td>Белая квадратная</td></tr><tr><td style="font-weight:600;width:40%">Вложение</td><td>100 шт в коробе</td></tr>
 </tbody></table></div></div>
 <div class="tabp" data-tab="dlvr"><p>Серийная позиция — отгрузка 2–5 рабочих дней. По Москве за 24 ч (ТермиМобиль). По России — любой ТК. Бесплатная доставка по Москве от 5 коробок. ЭДО поддерживается.</p></div>
-<div class="tabp" data-tab="docs"><p class="muted">Спецификации и декларации будут доступны для скачивания</p></div>
+<div class="tabp" data-tab="docs"><div class="tw" style="margin-bottom:1rem"><table class="tbl"><tbody>
+<tr><td style="font-weight:600;width:50%">ТУ</td><td>22.22.11-001-47645032-2022</td></tr>
+<tr><td style="font-weight:600">Декларация соответствия</td><td>ЕАЭС № RU Д-RU.РА01.В.02543/22</td></tr>
+<tr><td style="font-weight:600">Сертификат пищевой безопасности</td><td>имеется</td></tr>
+<tr><td style="font-weight:600">Паспорт на партию</td><td>выдаётся с каждой отгрузкой</td></tr>
+<tr><td style="font-weight:600">Артикул / EAN-13</td><td>у каждой SKU индивидуальный</td></tr>
+</tbody></table></div>
+<p style="font-size:var(--sm-fs);color:var(--ink-3);margin-top:.75rem">Полный пакет документов запросите через форму ниже — вышлем на e-mail вместе с оптовым расчётом.</p></div>
 </div>
 <div class="flex gap2 mt4"><a href="#cta" class="btn btn--p btn--lg">Запросить оптовый расчёт</a><a href="#cta" class="btn btn--s btn--lg">Заказать образец</a></div>
 </div></div></div></section>
@@ -1699,12 +1740,19 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 <div data-tabs>
 <div class="tabs"><button class="tabs__b on" data-tab="desc">Описание</button><button class="tabs__b" data-tab="specs">Характеристики</button><button class="tabs__b" data-tab="dlvr">Доставка</button><button class="tabs__b" data-tab="docs">Документы</button></div>
-<div class="tabp on" data-tab="desc"><p>Эконом-серия большого объёма для крупных заказов на коротких маршрутах.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 450/600 мл — <a href="/products/shock-600-cool.html" class="accent">перейти →</a></p></div>
+<div class="tabp on" data-tab="desc"><p>Серия <b>Light</b> — эконом-сегмент для демпинга конкурентов. Облегчённая версия Standart.</p><ul style="margin:1rem 0;padding-left:1.25rem;line-height:1.7"><li>Состав <span class="spec-mono">Мет&nbsp;85 / ВПЭ&nbsp;500–1000 / ПВД&nbsp;45&nbsp;мкм</span></li><li>Удержание температуры до <b>3 часов</b></li><li>Белая квадратная ручка старого образца</li><li>Рисунок одинаковый с обеих сторон</li><li>МОЗ — 1 коробка, отгрузка 2–5 раб. дн.</li></ul><p>Подходит для коротких маршрутов, внутригородской курьерской доставки. <b>Брендирование не производится</b> — для логотипа используйте Standart или PRO.</p></div>
 <div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
 <tr><td style="font-weight:600;width:40%">Артикул</td><td>ТПЛ 02</td></tr><tr><td style="font-weight:600;width:40%">Размер</td><td>60×55 см</td></tr><tr><td style="font-weight:600;width:40%">Объём</td><td>33 л</td></tr><tr><td style="font-weight:600;width:40%">Грузоподъёмность</td><td>до 20 кг</td></tr><tr><td style="font-weight:600;width:40%">Удержание t°</td><td>до 3 часов</td></tr><tr><td style="font-weight:600;width:40%">Вложение</td><td>60 шт в коробе</td></tr>
 </tbody></table></div></div>
 <div class="tabp" data-tab="dlvr"><p>Серийная позиция — отгрузка 2–5 рабочих дней. По Москве за 24 ч (ТермиМобиль). По России — любой ТК. Бесплатная доставка по Москве от 5 коробок. ЭДО поддерживается.</p></div>
-<div class="tabp" data-tab="docs"><p class="muted">Спецификации и декларации будут доступны для скачивания</p></div>
+<div class="tabp" data-tab="docs"><div class="tw" style="margin-bottom:1rem"><table class="tbl"><tbody>
+<tr><td style="font-weight:600;width:50%">ТУ</td><td>22.22.11-001-47645032-2022</td></tr>
+<tr><td style="font-weight:600">Декларация соответствия</td><td>ЕАЭС № RU Д-RU.РА01.В.02543/22</td></tr>
+<tr><td style="font-weight:600">Сертификат пищевой безопасности</td><td>имеется</td></tr>
+<tr><td style="font-weight:600">Паспорт на партию</td><td>выдаётся с каждой отгрузкой</td></tr>
+<tr><td style="font-weight:600">Артикул / EAN-13</td><td>у каждой SKU индивидуальный</td></tr>
+</tbody></table></div>
+<p style="font-size:var(--sm-fs);color:var(--ink-3);margin-top:.75rem">Полный пакет документов запросите через форму ниже — вышлем на e-mail вместе с оптовым расчётом.</p></div>
 </div>
 <div class="flex gap2 mt4"><a href="#cta" class="btn btn--p btn--lg">Запросить оптовый расчёт</a><a href="#cta" class="btn btn--s btn--lg">Заказать образец</a></div>
 </div></div></div></section>
@@ -1727,12 +1775,19 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 <div data-tabs>
 <div class="tabs"><button class="tabs__b on" data-tab="desc">Описание</button><button class="tabs__b" data-tab="specs">Характеристики</button><button class="tabs__b" data-tab="dlvr">Доставка</button><button class="tabs__b" data-tab="docs">Документы</button></div>
-<div class="tabp on" data-tab="desc"><p>Компактный термопакет основной серии. Для небольших заказов доставки еды, порционных обедов.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 300 мл — <a href="/products/shock-600-cool.html" class="accent">перейти →</a></p></div>
+<div class="tabp on" data-tab="desc"><p>Серия <b>Standart</b> — основной продукт TERMY. Качественный трёхслойный термопакет с запатентованной анатомической ручкой-защёлкой.</p><ul style="margin:1rem 0;padding-left:1.25rem;line-height:1.7"><li>Состав <span class="spec-mono">Мет&nbsp;85 / ВПЭ&nbsp;1000 / ПВД&nbsp;45&nbsp;мкм</span> <i>(белый)</i> или <span class="spec-mono">Мет&nbsp;85 / ВПЭ&nbsp;1000 / Мет&nbsp;85</span> <i>(серебро)</i></li><li>Удержание до <b>4 ч</b> (Мет/ПВД) или до <b>7 ч</b> (Мет/Мет)</li><li>Лицевая сторона — логотип, обратная — «добрые весёлые герои»</li><li>МОЗ — 1 коробка, срок 2–5 раб. дн.</li></ul><p>Брендирование: шелкография от 100 шт, флексография от 10 000 шт. Бесплатный макет при любом заказе.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 300, 450, 600 мл — <a href="/products/akkumulyatory-holoda/" class="accent" data-nav="/products/akkumulyatory-holoda/">подобрать →</a></p></div>
 <div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
 <tr><td style="font-weight:600;width:40%">Артикул</td><td>ТП 01</td></tr><tr><td style="font-weight:600;width:40%">Размер</td><td>32×35 см</td></tr><tr><td style="font-weight:600;width:40%">Объём</td><td>6 л</td></tr><tr><td style="font-weight:600;width:40%">Грузоподъёмность</td><td>до 7 кг</td></tr><tr><td style="font-weight:600;width:40%">Удержание t°</td><td>до 4 часов</td></tr><tr><td style="font-weight:600;width:40%">Вложение</td><td>200 шт в коробе</td></tr>
 </tbody></table></div></div>
 <div class="tabp" data-tab="dlvr"><p>Серийная позиция — отгрузка 2–5 рабочих дней. По Москве за 24 ч (ТермиМобиль). По России — любой ТК. Бесплатная доставка по Москве от 5 коробок. ЭДО поддерживается.</p></div>
-<div class="tabp" data-tab="docs"><p class="muted">Спецификации и декларации будут доступны для скачивания</p></div>
+<div class="tabp" data-tab="docs"><div class="tw" style="margin-bottom:1rem"><table class="tbl"><tbody>
+<tr><td style="font-weight:600;width:50%">ТУ</td><td>22.22.11-001-47645032-2022</td></tr>
+<tr><td style="font-weight:600">Декларация соответствия</td><td>ЕАЭС № RU Д-RU.РА01.В.02543/22</td></tr>
+<tr><td style="font-weight:600">Сертификат пищевой безопасности</td><td>имеется</td></tr>
+<tr><td style="font-weight:600">Паспорт на партию</td><td>выдаётся с каждой отгрузкой</td></tr>
+<tr><td style="font-weight:600">Артикул / EAN-13</td><td>у каждой SKU индивидуальный</td></tr>
+</tbody></table></div>
+<p style="font-size:var(--sm-fs);color:var(--ink-3);margin-top:.75rem">Полный пакет документов запросите через форму ниже — вышлем на e-mail вместе с оптовым расчётом.</p></div>
 </div>
 <div class="flex gap2 mt4"><a href="#cta" class="btn btn--p btn--lg">Запросить оптовый расчёт</a><a href="#cta" class="btn btn--s btn--lg">Заказать образец</a></div>
 </div></div></div></section>
@@ -1755,12 +1810,19 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 <div data-tabs>
 <div class="tabs"><button class="tabs__b on" data-tab="desc">Описание</button><button class="tabs__b" data-tab="specs">Характеристики</button><button class="tabs__b" data-tab="dlvr">Доставка</button><button class="tabs__b" data-tab="docs">Документы</button></div>
-<div class="tabp on" data-tab="desc"><p>Основная рабочая серия TERMY. Запатентованная анатомическая ручка-защёлка протестирована курьерами. Удерживает температуру до 4 часов — на 1 час дольше аналогов.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 300/450 мл — <a href="/products/shock-600-cool.html" class="accent">перейти →</a></p></div>
+<div class="tabp on" data-tab="desc"><p>Серия <b>Standart</b> — основной продукт TERMY. Качественный трёхслойный термопакет с запатентованной анатомической ручкой-защёлкой.</p><ul style="margin:1rem 0;padding-left:1.25rem;line-height:1.7"><li>Состав <span class="spec-mono">Мет&nbsp;85 / ВПЭ&nbsp;1000 / ПВД&nbsp;45&nbsp;мкм</span> <i>(белый)</i> или <span class="spec-mono">Мет&nbsp;85 / ВПЭ&nbsp;1000 / Мет&nbsp;85</span> <i>(серебро)</i></li><li>Удержание до <b>4 ч</b> (Мет/ПВД) или до <b>7 ч</b> (Мет/Мет)</li><li>Лицевая сторона — логотип, обратная — «добрые весёлые герои»</li><li>МОЗ — 1 коробка, срок 2–5 раб. дн.</li></ul><p>Брендирование: шелкография от 100 шт, флексография от 10 000 шт. Бесплатный макет при любом заказе.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 300, 450, 600 мл — <a href="/products/akkumulyatory-holoda/" class="accent" data-nav="/products/akkumulyatory-holoda/">подобрать →</a></p></div>
 <div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
 <tr><td style="font-weight:600;width:40%">Артикул</td><td>ТП 02 / ТП 03</td></tr><tr><td style="font-weight:600;width:40%">Состав</td><td>Мет 85 мкм / ВПЭ 1000 мкм / ПВД 45 мкм</td></tr><tr><td style="font-weight:600;width:40%">Размер</td><td>42×45 см</td></tr><tr><td style="font-weight:600;width:40%">Объём</td><td>15 л</td></tr><tr><td style="font-weight:600;width:40%">Грузоподъёмность</td><td>до 10 кг</td></tr><tr><td style="font-weight:600;width:40%">Удержание t°</td><td>до 4 часов при +25°C</td></tr><tr><td style="font-weight:600;width:40%">Ручка</td><td>Анатомическая чёрная ручка-защёлка (запатентована)</td></tr><tr><td style="font-weight:600;width:40%">Вложение</td><td>120 шт в коробе</td></tr>
 </tbody></table></div></div>
 <div class="tabp" data-tab="dlvr"><p>Серийная позиция — отгрузка 2–5 рабочих дней. По Москве за 24 ч (ТермиМобиль). По России — любой ТК. Бесплатная доставка по Москве от 5 коробок. ЭДО поддерживается.</p></div>
-<div class="tabp" data-tab="docs"><p class="muted">Спецификации и декларации будут доступны для скачивания</p></div>
+<div class="tabp" data-tab="docs"><div class="tw" style="margin-bottom:1rem"><table class="tbl"><tbody>
+<tr><td style="font-weight:600;width:50%">ТУ</td><td>22.22.11-001-47645032-2022</td></tr>
+<tr><td style="font-weight:600">Декларация соответствия</td><td>ЕАЭС № RU Д-RU.РА01.В.02543/22</td></tr>
+<tr><td style="font-weight:600">Сертификат пищевой безопасности</td><td>имеется</td></tr>
+<tr><td style="font-weight:600">Паспорт на партию</td><td>выдаётся с каждой отгрузкой</td></tr>
+<tr><td style="font-weight:600">Артикул / EAN-13</td><td>у каждой SKU индивидуальный</td></tr>
+</tbody></table></div>
+<p style="font-size:var(--sm-fs);color:var(--ink-3);margin-top:.75rem">Полный пакет документов запросите через форму ниже — вышлем на e-mail вместе с оптовым расчётом.</p></div>
 </div>
 <div class="flex gap2 mt4"><a href="#cta" class="btn btn--p btn--lg">Запросить оптовый расчёт</a><a href="#cta" class="btn btn--s btn--lg">Заказать образец</a></div>
 </div></div></div></section>
@@ -1783,12 +1845,19 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 <div data-tabs>
 <div class="tabs"><button class="tabs__b on" data-tab="desc">Описание</button><button class="tabs__b" data-tab="specs">Характеристики</button><button class="tabs__b" data-tab="dlvr">Доставка</button><button class="tabs__b" data-tab="docs">Документы</button></div>
-<div class="tabp on" data-tab="desc"><p>Формат 42×50 — первый и единственный в России. Популярен в Европе и ОАЭ. Удобен для высоких продуктов и бутылок.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 300/450 мл — <a href="/products/shock-600-cool.html" class="accent">перейти →</a></p></div>
+<div class="tabp on" data-tab="desc"><p>Серия <b>Standart</b> — основной продукт TERMY. Качественный трёхслойный термопакет с запатентованной анатомической ручкой-защёлкой.</p><ul style="margin:1rem 0;padding-left:1.25rem;line-height:1.7"><li>Состав <span class="spec-mono">Мет&nbsp;85 / ВПЭ&nbsp;1000 / ПВД&nbsp;45&nbsp;мкм</span> <i>(белый)</i> или <span class="spec-mono">Мет&nbsp;85 / ВПЭ&nbsp;1000 / Мет&nbsp;85</span> <i>(серебро)</i></li><li>Удержание до <b>4 ч</b> (Мет/ПВД) или до <b>7 ч</b> (Мет/Мет)</li><li>Лицевая сторона — логотип, обратная — «добрые весёлые герои»</li><li>МОЗ — 1 коробка, срок 2–5 раб. дн.</li></ul><p>Брендирование: шелкография от 100 шт, флексография от 10 000 шт. Бесплатный макет при любом заказе.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 300, 450, 600 мл — <a href="/products/akkumulyatory-holoda/" class="accent" data-nav="/products/akkumulyatory-holoda/">подобрать →</a></p></div>
 <div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
 <tr><td style="font-weight:600;width:40%">Артикул</td><td>ТП 04 / ТП 05</td></tr><tr><td style="font-weight:600;width:40%">Размер</td><td>42×50 см</td></tr><tr><td style="font-weight:600;width:40%">Объём</td><td>18 л</td></tr><tr><td style="font-weight:600;width:40%">Грузоподъёмность</td><td>до 15 кг</td></tr><tr><td style="font-weight:600;width:40%">Удержание t°</td><td>до 4 часов</td></tr><tr><td style="font-weight:600;width:40%">Вложение</td><td>120 шт в коробе</td></tr><tr><td style="font-weight:600;width:40%">Особенность</td><td>Формат 42×50 — первый в России</td></tr>
 </tbody></table></div></div>
 <div class="tabp" data-tab="dlvr"><p>Серийная позиция — отгрузка 2–5 рабочих дней. По Москве за 24 ч (ТермиМобиль). По России — любой ТК. Бесплатная доставка по Москве от 5 коробок. ЭДО поддерживается.</p></div>
-<div class="tabp" data-tab="docs"><p class="muted">Спецификации и декларации будут доступны для скачивания</p></div>
+<div class="tabp" data-tab="docs"><div class="tw" style="margin-bottom:1rem"><table class="tbl"><tbody>
+<tr><td style="font-weight:600;width:50%">ТУ</td><td>22.22.11-001-47645032-2022</td></tr>
+<tr><td style="font-weight:600">Декларация соответствия</td><td>ЕАЭС № RU Д-RU.РА01.В.02543/22</td></tr>
+<tr><td style="font-weight:600">Сертификат пищевой безопасности</td><td>имеется</td></tr>
+<tr><td style="font-weight:600">Паспорт на партию</td><td>выдаётся с каждой отгрузкой</td></tr>
+<tr><td style="font-weight:600">Артикул / EAN-13</td><td>у каждой SKU индивидуальный</td></tr>
+</tbody></table></div>
+<p style="font-size:var(--sm-fs);color:var(--ink-3);margin-top:.75rem">Полный пакет документов запросите через форму ниже — вышлем на e-mail вместе с оптовым расчётом.</p></div>
 </div>
 <div class="flex gap2 mt4"><a href="#cta" class="btn btn--p btn--lg">Запросить оптовый расчёт</a><a href="#cta" class="btn btn--s btn--lg">Заказать образец</a></div>
 </div></div></div></section>
@@ -1811,12 +1880,19 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 <div data-tabs>
 <div class="tabs"><button class="tabs__b on" data-tab="desc">Описание</button><button class="tabs__b" data-tab="specs">Характеристики</button><button class="tabs__b" data-tab="dlvr">Доставка</button><button class="tabs__b" data-tab="docs">Документы</button></div>
-<div class="tabp on" data-tab="desc"><p>Большой термопакет основной серии для крупных заказов, логистики и дистрибуции.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 450/600 мл — <a href="/products/shock-600-cool.html" class="accent">перейти →</a></p></div>
+<div class="tabp on" data-tab="desc"><p>Серия <b>Standart</b> — основной продукт TERMY. Качественный трёхслойный термопакет с запатентованной анатомической ручкой-защёлкой.</p><ul style="margin:1rem 0;padding-left:1.25rem;line-height:1.7"><li>Состав <span class="spec-mono">Мет&nbsp;85 / ВПЭ&nbsp;1000 / ПВД&nbsp;45&nbsp;мкм</span> <i>(белый)</i> или <span class="spec-mono">Мет&nbsp;85 / ВПЭ&nbsp;1000 / Мет&nbsp;85</span> <i>(серебро)</i></li><li>Удержание до <b>4 ч</b> (Мет/ПВД) или до <b>7 ч</b> (Мет/Мет)</li><li>Лицевая сторона — логотип, обратная — «добрые весёлые герои»</li><li>МОЗ — 1 коробка, срок 2–5 раб. дн.</li></ul><p>Брендирование: шелкография от 100 шт, флексография от 10 000 шт. Бесплатный макет при любом заказе.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 300, 450, 600 мл — <a href="/products/akkumulyatory-holoda/" class="accent" data-nav="/products/akkumulyatory-holoda/">подобрать →</a></p></div>
 <div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
 <tr><td style="font-weight:600;width:40%">Артикул</td><td>ТП 06 / ТП 07</td></tr><tr><td style="font-weight:600;width:40%">Размер</td><td>60×55 см</td></tr><tr><td style="font-weight:600;width:40%">Объём</td><td>33 л</td></tr><tr><td style="font-weight:600;width:40%">Грузоподъёмность</td><td>до 20 кг</td></tr><tr><td style="font-weight:600;width:40%">Удержание t°</td><td>до 4 часов</td></tr><tr><td style="font-weight:600;width:40%">Вложение</td><td>60 шт в коробе</td></tr>
 </tbody></table></div></div>
 <div class="tabp" data-tab="dlvr"><p>Серийная позиция — отгрузка 2–5 рабочих дней. По Москве за 24 ч (ТермиМобиль). По России — любой ТК. Бесплатная доставка по Москве от 5 коробок. ЭДО поддерживается.</p></div>
-<div class="tabp" data-tab="docs"><p class="muted">Спецификации и декларации будут доступны для скачивания</p></div>
+<div class="tabp" data-tab="docs"><div class="tw" style="margin-bottom:1rem"><table class="tbl"><tbody>
+<tr><td style="font-weight:600;width:50%">ТУ</td><td>22.22.11-001-47645032-2022</td></tr>
+<tr><td style="font-weight:600">Декларация соответствия</td><td>ЕАЭС № RU Д-RU.РА01.В.02543/22</td></tr>
+<tr><td style="font-weight:600">Сертификат пищевой безопасности</td><td>имеется</td></tr>
+<tr><td style="font-weight:600">Паспорт на партию</td><td>выдаётся с каждой отгрузкой</td></tr>
+<tr><td style="font-weight:600">Артикул / EAN-13</td><td>у каждой SKU индивидуальный</td></tr>
+</tbody></table></div>
+<p style="font-size:var(--sm-fs);color:var(--ink-3);margin-top:.75rem">Полный пакет документов запросите через форму ниже — вышлем на e-mail вместе с оптовым расчётом.</p></div>
 </div>
 <div class="flex gap2 mt4"><a href="#cta" class="btn btn--p btn--lg">Запросить оптовый расчёт</a><a href="#cta" class="btn btn--s btn--lg">Заказать образец</a></div>
 </div></div></div></section>
@@ -1839,12 +1915,19 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 <div data-tabs>
 <div class="tabs"><button class="tabs__b on" data-tab="desc">Описание</button><button class="tabs__b" data-tab="specs">Характеристики</button><button class="tabs__b" data-tab="dlvr">Доставка</button><button class="tabs__b" data-tab="docs">Документы</button></div>
-<div class="tabp on" data-tab="desc"><p>Профессиональная серия с утеплителем ВПП 1 см — в 10 раз толще стандартного. Для маршрутов 500+ км.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 300/450 мл — <a href="/products/shock-600-cool.html" class="accent">перейти →</a></p></div>
+<div class="tabp on" data-tab="desc"><p>Серия <b>PRO</b> — профессиональное решение для длительной транспортировки, кейтеринга, дорогих грузов и экспорта.</p><ul style="margin:1rem 0;padding-left:1.25rem;line-height:1.7"><li>Состав <span class="spec-mono">Мет&nbsp;85 / ВПП&nbsp;10&nbsp;мм / Мет&nbsp;85&nbsp;мкм</span></li><li>Утеплитель — воздушно-пузырьковая плёнка <b>10 мм</b>, в 10 раз толще обычных термопакетов</li><li>Удержание температуры <b>более 6 часов</b></li><li>МОЗ — 1 коробка, срок 2–5 раб. дн.</li></ul><p>Лучший выбор для: перевозки мяса/рыбы/препаратов на <b>500+ км</b>, авиаперевозок, экспорта, кейтеринга.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 600, 1000 мл — <a href="/products/akkumulyatory-holoda/" class="accent" data-nav="/products/akkumulyatory-holoda/">подобрать →</a></p></div>
 <div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
 <tr><td style="font-weight:600;width:40%">Артикул</td><td>ТП 03-1</td></tr><tr><td style="font-weight:600;width:40%">Размер</td><td>42×45 см</td></tr><tr><td style="font-weight:600;width:40%">Объём</td><td>15 л</td></tr><tr><td style="font-weight:600;width:40%">Удержание t°</td><td>> 6 часов</td></tr><tr><td style="font-weight:600;width:40%">Утеплитель</td><td>ВПП 1 см — в 10× толще стандартного</td></tr><tr><td style="font-weight:600;width:40%">Вложение</td><td>30 шт в коробе</td></tr><tr><td style="font-weight:600;width:40%">Материал</td><td>Мет/Мет</td></tr>
 </tbody></table></div></div>
 <div class="tabp" data-tab="dlvr"><p>Серийная позиция — отгрузка 2–5 рабочих дней. По Москве за 24 ч (ТермиМобиль). По России — любой ТК. Бесплатная доставка по Москве от 5 коробок. ЭДО поддерживается.</p></div>
-<div class="tabp" data-tab="docs"><p class="muted">Спецификации и декларации будут доступны для скачивания</p></div>
+<div class="tabp" data-tab="docs"><div class="tw" style="margin-bottom:1rem"><table class="tbl"><tbody>
+<tr><td style="font-weight:600;width:50%">ТУ</td><td>22.22.11-001-47645032-2022</td></tr>
+<tr><td style="font-weight:600">Декларация соответствия</td><td>ЕАЭС № RU Д-RU.РА01.В.02543/22</td></tr>
+<tr><td style="font-weight:600">Сертификат пищевой безопасности</td><td>имеется</td></tr>
+<tr><td style="font-weight:600">Паспорт на партию</td><td>выдаётся с каждой отгрузкой</td></tr>
+<tr><td style="font-weight:600">Артикул / EAN-13</td><td>у каждой SKU индивидуальный</td></tr>
+</tbody></table></div>
+<p style="font-size:var(--sm-fs);color:var(--ink-3);margin-top:.75rem">Полный пакет документов запросите через форму ниже — вышлем на e-mail вместе с оптовым расчётом.</p></div>
 </div>
 <div class="flex gap2 mt4"><a href="#cta" class="btn btn--p btn--lg">Запросить оптовый расчёт</a><a href="#cta" class="btn btn--s btn--lg">Заказать образец</a></div>
 </div></div></div></section>
@@ -1867,12 +1950,19 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 <div data-tabs>
 <div class="tabs"><button class="tabs__b on" data-tab="desc">Описание</button><button class="tabs__b" data-tab="specs">Характеристики</button><button class="tabs__b" data-tab="dlvr">Доставка</button><button class="tabs__b" data-tab="docs">Документы</button></div>
-<div class="tabp on" data-tab="desc"><p>Большой профессиональный термопакет для крупных экспортных партий и длинных маршрутов.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 450/600/1000 мл — <a href="/products/shock-600-cool.html" class="accent">перейти →</a></p></div>
+<div class="tabp on" data-tab="desc"><p>Серия <b>PRO</b> — профессиональное решение для длительной транспортировки, кейтеринга, дорогих грузов и экспорта.</p><ul style="margin:1rem 0;padding-left:1.25rem;line-height:1.7"><li>Состав <span class="spec-mono">Мет&nbsp;85 / ВПП&nbsp;10&nbsp;мм / Мет&nbsp;85&nbsp;мкм</span></li><li>Утеплитель — воздушно-пузырьковая плёнка <b>10 мм</b>, в 10 раз толще обычных термопакетов</li><li>Удержание температуры <b>более 6 часов</b></li><li>МОЗ — 1 коробка, срок 2–5 раб. дн.</li></ul><p>Лучший выбор для: перевозки мяса/рыбы/препаратов на <b>500+ км</b>, авиаперевозок, экспорта, кейтеринга.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 600, 1000 мл — <a href="/products/akkumulyatory-holoda/" class="accent" data-nav="/products/akkumulyatory-holoda/">подобрать →</a></p></div>
 <div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
 <tr><td style="font-weight:600;width:40%">Артикул</td><td>ТПП 02</td></tr><tr><td style="font-weight:600;width:40%">Размер</td><td>60×55 см</td></tr><tr><td style="font-weight:600;width:40%">Объём</td><td>33 л</td></tr><tr><td style="font-weight:600;width:40%">Грузоподъёмность</td><td>до 20 кг</td></tr><tr><td style="font-weight:600;width:40%">Удержание t°</td><td>> 6 часов</td></tr><tr><td style="font-weight:600;width:40%">Утеплитель</td><td>ВПП 1 см — в 10× толще стандартного</td></tr><tr><td style="font-weight:600;width:40%">Вложение</td><td>20 шт в коробе</td></tr><tr><td style="font-weight:600;width:40%">Материал</td><td>Мет/Мет</td></tr>
 </tbody></table></div></div>
 <div class="tabp" data-tab="dlvr"><p>Серийная позиция — отгрузка 2–5 рабочих дней. По Москве за 24 ч (ТермиМобиль). По России — любой ТК. Бесплатная доставка по Москве от 5 коробок. ЭДО поддерживается.</p></div>
-<div class="tabp" data-tab="docs"><p class="muted">Спецификации и декларации будут доступны для скачивания</p></div>
+<div class="tabp" data-tab="docs"><div class="tw" style="margin-bottom:1rem"><table class="tbl"><tbody>
+<tr><td style="font-weight:600;width:50%">ТУ</td><td>22.22.11-001-47645032-2022</td></tr>
+<tr><td style="font-weight:600">Декларация соответствия</td><td>ЕАЭС № RU Д-RU.РА01.В.02543/22</td></tr>
+<tr><td style="font-weight:600">Сертификат пищевой безопасности</td><td>имеется</td></tr>
+<tr><td style="font-weight:600">Паспорт на партию</td><td>выдаётся с каждой отгрузкой</td></tr>
+<tr><td style="font-weight:600">Артикул / EAN-13</td><td>у каждой SKU индивидуальный</td></tr>
+</tbody></table></div>
+<p style="font-size:var(--sm-fs);color:var(--ink-3);margin-top:.75rem">Полный пакет документов запросите через форму ниже — вышлем на e-mail вместе с оптовым расчётом.</p></div>
 </div>
 <div class="flex gap2 mt4"><a href="#cta" class="btn btn--p btn--lg">Запросить оптовый расчёт</a><a href="#cta" class="btn btn--s btn--lg">Заказать образец</a></div>
 </div></div></div></section>
@@ -1895,12 +1985,19 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 <div data-tabs>
 <div class="tabs"><button class="tabs__b on" data-tab="desc">Описание</button><button class="tabs__b" data-tab="specs">Характеристики</button><button class="tabs__b" data-tab="dlvr">Доставка</button><button class="tabs__b" data-tab="docs">Документы</button></div>
-<div class="tabp on" data-tab="desc"><p>Термопакет с многоразовой застёжкой. Максимальная герметичность для фармацевтики, мелкого ритейла и маркетплейсов.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 300 мл — <a href="/products/shock-600-cool.html" class="accent">перейти →</a></p></div>
+<div class="tabp on" data-tab="desc"><p>Термопакет с <b>Zip-Lock</b> замком — однослойный пакет для непродолжительной транспортировки БАДов, косметики, мелкого ритейла.</p><ul style="margin:1rem 0;padding-left:1.25rem;line-height:1.7"><li>Однослойный <span class="spec-mono">Мет&nbsp;100–115&nbsp;мкм</span></li><li>Размер 25×40 см + 5 см донная складка</li><li>Объём 6 л, грузоподъёмность 4 кг</li><li>Удержание до <b>1,5 часов</b></li><li>Вложение 700 шт/короб, МОЗ — 1 коробка</li></ul><p><b>СТМ:</b> флексография на металлизированной плёнке от 22 000 шт, срок 4–6 нед. Альтернатива — клеевая этикетка.</p></div>
 <div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
 <tr><td style="font-weight:600;width:40%">Артикул</td><td>ТП 08</td></tr><tr><td style="font-weight:600;width:40%">Размер</td><td>250×400 мм</td></tr><tr><td style="font-weight:600;width:40%">Объём</td><td>6 л</td></tr><tr><td style="font-weight:600;width:40%">Грузоподъёмность</td><td>до 4 кг</td></tr><tr><td style="font-weight:600;width:40%">Состав</td><td>Мет</td></tr><tr><td style="font-weight:600;width:40%">Тип закрытия</td><td>Zip-Lock (многоразовая застёжка)</td></tr><tr><td style="font-weight:600;width:40%">Вложение</td><td>700 шт в коробе</td></tr>
 </tbody></table></div></div>
 <div class="tabp" data-tab="dlvr"><p>Серийная позиция — отгрузка 2–5 рабочих дней. По Москве за 24 ч (ТермиМобиль). По России — любой ТК. Бесплатная доставка по Москве от 5 коробок. ЭДО поддерживается.</p></div>
-<div class="tabp" data-tab="docs"><p class="muted">Спецификации и декларации будут доступны для скачивания</p></div>
+<div class="tabp" data-tab="docs"><div class="tw" style="margin-bottom:1rem"><table class="tbl"><tbody>
+<tr><td style="font-weight:600;width:50%">ТУ</td><td>22.22.11-001-47645032-2022</td></tr>
+<tr><td style="font-weight:600">Декларация соответствия</td><td>ЕАЭС № RU Д-RU.РА01.В.02543/22</td></tr>
+<tr><td style="font-weight:600">Сертификат пищевой безопасности</td><td>имеется</td></tr>
+<tr><td style="font-weight:600">Паспорт на партию</td><td>выдаётся с каждой отгрузкой</td></tr>
+<tr><td style="font-weight:600">Артикул / EAN-13</td><td>у каждой SKU индивидуальный</td></tr>
+</tbody></table></div>
+<p style="font-size:var(--sm-fs);color:var(--ink-3);margin-top:.75rem">Полный пакет документов запросите через форму ниже — вышлем на e-mail вместе с оптовым расчётом.</p></div>
 </div>
 <div class="flex gap2 mt4"><a href="#cta" class="btn btn--p btn--lg">Запросить оптовый расчёт</a><a href="#cta" class="btn btn--s btn--lg">Заказать образец</a></div>
 </div></div></div></section>
@@ -1923,12 +2020,19 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 <div data-tabs>
 <div class="tabs"><button class="tabs__b on" data-tab="desc">Описание</button><button class="tabs__b" data-tab="specs">Характеристики</button><button class="tabs__b" data-tab="dlvr">Доставка</button><button class="tabs__b" data-tab="docs">Документы</button></div>
-<div class="tabp on" data-tab="desc"><p>Устойчивая конструкция с пластиковым дном 6 мм для жидких продуктов. Удержание до 7 часов.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 450/600 мл — <a href="/products/shock-600-cool.html" class="accent">перейти →</a></p></div>
+<div class="tabp on" data-tab="desc"><p>Термопакет Standart <b>с пластиковым дном</b> — для жидких продуктов (супы, соусы), нежной упаковки, дорогих блюд.</p><ul style="margin:1rem 0;padding-left:1.25rem;line-height:1.7"><li>Состав <span class="spec-mono">Мет&nbsp;85 / ВПЭ&nbsp;1&nbsp;мм / Мет&nbsp;85&nbsp;мкм</span></li><li>Пластиковое дно <b>6 мм</b>, пищевой, ударопрочный</li><li>Удержание до <b>7 часов</b></li><li>Ширина дна 10 см</li><li>МОЗ — 1 коробка</li></ul></div>
 <div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
 <tr><td style="font-weight:600;width:40%">Артикул</td><td>ТПП 02-1</td></tr><tr><td style="font-weight:600;width:40%">Размер</td><td>60×50+10 см</td></tr><tr><td style="font-weight:600;width:40%">Объём</td><td>33 л</td></tr><tr><td style="font-weight:600;width:40%">Грузоподъёмность</td><td>до 20 кг</td></tr><tr><td style="font-weight:600;width:40%">Удержание t°</td><td>до 7 часов</td></tr><tr><td style="font-weight:600;width:40%">Дно</td><td>Пластиковое дно 6 мм</td></tr><tr><td style="font-weight:600;width:40%">Вложение</td><td>30 шт в коробе</td></tr><tr><td style="font-weight:600;width:40%">Материал</td><td>Мет/Мет</td></tr>
 </tbody></table></div></div>
 <div class="tabp" data-tab="dlvr"><p>Серийная позиция — отгрузка 2–5 рабочих дней. По Москве за 24 ч (ТермиМобиль). По России — любой ТК. Бесплатная доставка по Москве от 5 коробок. ЭДО поддерживается.</p></div>
-<div class="tabp" data-tab="docs"><p class="muted">Спецификации и декларации будут доступны для скачивания</p></div>
+<div class="tabp" data-tab="docs"><div class="tw" style="margin-bottom:1rem"><table class="tbl"><tbody>
+<tr><td style="font-weight:600;width:50%">ТУ</td><td>22.22.11-001-47645032-2022</td></tr>
+<tr><td style="font-weight:600">Декларация соответствия</td><td>ЕАЭС № RU Д-RU.РА01.В.02543/22</td></tr>
+<tr><td style="font-weight:600">Сертификат пищевой безопасности</td><td>имеется</td></tr>
+<tr><td style="font-weight:600">Паспорт на партию</td><td>выдаётся с каждой отгрузкой</td></tr>
+<tr><td style="font-weight:600">Артикул / EAN-13</td><td>у каждой SKU индивидуальный</td></tr>
+</tbody></table></div>
+<p style="font-size:var(--sm-fs);color:var(--ink-3);margin-top:.75rem">Полный пакет документов запросите через форму ниже — вышлем на e-mail вместе с оптовым расчётом.</p></div>
 </div>
 <div class="flex gap2 mt4"><a href="#cta" class="btn btn--p btn--lg">Запросить оптовый расчёт</a><a href="#cta" class="btn btn--s btn--lg">Заказать образец</a></div>
 </div></div></div></section>
@@ -1951,12 +2055,19 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 <div data-tabs>
 <div class="tabs"><button class="tabs__b on" data-tab="desc">Описание</button><button class="tabs__b" data-tab="specs">Характеристики</button><button class="tabs__b" data-tab="dlvr">Доставка</button><button class="tabs__b" data-tab="docs">Документы</button></div>
-<div class="tabp on" data-tab="desc"><p>Термопакет с клеевым клапаном для надёжного запечатывания паллетных грузов.</p><p style="font-size:var(--sm-fs);margin-top:1rem"><strong>Совместимые аккумуляторы:</strong> SHOCK® 300/450 мл — <a href="/products/shock-600-cool.html" class="accent">перейти →</a></p></div>
+<div class="tabp on" data-tab="desc"><p>Термопакет с <b>клеевым клапаном</b> — для запечатывания, конфиденциальности, паллетных и коробочных грузов.</p><ul style="margin:1rem 0;padding-left:1.25rem;line-height:1.7"><li>Размер 42×45 + 5 см клапан</li><li>Клапан многоразовый — рассчитан на <b>5–6 циклов</b></li><li>Варианты состава: <span class="spec-mono">Мет/ПВД</span> до 4 ч; <span class="spec-mono">Мет/Мет</span> до 7 ч; однослойный до 30 мин</li><li>МОЗ — 1 коробка серийки</li><li><b>СТМ:</b> только флексография, от 25 000 шт</li></ul></div>
 <div class="tabp" data-tab="specs"><div class="tw"><table class="tbl"><tbody>
 <tr><td style="font-weight:600;width:40%">Артикул</td><td>ТПКС 03 / 03-1 / 03-1-1</td></tr><tr><td style="font-weight:600;width:40%">Размер</td><td>42×45+5 см</td></tr><tr><td style="font-weight:600;width:40%">Тип закрытия</td><td>Клеевой клапан</td></tr><tr><td style="font-weight:600;width:40%">Вложение</td><td>120 шт в коробе</td></tr><tr><td style="font-weight:600;width:40%">Варианты</td><td>Однослойный (Мет) / Мет/ПВД / Мет/Мет</td></tr>
 </tbody></table></div></div>
 <div class="tabp" data-tab="dlvr"><p>Серийная позиция — отгрузка 2–5 рабочих дней. По Москве за 24 ч (ТермиМобиль). По России — любой ТК. Бесплатная доставка по Москве от 5 коробок. ЭДО поддерживается.</p></div>
-<div class="tabp" data-tab="docs"><p class="muted">Спецификации и декларации будут доступны для скачивания</p></div>
+<div class="tabp" data-tab="docs"><div class="tw" style="margin-bottom:1rem"><table class="tbl"><tbody>
+<tr><td style="font-weight:600;width:50%">ТУ</td><td>22.22.11-001-47645032-2022</td></tr>
+<tr><td style="font-weight:600">Декларация соответствия</td><td>ЕАЭС № RU Д-RU.РА01.В.02543/22</td></tr>
+<tr><td style="font-weight:600">Сертификат пищевой безопасности</td><td>имеется</td></tr>
+<tr><td style="font-weight:600">Паспорт на партию</td><td>выдаётся с каждой отгрузкой</td></tr>
+<tr><td style="font-weight:600">Артикул / EAN-13</td><td>у каждой SKU индивидуальный</td></tr>
+</tbody></table></div>
+<p style="font-size:var(--sm-fs);color:var(--ink-3);margin-top:.75rem">Полный пакет документов запросите через форму ниже — вышлем на e-mail вместе с оптовым расчётом.</p></div>
 </div>
 <div class="flex gap2 mt4"><a href="#cta" class="btn btn--p btn--lg">Запросить оптовый расчёт</a><a href="#cta" class="btn btn--s btn--lg">Заказать образец</a></div>
 </div></div></div></section>
