@@ -173,6 +173,15 @@ section.features-grid .reason-ic::after{display:none !important}
 #p-products .pcard__img img{max-height:100%;max-width:100%;object-fit:contain}
 #p-products .pcard__bd{padding:1.1rem 1.2rem 1.25rem}
 #p-products .pcard__nm{font-size:1.05rem;font-weight:700;color:var(--ink);line-height:1.2;margin:.2rem 0 .35rem}
+/* ═══ Product filter bar ═══ */
+.prod-filter{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:2rem;align-items:center;padding-bottom:1.25rem;border-bottom:1px solid var(--border-ink)}
+.prod-filter__b{display:inline-flex;align-items:center;gap:.45rem;padding:.55rem 1.05rem;border-radius:999px;background:#fff;border:1px solid var(--border-ink);color:var(--ink-2);font:500 .88rem/1 var(--ff);letter-spacing:0;cursor:pointer;transition:background .2s var(--ease),color .2s var(--ease),border-color .2s var(--ease)}
+.prod-filter__b:hover{border-color:var(--brand-purple-1);color:var(--ink)}
+.prod-filter__b.on{background:var(--grad-brand);color:#fff;border-color:transparent}
+.prod-filter__c{display:inline-flex;align-items:center;justify-content:center;min-width:1.5rem;height:1.25rem;padding:0 .4rem;border-radius:999px;background:rgba(15,16,20,.08);color:var(--ink-3);font-size:.72rem;font-weight:600}
+.prod-filter__b.on .prod-filter__c{background:rgba(255,255,255,.22);color:#fff}
+#product-grid .pcard{transition:opacity .25s var(--ease),transform .25s var(--ease)}
+#product-grid .pcard.hidden{display:none}
 </style>
 <style>
 /* ================================================================
@@ -2040,6 +2049,15 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
 </div>
 
 <section class="sec sec--lt"><div class="ctr">
+<div class="prod-filter" role="tablist" aria-label="Фильтр по категориям">
+  <button class="prod-filter__b on" data-filter="all" type="button">Все <span class="prod-filter__c">25</span></button>
+  <button class="prod-filter__b" data-filter="pack" type="button">Термопакеты <span class="prod-filter__c">6</span></button>
+  <button class="prod-filter__b" data-filter="shock" type="button">Аккумуляторы SHOCK® <span class="prod-filter__c">12</span></button>
+  <button class="prod-filter__b" data-filter="box" type="button">Термокороба <span class="prod-filter__c">3</span></button>
+  <button class="prod-filter__b" data-filter="bag" type="button">Термошопперы <span class="prod-filter__c">1</span></button>
+  <button class="prod-filter__b" data-filter="wrap" type="button">БаблПак <span class="prod-filter__c">1</span></button>
+  <button class="prod-filter__b" data-filter="cup" type="button">Термокружки <span class="prod-filter__c">2</span></button>
+</div>
 <div class="grid g4" data-a id="product-grid">
 
 <!-- ══════ ТЕРМОПАКЕТЫ ══════ -->
@@ -5660,6 +5678,19 @@ section.sec:has(> .hero-blobs-continue) > *:not(.hero-blobs-continue),.tstrip:ha
     }
   });
   
+  // Product filter tabs (p-products)
+  document.addEventListener('click',e=>{
+    const b=e.target.closest('.prod-filter__b');
+    if(!b) return;
+    const filter=b.dataset.filter;
+    b.parentElement.querySelectorAll('.prod-filter__b').forEach(x=>x.classList.toggle('on',x===b));
+    const grid=document.getElementById('product-grid');
+    if(!grid) return;
+    grid.querySelectorAll('.pcard').forEach(c=>{
+      const show=filter==='all'||c.dataset.cat===filter;
+      c.classList.toggle('hidden',!show);
+    });
+  });
   // Init: определить стартовую страницу по URL
   function resolveInitialRoute(){
     const h=window.location.hash.replace(/^#/,'');
