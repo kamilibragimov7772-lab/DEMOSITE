@@ -65,7 +65,8 @@
 <!-- 🔶 TEMPORARY: fonts — replace with confirmed brand fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="design-system/termy-tokens.css">
 <style>
 /* ================================================================
    TERMY — Wave 1 Build Base v1 Design System
@@ -77,29 +78,62 @@
    Grid: 8px base | 12-column mobile-first | max-width 1280px
    ================================================================ */
 :root{
-  /* ── Surfaces — ✅ CONFIRMED dark direction ── */
-  --s900:#0D0F11; --s850:#131619; --s800:#1A1D22;
-  --s700:#22262D; --s600:#2E333B;
-  --s100:#F4F5F7; --s0:#FFFFFF;
+  /* ═══ TERMY Design System override (paper/Inter/gradient pairs) ═══
+   * см. design-system/termy-tokens.css и README.md
+   */
 
-  /* ── Text — dark theme ── */
-  --t1:#F0F1F3; --t2:#9EA5B1; --t3:#636B78; --t-dark:#1A1D22;
+  /* ── Brand gradient pairs ── */
+  --brand-purple-1:#6428A0; --brand-purple-2:#9466BB;
+  --info-indigo-1:#1E1E50; --info-indigo-2:#323287;
+  --eco-teal-1:#28A096; --eco-teal-2:#32C8BE;
+  --shock-1:#A53728; --shock-2:#EB5A3C;
+  --amber-1:#E6AA23; --amber-2:#F0CD73;
+  --orange-1:#EB7D2D; --orange-2:#F0B47D;
+  --temp-chill-1:#6491B4; --temp-chill-2:#AAD2F5;
+  --temp-frozen-1:#913791; --temp-frozen-2:#DC78DC;
+  --temp-deep-1:#054B37; --temp-deep-2:#0F6950;
+  --grad-brand:linear-gradient(135deg,var(--brand-purple-1),var(--brand-purple-2));
+  --grad-indigo:linear-gradient(135deg,var(--info-indigo-1),var(--info-indigo-2));
+  --grad-eco:linear-gradient(135deg,var(--eco-teal-1),var(--eco-teal-2));
+  --grad-shock:linear-gradient(135deg,var(--shock-1),var(--shock-2));
+  --grad-chill:linear-gradient(135deg,var(--temp-chill-1),var(--temp-chill-2));
+  --grad-frozen:linear-gradient(135deg,var(--temp-frozen-1),var(--temp-frozen-2));
+  --grad-deep:linear-gradient(135deg,var(--temp-deep-1),var(--temp-deep-2));
 
-  /* ── Accent — 🔶 TEMPORARY, replace with brand color ── */
-  --c-a:#7D46AF; --c-ah:#9466BB;
-  --c-al:rgba(125,70,175,0.12);
-  --accent-border:rgba(200,169,110,0.22);
+  /* ── Surfaces (PAPER) ── */
+  --paper:#F5F2EC; --paper-deep:#EDE8DE;
+  --ink:#0F1014; --ink-2:#3E424A; --ink-3:#6E7480;
+  --ink-on-dark:#F6F4EF;
+  --border-ink:rgba(15,16,20,.10);
 
-  /* ── Legacy compat tokens ── */
-  --c-black:#0A0A0A; --c-dark:#1A1D22; --c-dark-mid:#22262D;
-  --c-g9:#F0F1F3; --c-g7:#9EA5B1; --c-g5:#636B78; --c-g4:#9EA5B1;
-  --c-g3:#2E333B; --c-g2:#2E333B; --c-g1:#22262D; --c-g0:#1A1D22;
-  --c-w:#F0F1F3;
-  --c-ok:#34D399; --c-err:#F87171;
+  /* ── Legacy compat: remap old tokens to paper palette ── */
+  --s900:var(--paper);            /* был #0D0F11 → теперь paper */
+  --s850:var(--paper-deep);
+  --s800:#E5DFD3;                 /* чуть плотнее */
+  --s700:#D9D1C1;
+  --s600:rgba(15,16,20,.10);      /* было border/outline */
+  --s100:var(--paper);
+  --s0:#FFFFFF;
 
-  /* ── Typography — 🔶 TEMPORARY ── */
-  --ff-display:'Unbounded',-apple-system,sans-serif;
-  --ff:'Manrope',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --t1:var(--ink);                /* тёмный текст на бумаге */
+  --t2:var(--ink-2);
+  --t3:var(--ink-3);
+  --t-dark:var(--ink);
+
+  --c-a:var(--brand-purple-1); --c-ah:var(--brand-purple-2);
+  --c-al:rgba(100,40,160,.10);
+  --accent-border:rgba(100,40,160,.22);
+
+  --c-black:#0F1014; --c-dark:#1A1D22; --c-dark-mid:#22262D;
+  --c-g9:var(--ink); --c-g7:var(--ink-2); --c-g5:var(--ink-3); --c-g4:var(--ink-2);
+  --c-g3:var(--paper-deep); --c-g2:var(--paper-deep); --c-g1:var(--paper-deep); --c-g0:var(--paper);
+  --c-w:#FFFFFF;
+  --c-ok:#0B9D6E; --c-err:#C23A1E;
+
+  /* ── Typography: Inter + Instrument Serif ── */
+  --ff-display:'Inter',-apple-system,sans-serif;
+  --ff:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --ff-editorial:'Instrument Serif',Georgia,serif;
   --ff-mono:'JetBrains Mono',monospace;
 
   /* ── Type scale ── */
@@ -119,7 +153,18 @@
   /* ── Motion — ✅ CONFIRMED ── */
   --ease:cubic-bezier(.4,0,.2,1)
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:var(--ff);font-size:var(--body-fs);line-height:1.6;color:var(--t1);background:var(--s900);-webkit-font-smoothing:antialiased}img,svg{max-width:100%;display:block}a{color:inherit;text-decoration:none}button{cursor:pointer;font:inherit;border:none;background:none}ul,ol{list-style:none}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:var(--ff);font-size:var(--body-fs);line-height:1.6;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}img,svg{max-width:100%;display:block}a{color:inherit;text-decoration:none}button{cursor:pointer;font:inherit;border:none;background:none}ul,ol{list-style:none}
+/* ═══ Brand-section colors (paper → purple → paper → indigo) ═══ */
+#p-home > section.hero.hero--home{background:var(--grad-brand);color:var(--ink-on-dark)}
+#p-home > section.hero.hero--home h1,#p-home > section.hero.hero--home h2,#p-home > section.hero.hero--home h3{color:var(--ink-on-dark)}
+#p-home > section.hero.hero--home p,#p-home > section.hero.hero--home .muted{color:var(--ink-on-dark-2,rgba(246,244,239,.75))}
+#p-home > section.features-grid{background:var(--grad-indigo);color:var(--ink-on-dark)}
+#p-home > section.features-grid h2,#p-home > section.features-grid h3,#p-home > section.features-grid h4{color:var(--ink-on-dark)}
+#p-home > section.features-grid p,#p-home > section.features-grid .feat-pill__tx{color:var(--ink-on-dark-2,rgba(246,244,239,.78))}
+#p-home > section.cta-sec{background:var(--grad-indigo);color:var(--ink-on-dark)}
+/* Светлые секции: явный paper, небольшая вариация между ними */
+#p-home > section.sec--lt,#p-home > section.sec{background:var(--paper)}
+#p-home > section.sec--lt:nth-of-type(even),#p-home > section.sec:nth-of-type(even){background:var(--paper-deep)}
 /* Layout */
 .ctr{max-width:var(--max-w);margin:0 auto;padding:0 var(--gutter)}.sec{padding:var(--sec-py) 0}.sec--dk{background:var(--s850);color:var(--t1)}
 .sec--lt{background:var(--s100);color:var(--t-dark)}
