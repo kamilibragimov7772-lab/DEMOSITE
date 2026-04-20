@@ -1,0 +1,28 @@
+User-agent: *
+Allow: /
+Disallow: /server/
+Disallow: /widget/
+Disallow: /knowledge-base/
+Disallow: /*.docx$
+Disallow: /*.pdf$
+Allow: /img/
+
+# AI crawlers
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Sitemap
+Sitemap: https://termybrand.com/sitemap.xml
+
+# Crawl-delay для неизвестных ботов
+User-agent: *
+Crawl-delay: 1

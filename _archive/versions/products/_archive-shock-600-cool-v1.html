@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHOCK® 600 мл Cool · Аккумулятор холода +2…+8°C — TERMY</title>
+<meta name="description" content="Многоразовый аккумулятор холода SHOCK® 600 мл Cool. Рабочая температура +2…+8°C. Водно-солевой раствор. 25 шт/короб. Цена от 79,20 ₽. МОЗ от 1 короба.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --s900:#0D0F11;--s850:#131619;--s800:#1A1D22;--s700:#22262D;--s600:#2E333B;
+  --s100:#F4F5F7;--s0:#FFFFFF;
+  --t1:#F0F1F3;--t2:#9EA5B1;--t3:#636B78;--t-dark:#1A1D22;
+  --c-a:#7D46AF;--c-ah:#9466BB;--c-al:rgba(125,70,175,0.12);
+  --grad-brand:linear-gradient(135deg,#6428A0 0%,#9466BB 100%);
+  --grad-shock:linear-gradient(135deg,#A53728 0%,#EB5A3C 100%);
+  --grad-cool:linear-gradient(135deg,#6491B4 0%,#AAD2F5 100%);
+  --ff:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --h1-fs:clamp(1.875rem,4vw,2.75rem);--h2-fs:clamp(1.375rem,3vw,2rem);
+  --h3-fs:clamp(1.125rem,2vw,1.375rem);
+  --max-w:1280px;--gutter:clamp(1rem,4vw,3rem);--sec-py:clamp(4rem,8vw,6rem);
+  --r:8px;--rl:12px;--rxl:16px;--ease:cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff);font-size:1rem;line-height:1.6;color:var(--t1);background:var(--s900);-webkit-font-smoothing:antialiased}
+img,svg{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font:inherit;border:none;background:none}
+ul,ol{list-style:none}
+
+.ctr{max-width:var(--max-w);margin:0 auto;padding:0 var(--gutter)}
+.sec{padding:var(--sec-py) 0}
+.sec--lt{background:var(--s100);color:var(--t-dark)}
+.sec--dk{background:var(--s850);color:var(--t1)}
+
+h1{font-size:var(--h1-fs);font-weight:800;line-height:1.15;letter-spacing:-.02em}
+h2{font-size:var(--h2-fs);font-weight:700;line-height:1.25}
+h3{font-size:var(--h3-fs);font-weight:600;line-height:1.3}
+.label{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--c-a)}
+.muted{color:var(--t3)}
+
+/* ── Header ── */
+.hdr{position:sticky;top:0;z-index:50;background:rgba(13,15,17,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.08)}
+.hdr__inner{display:flex;align-items:center;justify-content:space-between;padding:1rem 0;gap:1.5rem}
+.hdr__logo{font-weight:900;font-size:1.375rem;letter-spacing:-.02em;background:var(--grad-brand);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hdr__nav{display:flex;gap:1.5rem;font-size:.9375rem;color:var(--t2)}
+.hdr__nav a:hover{color:var(--t1)}
+.hdr__cta{padding:.625rem 1.25rem;background:var(--grad-brand);color:#fff;border-radius:var(--r);font-weight:600;font-size:.9375rem;transition:transform .2s var(--ease)}
+.hdr__cta:hover{transform:translateY(-1px)}
+@media(max-width:768px){.hdr__nav{display:none}}
+
+.crumb{font-size:.875rem;color:var(--t3);margin-bottom:1.5rem}
+.crumb a{color:var(--t2)}.crumb a:hover{color:var(--t1)}.crumb span{margin:0 .5rem;color:var(--t3)}
+
+/* ── Hero ── */
+.hero{padding:3rem 0 4rem;background:linear-gradient(180deg,#0D0F11 0%,#131619 100%)}
+.hero__grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+@media(max-width:900px){.hero__grid{grid-template-columns:1fr;gap:2rem}}
+.hero__gallery{position:relative;aspect-ratio:1/1;background:#fff;border-radius:var(--rxl);overflow:hidden;display:flex;align-items:center;justify-content:center;padding:2rem}
+.hero__gallery img{max-width:85%;max-height:85%;width:auto;height:auto;object-fit:contain}
+.hero__thumbs{display:flex;gap:.75rem;margin-top:1rem}
+.hero__thumb{width:64px;height:64px;background:#fff;border-radius:var(--r);border:2px solid transparent;cursor:pointer;overflow:hidden;padding:.25rem;display:flex;align-items:center;justify-content:center;transition:border-color .2s}
+.hero__thumb.on{border-color:var(--c-a)}
+.hero__thumb--ph{background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.15)}
+.hero__meta{display:flex;flex-direction:column;gap:1rem}
+.hero__tag{display:inline-flex;align-items:center;gap:.5rem;width:fit-content}
+.hero__tag-cat{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:.375rem .75rem;background:var(--grad-shock);color:#fff;border-radius:var(--r-badge,4px)}
+.hero__headline{font-size:var(--h1-fs);font-weight:800;line-height:1.1;letter-spacing:-.02em}
+.hero__sub{font-size:1.125rem;color:var(--t2);line-height:1.55;max-width:500px}
+.hero__badges{display:flex;flex-wrap:wrap;gap:.625rem;margin-top:.5rem}
+.badge{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem .875rem;border-radius:999px;font-size:.875rem;font-weight:600}
+.badge--cool{background:var(--grad-cool);color:#0D1E2F}
+.badge--time{background:rgba(125,70,175,.15);color:#C8AFE6;border:1px solid rgba(125,70,175,.3)}
+.badge--cert{background:rgba(52,211,153,.12);color:#6EE7B7;border:1px solid rgba(52,211,153,.25)}
+.hero__price{display:flex;align-items:baseline;gap:.75rem;padding:1.25rem 1.5rem;background:rgba(125,70,175,.08);border:1px solid rgba(125,70,175,.2);border-radius:var(--rl);margin-top:.5rem}
+.hero__price-val{font-size:1.875rem;font-weight:800;color:var(--t1)}
+.hero__price-unit{font-size:1rem;color:var(--t2)}
+.hero__price-note{margin-left:auto;font-size:.8125rem;color:var(--t3)}
+.hero__cta{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:.5rem}
+.btn{padding:.875rem 1.5rem;border-radius:var(--r);font-weight:600;font-size:.9375rem;transition:transform .2s var(--ease),background .2s;display:inline-flex;align-items:center;gap:.5rem}
+.btn--primary{background:var(--grad-brand);color:#fff}.btn--primary:hover{transform:translateY(-1px)}
+.btn--ghost{background:transparent;color:var(--t1);border:1px solid rgba(255,255,255,.18)}.btn--ghost:hover{border-color:var(--t1)}
+.btn--ghost-dk{background:transparent;color:var(--t-dark);border:1px solid #D1D5DB}.btn--ghost-dk:hover{border-color:var(--t-dark)}
+
+/* ── Specs ── */
+.specs__head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2rem;gap:1rem;flex-wrap:wrap}
+.specs__grid{display:grid;grid-template-columns:2fr 1fr;gap:2rem;align-items:start}
+@media(max-width:900px){.specs__grid{grid-template-columns:1fr}}
+.tbl{width:100%;border-collapse:collapse;background:var(--s0);border-radius:var(--rl);overflow:hidden;border:1px solid #E5E7EB}
+.tbl th,.tbl td{padding:.875rem 1.125rem;text-align:left;border-bottom:1px solid #E5E7EB;font-size:.9375rem}
+.tbl th{background:#E5E7EB;font-weight:600;width:40%;color:var(--t-dark)}
+.tbl tr:last-child td,.tbl tr:last-child th{border-bottom:none}
+.tbl tr:hover td{background:#FAFBFC}
+.order-card{background:var(--s0);border:1px solid #E5E7EB;border-radius:var(--rl);padding:1.5rem;display:flex;flex-direction:column;gap:1rem}
+.order-card h3{margin-bottom:.25rem}
+.order-row{display:flex;justify-content:space-between;gap:1rem;padding:.625rem 0;border-bottom:1px solid #E5E7EB;font-size:.9375rem}
+.order-row:last-of-type{border-bottom:none}
+.order-row span:first-child{color:var(--t3)}
+.order-row span:last-child{font-weight:600;color:var(--t-dark);text-align:right}
+
+/* ── Benefits ── */
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem}
+@media(max-width:1024px){.grid4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.grid4{grid-template-columns:1fr}}
+.benefit{background:var(--s800);border:1px solid rgba(255,255,255,.08);border-radius:var(--rl);padding:1.75rem 1.5rem;transition:border-color .25s,transform .25s}
+.benefit:hover{border-color:var(--c-ah);transform:translateY(-2px)}
+.benefit__ic{width:48px;height:48px;border-radius:var(--r);background:var(--grad-brand);display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;font-size:1.5rem}
+.benefit h3{margin-bottom:.5rem;font-size:1.0625rem}
+.benefit p{font-size:.9375rem;color:var(--t2);line-height:1.55}
+
+/* ── Technical ── */
+.tech__grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;margin-top:2rem}
+@media(max-width:900px){.tech__grid{grid-template-columns:1fr}}
+.cross{aspect-ratio:4/3;background:var(--s0);border:1px solid #E5E7EB;border-radius:var(--rl);padding:1.5rem;display:flex;flex-direction:column;justify-content:center;gap:.75rem;position:relative}
+.cross__layer{display:grid;grid-template-columns:20px 1fr;gap:1rem;align-items:center;padding:.625rem 1rem;background:var(--s100);border-radius:var(--r);font-size:.875rem;color:var(--t-dark);transition:transform .25s}
+.cross__layer:hover{transform:translateX(4px)}
+.cross__dot{width:14px;height:14px;border-radius:4px;grid-column:1}
+.cross__t{grid-column:2;font-weight:500}
+.cross__t small{display:block;color:var(--t3);font-weight:400;margin-top:.125rem;font-size:.75rem}
+.tech-text h3{margin-bottom:.75rem}
+.tech-text p{color:var(--t3);margin-bottom:.875rem;font-size:.9375rem;line-height:1.6}
+.comp-tbl{margin-top:2.5rem;overflow-x:auto}
+.comp-tbl .tbl{min-width:600px}
+.comp-tbl th:first-child{width:auto}
+.comp-tbl .ok{color:#059669;font-weight:600}
+.comp-tbl .no{color:#DC2626}
+.comp-tbl .hl{background:rgba(125,70,175,.06)}
+
+/* ── Use cases ── */
+.usecase{background:var(--s800);border:1px solid rgba(255,255,255,.08);border-radius:var(--rl);padding:1.5rem;transition:border-color .25s,transform .25s}
+.usecase:hover{border-color:var(--c-ah);transform:translateY(-2px)}
+.usecase__ic{font-size:2rem;margin-bottom:1rem}
+.usecase h3{margin-bottom:.5rem;font-size:1.0625rem}
+.usecase p{color:var(--t2);font-size:.9375rem;line-height:1.5}
+
+/* ── Trust ── */
+.trust-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+@media(max-width:900px){.trust-grid{grid-template-columns:1fr}}
+.trust{background:var(--s0);border:1px solid #E5E7EB;border-radius:var(--rl);padding:1.75rem}
+.trust__ic{font-size:1.75rem;margin-bottom:1rem;display:inline-flex;width:48px;height:48px;background:rgba(125,70,175,.1);border-radius:var(--r);align-items:center;justify-content:center}
+.trust h3{margin-bottom:.75rem;color:var(--t-dark)}
+.trust ul{display:flex;flex-direction:column;gap:.5rem}
+.trust li{font-size:.9375rem;color:var(--t3);padding-left:1.25rem;position:relative}
+.trust li::before{content:'✓';position:absolute;left:0;color:var(--c-a);font-weight:700}
+
+/* ── FAQ ── */
+.faq{border-top:1px solid #E5E7EB}
+.faq__item{border-bottom:1px solid #E5E7EB}
+.faq__q{width:100%;text-align:left;padding:1.25rem 0;display:flex;justify-content:space-between;align-items:center;gap:1rem;font-weight:600;color:var(--t-dark);font-size:1rem;transition:color .2s}
+.faq__q:hover{color:var(--c-a)}
+.faq__ic{width:24px;height:24px;flex-shrink:0;position:relative;transition:transform .3s var(--ease)}
+.faq__ic::before,.faq__ic::after{content:'';position:absolute;background:#636B78;top:50%;left:50%;transition:transform .3s var(--ease)}
+.faq__ic::before{width:12px;height:2px;transform:translate(-50%,-50%)}
+.faq__ic::after{width:2px;height:12px;transform:translate(-50%,-50%)}
+.faq__item.on .faq__ic::after{transform:translate(-50%,-50%) rotate(90deg);opacity:0}
+.faq__a{max-height:0;overflow:hidden;transition:max-height .35s var(--ease)}
+.faq__ai{padding:0 0 1.25rem;color:var(--t3);font-size:.9375rem;line-height:1.6;max-width:720px}
+
+/* ── Final CTA ── */
+.fcta{background:linear-gradient(135deg,rgba(100,40,160,.15),rgba(148,102,187,.08));border:1px solid rgba(148,102,187,.25);border-radius:var(--rxl);padding:3rem;text-align:center;max-width:900px;margin:0 auto}
+.fcta h2{margin-bottom:1rem}
+.fcta p{color:var(--t2);margin-bottom:2rem;font-size:1.0625rem;max-width:620px;margin-left:auto;margin-right:auto}
+.fcta__btns{display:flex;justify-content:center;gap:.75rem;flex-wrap:wrap;margin-bottom:1.5rem}
+.fcta__contact{font-size:.9375rem;color:var(--t3);display:flex;justify-content:center;gap:2rem;flex-wrap:wrap;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.08)}
+.fcta__contact a{color:var(--t1);font-weight:500}
+.fcta__contact a:hover{color:var(--c-ah)}
+
+footer{padding:2rem 0;border-top:1px solid rgba(255,255,255,.08);font-size:.875rem;color:var(--t3);text-align:center}
+</style>
+</head>
+<body>
+
+<!-- ══════ HEADER ══════ -->
+<header class="hdr"><div class="ctr hdr__inner">
+  <a href="../index.html" class="hdr__logo">TERMY</a>
+  <nav class="hdr__nav">
+    <a href="../index.html#product-grid">Каталог</a>
+    <a href="../index.html#solutions">Решения</a>
+    <a href="../index.html#about">О компании</a>
+    <a href="../index.html#contacts">Контакты</a>
+  </nav>
+  <a href="#final-cta" class="hdr__cta">Запросить прайс</a>
+</div></header>
+
+<!-- ══════ HERO (1.0) ══════ -->
+<section class="hero"><div class="ctr">
+  <div class="crumb">
+    <a href="../index.html">Главная</a><span>/</span>
+    <a href="../index.html#product-grid">Каталог</a><span>/</span>
+    <a href="../index.html#product-grid">Хладоэлементы SHOCK®</a><span>/</span>
+    <span>600 мл · Cool</span>
+  </div>
+  <div class="hero__grid">
+    <div>
+      <div class="hero__gallery">
+        <img src="../img/products/shock-600-cool.webp" alt="SHOCK® 600 мл Cool — аккумулятор холода" id="mainImg">
+      </div>
+      <div class="hero__thumbs">
+        <button class="hero__thumb on" aria-label="Основной вид"><img src="../img/products/shock-600-cool.webp" alt=""></button>
+        <button class="hero__thumb hero__thumb--ph" aria-label="Фото в коробе — скоро"></button>
+        <button class="hero__thumb hero__thumb--ph" aria-label="Разрез — скоро"></button>
+        <button class="hero__thumb hero__thumb--ph" aria-label="Линейка объёмов — скоро"></button>
+      </div>
+    </div>
+    <div class="hero__meta">
+      <span class="hero__tag"><span class="hero__tag-cat">SHOCK®</span><span class="label">Аккумулятор холода</span></span>
+      <h1 class="hero__headline">600 мл · Cool — держит холодовую цепь +2…+8°C</h1>
+      <p class="hero__sub">Многоразовый аккумулятор холода с водно-солевым раствором. Универсальный объём для термошопперов и коробов среднего размера. Работает в паре с термопакетами и LinerBox® Termy.</p>
+      <div class="hero__badges">
+        <span class="badge badge--cool">❄️ +2…+8°C</span>
+        <span class="badge badge--time">⏱ до 12 часов</span>
+        <span class="badge badge--cert">✓ Пищевая безопасность</span>
+      </div>
+      <div class="hero__price">
+        <span class="hero__price-val">от 79,20 ₽</span>
+        <span class="hero__price-unit">/ шт при заказе от 1 короба</span>
+        <span class="hero__price-note">НДС включён</span>
+      </div>
+      <div class="hero__cta">
+        <a href="#final-cta" class="btn btn--primary">Запросить прайс с объёмами</a>
+        <a href="#tech" class="btn btn--ghost">Технические характеристики</a>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══════ SPECS (2.0) ══════ -->
+<section class="sec sec--lt"><div class="ctr">
+  <div class="specs__head">
+    <div>
+      <span class="label">Спецификации</span>
+      <h2>Все параметры — сразу, без «уточните по запросу»</h2>
+    </div>
+  </div>
+  <div class="specs__grid">
+    <table class="tbl">
+      <tr><th>Объём</th><td>600 мл</td></tr>
+      <tr><th>Наполнитель</th><td>Водно-солевой раствор (Cool)</td></tr>
+      <tr><th>Рабочая температура</th><td>+2…+8°C</td></tr>
+      <tr><th>Время поддержания температуры*</th><td>до 12 часов (в изолированном объёме)</td></tr>
+      <tr><th>Время заморозки до готовности</th><td>12 часов при −18°C</td></tr>
+      <tr><th>Циклы использования</th><td>не ограничено (многоразовый)</td></tr>
+      <tr><th>Материал корпуса</th><td>Полиэтилен высокой плотности (HDPE)</td></tr>
+      <tr><th>Габариты (Ш×В×Г)</th><td>200 × 160 × 25 мм</td></tr>
+      <tr><th>Вес единицы</th><td>~610 г (в замороженном виде)</td></tr>
+      <tr><th>Вложение в короб</th><td>25 шт</td></tr>
+      <tr><th>Совместимость</th><td>Термошопперы Termy 20–40 л, LinerBox® 24–40 л</td></tr>
+      <tr><th>Пищевая безопасность</th><td>соответствует ТР ТС 005/2011</td></tr>
+    </table>
+    <aside class="order-card">
+      <div>
+        <span class="label">Заказ и доставка</span>
+        <h3 style="margin-top:.375rem">Условия для B2B</h3>
+      </div>
+      <div>
+        <div class="order-row"><span>МОЗ</span><span>от 1 короба (25 шт)</span></div>
+        <div class="order-row"><span>Срок производства</span><span>от 2 рабочих дней</span></div>
+        <div class="order-row"><span>Доставка по Москве</span><span>24 ч после оплаты</span></div>
+        <div class="order-row"><span>Доставка по РФ</span><span>1–5 дней (ТК на выбор)</span></div>
+        <div class="order-row"><span>Оплата</span><span>безнал, счёт-фактура</span></div>
+      </div>
+      <a href="#final-cta" class="btn btn--primary" style="justify-content:center">Запросить прайс</a>
+      <p style="font-size:.8125rem;color:var(--t3);margin-top:-.25rem">*При заказе от 10 коробов — оптовая скидка</p>
+    </aside>
+  </div>
+  <p class="muted" style="margin-top:1.25rem;font-size:.8125rem">* Время поддержания зависит от внешней температуры, типа термотары и количества хладоэлементов. Точные данные под вашу задачу — по запросу.</p>
+</div></section>
+
+<!-- ══════ BENEFITS (3.0) ══════ -->
+<section class="sec sec--dk"><div class="ctr">
+  <span class="label">Почему Termy</span>
+  <h2 style="margin-bottom:2.5rem;max-width:720px">Четыре причины взять SHOCK® 600 вместо ближайшего аналога</h2>
+  <div class="grid4">
+    <div class="benefit">
+      <div class="benefit__ic">🎯</div>
+      <h3>Точный холодовой коридор</h3>
+      <p>Водно-солевой состав держит +2…+8°C стабильно, без «переохлаждения» продукта. Критично для фармы и кондитерки.</p>
+    </div>
+    <div class="benefit">
+      <div class="benefit__ic">♻️</div>
+      <h3>Многоразовый — окупается за 3 цикла</h3>
+      <p>В отличие от сухого льда, возвращается на склад и замораживается снова. Нет расходов на утилизацию.</p>
+    </div>
+    <div class="benefit">
+      <div class="benefit__ic">🛡️</div>
+      <h3>Безопасный состав</h3>
+      <p>Корпус HDPE, наполнитель — пищевой водно-солевой раствор. Соответствует ТР ТС 005/2011 «О безопасности упаковки».</p>
+    </div>
+    <div class="benefit">
+      <div class="benefit__ic">🧩</div>
+      <h3>Работает в экосистеме Termy</h3>
+      <p>Рассчитан под наши термошопперы 20–40 л и LinerBox®. Не нужно подбирать «под чужой короб» методом тыка.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══════ TECHNICAL (4.0) ══════ -->
+<section class="sec sec--lt" id="tech"><div class="ctr">
+  <span class="label">Технически</span>
+  <h2>Как устроен и почему работает</h2>
+  <div class="tech__grid">
+    <div class="tech-text">
+      <h3>Принцип работы</h3>
+      <p>Наполнитель — водно-солевой раствор с точкой фазового перехода в диапазоне 0…+2°C. При замораживании до −18°C раствор аккумулирует холод; в процессе оттаивания отдаёт его окружению, удерживая целевой коридор +2…+8°C пока не перейдёт полностью в жидкую фазу.</p>
+      <p>Корпус — полиэтилен высокой плотности (HDPE) с вакуумной запайкой. Не протекает, не деформируется при циклических заморозках, выдерживает механические нагрузки при перевозке.</p>
+      <h3 style="margin-top:1.5rem">Рекомендация по использованию</h3>
+      <p>Для короба 24–40 л с охлаждением +2…+8°C: 2–3 элемента SHOCK® 600 Cool на 8–12 ч доставки. Точный расчёт — под вашу термотару и логистическое плечо.</p>
+    </div>
+    <div class="cross">
+      <div class="cross__layer"><span class="cross__dot" style="background:#6491B4"></span><span class="cross__t">HDPE-корпус <small>плотный полиэтилен, 1,2 мм</small></span></div>
+      <div class="cross__layer"><span class="cross__dot" style="background:#AAD2F5"></span><span class="cross__t">Водно-солевой раствор <small>600 мл · точка перехода 0…+2°C</small></span></div>
+      <div class="cross__layer"><span class="cross__dot" style="background:#87B4D2"></span><span class="cross__t">Термоактивная фаза <small>удерживает +2…+8°C при оттаивании</small></span></div>
+      <div class="cross__layer"><span class="cross__dot" style="background:#6491B4"></span><span class="cross__t">Обратная стенка HDPE <small>вакуумная запайка по периметру</small></span></div>
+      <p style="font-size:.75rem;color:var(--t3);margin-top:.5rem;padding:0 1rem">Схема-разрез. Детальный технический чертёж — по запросу под NDA.</p>
+    </div>
+  </div>
+
+  <div class="comp-tbl" style="margin-top:3rem">
+    <h3 style="margin-bottom:1rem">SHOCK® Cool vs альтернативы</h3>
+    <table class="tbl">
+      <tr>
+        <th>Параметр</th>
+        <th class="hl">SHOCK® 600 Cool</th>
+        <th>Сухой лёд</th>
+        <th>Обычный гель-пак</th>
+      </tr>
+      <tr>
+        <td>Рабочая температура</td>
+        <td class="hl">+2…+8°C</td>
+        <td>−78°C (переохлаждает)</td>
+        <td>плавающая</td>
+      </tr>
+      <tr>
+        <td>Многоразовость</td>
+        <td class="hl"><span class="ok">да, без ограничений</span></td>
+        <td><span class="no">нет</span></td>
+        <td><span class="ok">да</span></td>
+      </tr>
+      <tr>
+        <td>Безопасность для продукта</td>
+        <td class="hl"><span class="ok">пищевой контакт</span></td>
+        <td><span class="no">ожог сухим льдом</span></td>
+        <td>зависит от состава</td>
+      </tr>
+      <tr>
+        <td>Стоимость цикла</td>
+        <td class="hl">~26 ₽ (амортизация)</td>
+        <td>≈150 ₽ за поставку</td>
+        <td>~35 ₽</td>
+      </tr>
+      <tr>
+        <td>Утилизация</td>
+        <td class="hl"><span class="ok">не требуется</span></td>
+        <td><span class="no">специальная</span></td>
+        <td>бытовая</td>
+      </tr>
+    </table>
+  </div>
+</div></section>
+
+<!-- ══════ USE CASES (5.0) ══════ -->
+<section class="sec sec--dk"><div class="ctr">
+  <span class="label">Где применяется</span>
+  <h2 style="margin-bottom:2.5rem;max-width:720px">Сценарии, в которых SHOCK® 600 Cool закрывает задачу «из коробки»</h2>
+  <div class="grid4">
+    <div class="usecase">
+      <div class="usecase__ic">🍱</div>
+      <h3>Last-mile доставка еды</h3>
+      <p>Для ready-to-eat и готовых блюд с охлаждённым хранением: 2 элемента на термошоппер 40 л держат 4–6 ч.</p>
+    </div>
+    <div class="usecase">
+      <div class="usecase__ic">💊</div>
+      <h3>Фарма-логистика</h3>
+      <p>Перевозка препаратов с требованием +2…+8°C. Подтверждённый диапазон, пищевая безопасность корпуса.</p>
+    </div>
+    <div class="usecase">
+      <div class="usecase__ic">🧑‍🍳</div>
+      <h3>HoReCa и кондитерки</h3>
+      <p>Кейтеринг, доставка тортов, молочки. Стабильная температура без риска заморозки продукта.</p>
+    </div>
+    <div class="usecase">
+      <div class="usecase__ic">🥗</div>
+      <h3>Meal-kit · фермерские подписки</h3>
+      <p>Еженедельные боксы со свежими продуктами. Возврат хладоэлемента в следующей поставке.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══════ TRUST (6.0) ══════ -->
+<section class="sec sec--lt"><div class="ctr">
+  <span class="label">Доверие</span>
+  <h2 style="margin-bottom:2.5rem">Производство, контроль и сертификация</h2>
+  <div class="trust-grid">
+    <div class="trust">
+      <div class="trust__ic">🏭</div>
+      <h3>Собственное производство</h3>
+      <ul>
+        <li>Люберцы, Московская область</li>
+        <li>~2 000 м² производственной площади</li>
+        <li>Мощность до 10 млн единиц/год</li>
+        <li>Производим, не перепродаём</li>
+      </ul>
+    </div>
+    <div class="trust">
+      <div class="trust__ic">🔬</div>
+      <h3>Контроль качества</h3>
+      <ul>
+        <li>ISO 9001 — получен</li>
+        <li>ТУ 22.22.11-001-47645032-2022</li>
+        <li>Декларация ТР ТС 005/2011</li>
+        <li>Лабораторные протоколы испытаний</li>
+      </ul>
+    </div>
+    <div class="trust">
+      <div class="trust__ic">♻️</div>
+      <h3>Многоразовость и экология</h3>
+      <ul>
+        <li>Не ограниченное число циклов</li>
+        <li>Корпус HDPE подлежит переработке</li>
+        <li>Не требует спецутилизации</li>
+        <li>Снижает долю одноразовой упаковки</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══════ FAQ (7.0) ══════ -->
+<section class="sec sec--lt" style="padding-top:0"><div class="ctr" style="max-width:820px">
+  <span class="label">Частые вопросы</span>
+  <h2 style="margin-bottom:2rem">Короткие ответы на то, что спрашивают чаще всего</h2>
+  <div class="faq">
+    <div class="faq__item">
+      <button class="faq__q" aria-expanded="false">
+        <span>Сколько хладоэлементов нужно на короб 24–40 л?</span>
+        <span class="faq__ic"></span>
+      </button>
+      <div class="faq__a"><div class="faq__ai">Для охлаждения +2…+8°C на 8–12 ч — 2–3 элемента SHOCK® 600 Cool. Точное количество рассчитывается под конкретную термотару, внешнюю температуру и длительность плеча. Пришлите параметры задачи — мы соберём раскладку бесплатно.</div></div>
+    </div>
+    <div class="faq__item">
+      <button class="faq__q" aria-expanded="false">
+        <span>Сколько времени замораживать до готовности?</span>
+        <span class="faq__ic"></span>
+      </button>
+      <div class="faq__a"><div class="faq__ai">12 часов в бытовой морозильной камере при −18°C. В промышленной камере быстрой заморозки при −25…−30°C — 6–8 часов. Элемент должен быть полностью твёрдым на ощупь перед использованием.</div></div>
+    </div>
+    <div class="faq__item">
+      <button class="faq__q" aria-expanded="false">
+        <span>Состав геля безопасен для контакта с продуктами?</span>
+        <span class="faq__ic"></span>
+      </button>
+      <div class="faq__a"><div class="faq__ai">Да. Наполнитель — водно-солевой раствор; корпус HDPE толщиной 1,2 мм. Соответствует требованиям ТР ТС 005/2011 «О безопасности упаковки». Сертификат и лабораторный протокол — высылаем под NDA или в составе тендерного комплекта.</div></div>
+    </div>
+    <div class="faq__item">
+      <button class="faq__q" aria-expanded="false">
+        <span>Сколько циклов заморозки выдерживает элемент?</span>
+        <span class="faq__ic"></span>
+      </button>
+      <div class="faq__a"><div class="faq__ai">Не ограничено эксплуатационным ресурсом наполнителя. Корпус HDPE при нормальной эксплуатации выдерживает 500+ циклов без потери характеристик. Критерий замены — механическое повреждение (трещина, вздутие) или потеря герметичности.</div></div>
+    </div>
+    <div class="faq__item">
+      <button class="faq__q" aria-expanded="false">
+        <span>Чем гель лучше сухого льда или обычной бутылки с водой?</span>
+        <span class="faq__ic"></span>
+      </button>
+      <div class="faq__a"><div class="faq__ai">Сухой лёд даёт −78°C — переохлаждает продукт, требует спецутилизации, несёт риск ожога оператору. Бутылка с водой держит 0°C (лёд), но теряет форму и течёт при оттаивании. SHOCK® Cool стабильно работает в коридоре +2…+8°C, не течёт, не требует утилизации и окупается за 3–5 циклов.</div></div>
+    </div>
+    <div class="faq__item">
+      <button class="faq__q" aria-expanded="false">
+        <span>Есть ли минимальная партия и можно ли получить образцы?</span>
+        <span class="faq__ic"></span>
+      </button>
+      <div class="faq__a"><div class="faq__ai">МОЗ — от 1 короба (25 шт). Для тестовой отгрузки на пробу можем отправить 3–5 штук бесплатно, если планируется закупка от 5 коробов. Напишите менеджеру — соберём тестовую партию под вашу задачу.</div></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══════ FINAL CTA (8.0) ══════ -->
+<section class="sec sec--dk" id="final-cta"><div class="ctr">
+  <div class="fcta">
+    <span class="label">Следующий шаг</span>
+    <h2 style="margin-top:.5rem">Получите индивидуальный прайс и расчёт под вашу задачу</h2>
+    <p>Пришлите параметры: объём термотары, длительность логистического плеча, требуемый температурный коридор. Соберём раскладку хладоэлементов и пришлём прайс в течение рабочего дня.</p>
+    <div class="fcta__btns">
+      <a href="mailto:info@termybrand.com?subject=SHOCK%20600%20Cool%20—%20прайс" class="btn btn--primary">Запросить прайс с объёмами</a>
+      <a href="#" class="btn btn--ghost">Заказать тестовую партию</a>
+      <a href="#" class="btn btn--ghost">PDF-спецификация</a>
+    </div>
+    <div class="fcta__contact">
+      <span>📞 <a href="tel:+78001011525">+7 (800) 101-15-25</a></span>
+      <span>✉️ <a href="mailto:info@termybrand.com">info@termybrand.com</a></span>
+      <span>💬 <a href="https://wa.me/78001011525">WhatsApp менеджеру</a></span>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="ctr">
+  © 2026 ООО «ТЕРМИ» · Производство термоупаковки · termybrand.com
+</div></footer>
+
+<script>
+document.querySelectorAll('.faq__q').forEach(function(q){
+  q.addEventListener('click', function(){
+    var item = q.parentElement;
+    var ans = item.querySelector('.faq__a');
+    var open = item.classList.toggle('on');
+    q.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if(open){ ans.style.maxHeight = ans.scrollHeight + 'px'; }
+    else{ ans.style.maxHeight = '0'; }
+  });
+});
+</script>
+
+</body>
+</html>
