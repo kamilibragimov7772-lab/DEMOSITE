@@ -8,9 +8,9 @@ phase: 5
 mode: setup
 ---
 
-# Termy site
 
-B2B-каталог-лидогенератор. Astro 5 multi-page (static), TypeScript strict, Tailwind v4 (CSS-first), Style Dictionary для дизайн-токенов.
+
+. Astro 5 multi-page (static), TypeScript strict, Tailwind v4 (CSS-first), Style Dictionary для дизайн-токенов.
 
 ## Стек
 
