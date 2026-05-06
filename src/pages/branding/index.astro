@@ -1,0 +1,405 @@
+---
+/**
+ * /branding/ — хаб брендирования.
+ *
+ * Реализация по outline `02_content/page_outlines/24-branding-hub.md` (SKELETON, без spec.md в phase 4).
+ * STRATEGY: outline + reuse organisms (BrandingDuo, MethodsGrid, FaqAccordion, FormBlock, PreFooterCta).
+ * Открытый scope-gap (spec.md 24-branding-hub.md отсутствует) логируется в OUTPUT escalations[type=data_gap].
+ *
+ * Schema.org: CollectionPage + BreadcrumbList + FAQPage.
+ *
+ * Композиция:
+ *   1. Hero (eyebrow + h1 + lead + 2 CTA)
+ *   2. BrandingDuo (3 cards: Термопакеты / SHOCK / Термошопперы)
+ *   3. MethodsGrid (4 метода: Шелкография / Флексопечать / Тампопечать / УФ)
+ *   4. Process (5 шагов как inline-list)
+ *   5. FaqAccordion (5 Q&A)
+ *   6. FormBlock (variant=lead)
+ *   7. PreFooterCta
+ *   8. StickyWA
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import Button from '@components/atoms/Button.astro';
+import BrandingDuo from '@components/organisms/BrandingDuo.astro';
+import MethodsGrid from '@components/organisms/MethodsGrid.astro';
+import FaqAccordion from '@components/organisms/FaqAccordion.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { collectionPage, breadcrumbList, faqPage } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const breadcrumbs = [
+  { name: 'Главная',       url: siteUrl },
+  { name: 'Брендирование', url: `${siteUrl}branding/` },
+];
+
+const brandingCards = [
+  {
+    slug: 'termopakety' as const,
+    title: 'Термопакеты с вашим логотипом',
+    description: 'Шелкография от 100 шт, флексопечать от 10 000. Pantone, бесплатный макет, 2–4 недели.',
+    details: [
+      'Light / Standart / PRO — все три серии',
+      'Размеры от 30×40 до 60×55 см',
+      'До 4 цветов на шелкографии, фотопечать на флексо',
+    ],
+    ctaLabel: 'Открыть брендирование термопакетов →',
+  },
+  {
+    slug: 'akkumulyatory' as const,
+    title: 'Аккумуляторы SHOCK® с брендом',
+    description: 'Наклейка от 1 000 шт, выбивка от 3 000. 3 режима (Cool / Gel / Freeze), 4 объёма.',
+    details: [
+      'Полноцвет на наклейке',
+      'До 2 цветов на выбивке',
+      'Стойкость к 30+ циклам заморозки',
+    ],
+    ctaLabel: 'Открыть брендирование SHOCK® →',
+  },
+  {
+    slug: 'termoshoppery' as const,
+    title: 'Термошопперы с логотипом',
+    description: 'Шелкография от 100 шт, флексопечать от 5 000. 5 размеров (8 / 10 / 16 / 30 / 53 л).',
+    details: [
+      'Зоны нанесения: front, handles, по периметру',
+      'Pantone, до 4 цветов',
+      '2–4 недели от утверждения макета',
+    ],
+    ctaLabel: 'Открыть брендирование термошопперов →',
+  },
+];
+
+const methods = [
+  {
+    name: 'Шелкография',
+    moq: '100 шт',
+    colors: 'до 4 цветов Pantone',
+    terms: '2–4 недели',
+    description: 'Базовый метод для логотипов и плашек. Лучшая цена на малых тиражах.',
+  },
+  {
+    name: 'Флексопечать',
+    moq: '5 000–10 000 шт',
+    colors: 'фотопечать, полноцвет',
+    terms: '3–4 недели',
+    description: 'Для крупных партий и фотореалистичных макетов. Промышленный стандарт ритейла.',
+  },
+  {
+    name: 'Тампопечать',
+    moq: '500–3 000 шт',
+    colors: '1–2 цвета',
+    terms: '2–3 недели',
+    description: 'Для жёстких поверхностей: корпус SHOCK®, складки термошопперов.',
+  },
+  {
+    name: 'УФ-печать',
+    moq: '300 шт',
+    colors: 'полноцвет',
+    terms: '2–3 недели',
+    description: 'Для премиум-сегмента: высокое разрешение, стойкость к истиранию.',
+  },
+];
+
+const faqs = [
+  {
+    question: 'Что нужно для макета?',
+    answer:
+      'Векторный файл (AI / PDF / EPS) с цветовой моделью CMYK или Pantone. Шрифты — в кривых. Минимальное разрешение растровых элементов — 300 dpi на финальном размере. Шаблоны под все категории — на странице каждого продукта.',
+  },
+  {
+    question: 'Сколько стоит макет?',
+    answer:
+      'Бесплатно при заказе от минимального тиража (МОЗ). Если макет сложный (мульти-цвет, фотореалистика, спец-эффекты) — отдельно согласовываем. В большинстве кейсов стоимость макета входит в цену партии.',
+  },
+  {
+    question: 'Какие сроки производства брендированной партии?',
+    answer:
+      '2–4 недели от момента утверждения финального макета. На редкие методы (УФ-печать, выбивка SHOCK®) и крупные тиражи (50 000+ шт) сроки могут увеличиваться до 5–6 недель — это уточняем на этапе расчёта.',
+  },
+  {
+    question: 'Можно ли заказать пробную партию?',
+    answer:
+      'Минимальный тираж = МОЗ под выбранный метод (например, 100 шт для шелкографии). Меньше делать невыгодно — печатные формы и подготовка съедают всю экономию. Если нужны образцы — присылаем 5–10 шт после согласования макета.',
+  },
+  {
+    question: 'Гарантия цвета по Pantone?',
+    answer:
+      'Да, по согласованному Pantone-номеру. Допустимое отклонение — ΔE ≤ 2 (стандарт ISO 12647-2). Перед запуском партии присылаем proof-образец на согласование.',
+  },
+];
+
+const schema = [
+  collectionPage({
+    name: 'Брендирование упаковки',
+    description:
+      'Шелкография, флексопечать, тампопечать на термопакетах, SHOCK® и термошопперах. От 100 шт, бесплатный макет.',
+    numberOfItems: 3,
+  }),
+  breadcrumbList(breadcrumbs),
+  faqPage(faqs),
+];
+---
+
+<BaseLayout
+  title="Брендирование упаковки — TERMY"
+  description="Шелкография от 100 шт, флексопечать от 10 000. Бесплатный макет, Pantone, 2–4 недели. Запросите макет с вашим логотипом."
+  ogType="website"
+  ogImage="/assets/og/og-branding-hub.jpg"
+  schema={schema}
+>
+  <div class="container">
+    <Breadcrumbs items={breadcrumbs} />
+  </div>
+
+  {/* Hero */}
+  <section class="bh-hero" aria-labelledby="bh-h1">
+    <div class="container bh-hero__inner">
+      <p class="bh-hero__eyebrow">Брендирование</p>
+      <h1 id="bh-h1" class="bh-hero__h1">Брендирование упаковки с вашим логотипом — TERMY</h1>
+      <p class="bh-hero__lead">
+        Логотип на термопакете, SHOCK® или термошоппере. Шелкография — от 100 шт,
+        флексопечать — от 10 000. Pantone, бесплатный макет, 2–4 недели от утверждения.
+      </p>
+      <div class="bh-hero__cta">
+        <Button variant="primary" size="lg" href="#form-branding-hub">Запросить макет с вашим логотипом →</Button>
+        <Button variant="secondary" size="lg" href="/products/">Посмотреть каталог</Button>
+      </div>
+      <ul class="bh-hero__proof" role="list">
+        <li><strong class="num">100 шт</strong><span>МОЗ шелкография</span></li>
+        <li><strong class="num">2–4</strong><span>недели</span></li>
+        <li><strong class="num">Pantone</strong><span>точность</span></li>
+        <li><strong>бесплатно</strong><span>макет</span></li>
+      </ul>
+    </div>
+  </section>
+
+  {/* 3 направления — Service Cards */}
+  <BrandingDuo
+    eyebrow="3 направления"
+    heading="Что брендируем"
+    cards={brandingCards}
+  />
+
+  {/* Методы нанесения */}
+  <MethodsGrid
+    eyebrow="Методы"
+    heading="Технологии нанесения"
+    methods={methods}
+  />
+
+  {/* Процесс брендирования — 5 шагов */}
+  <section class="bh-proc" aria-labelledby="bh-proc-h">
+    <div class="container">
+      <p class="bh-proc__eyebrow">Процесс</p>
+      <h2 id="bh-proc-h" class="bh-proc__h">Брендирование за 5 шагов</h2>
+      <ol class="bh-proc__list">
+        <li>
+          <strong class="bh-proc__num">1</strong>
+          <h3 class="bh-proc__step-h">Заявка</h3>
+          <p class="bh-proc__step-p">
+            Опишите задачу: продукт, тираж, метод. Загрузите макет или пришлите бриф —
+            наш специалист сам соберёт.
+          </p>
+        </li>
+        <li>
+          <strong class="bh-proc__num">2</strong>
+          <h3 class="bh-proc__step-h">Бесплатный макет</h3>
+          <p class="bh-proc__step-p">
+            1–2 рабочих дня. Готовим макет с учётом safe-zone, Pantone, технологии.
+            Присылаем на согласование.
+          </p>
+        </li>
+        <li>
+          <strong class="bh-proc__num">3</strong>
+          <h3 class="bh-proc__step-h">Утверждение</h3>
+          <p class="bh-proc__step-p">
+            Корректировки до финальной версии. Согласовываете proof-образец цвета.
+          </p>
+        </li>
+        <li>
+          <strong class="bh-proc__num">4</strong>
+          <h3 class="bh-proc__step-h">Производство</h3>
+          <p class="bh-proc__step-p">
+            2–4 недели на брендированную партию. Контроль качества — три стадии,
+            как и для стандартной продукции.
+          </p>
+        </li>
+        <li>
+          <strong class="bh-proc__num">5</strong>
+          <h3 class="bh-proc__step-h">Отгрузка</h3>
+          <p class="bh-proc__step-p">
+            По Москве — 24 часа собственным транспортом «ТермиМобиль». По РФ — ТК,
+            экспорт — индивидуально.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  {/* FAQ */}
+  <FaqAccordion
+    eyebrow="FAQ"
+    heading="Частые вопросы по брендированию"
+    items={faqs}
+    id="faq-branding"
+  />
+
+  {/* Form */}
+  <FormBlock
+    id="branding-hub"
+    variant="lead"
+    eyebrow="Получить расчёт"
+    heading="Получить расчёт брендирования"
+    description="Опишите задачу — менеджер свяжется в течение 2 часов. Если нужен макет — приложите эталон или бриф, мы соберём бесплатно."
+    submitLabel="Получить расчёт →"
+  />
+
+  {/* Pre-footer CTA */}
+  <PreFooterCta
+    heading="Готовы запустить вашу партию с логотипом?"
+    lead="Менеджер ответит в течение 2 часов в рабочее время. Параллельный канал — WhatsApp."
+    primaryCta={{ label: 'Запросить макет →', href: '#form-branding-hub' }}
+    secondaryCta={{ label: 'Все кейсы брендирования →', href: '/cases/' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>
+
+<style>
+  .bh-hero {
+    padding-block: var(--spacing-7) var(--spacing-8);
+    background: var(--color-bg-page);
+  }
+  .bh-hero__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    max-width: 800px;
+  }
+  .bh-hero__eyebrow {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .bh-hero__h1 {
+    margin: 0;
+    font-size: var(--font-size-h1-fluid);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tighter);
+  }
+  .bh-hero__lead {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: var(--font-line-height-normal);
+  }
+  .bh-hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-3);
+    margin-block-start: var(--spacing-2);
+  }
+  .bh-hero__proof {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+    margin: var(--spacing-3) 0 0;
+    padding: var(--spacing-4);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+    list-style: none;
+  }
+  .bh-hero__proof li {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+  .bh-hero__proof strong {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    font-variant-numeric: tabular-nums;
+  }
+  .bh-hero__proof span {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--font-letter-spacing-wide);
+  }
+
+  /* Process */
+  .bh-proc {
+    padding-block: var(--spacing-8);
+    background: var(--color-bg-surface-warm);
+  }
+  .bh-proc__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .bh-proc__h {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-6);
+  }
+  .bh-proc__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+    counter-reset: step;
+  }
+  .bh-proc__list > li {
+    padding: var(--spacing-5);
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+  .bh-proc__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-pill);
+    background: var(--color-action-primary);
+    color: var(--color-text-on-brand);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-md);
+    line-height: 1;
+    margin-block-end: var(--spacing-1);
+  }
+  .bh-proc__step-h {
+    margin: 0;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+  }
+  .bh-proc__step-p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+
+  @media (min-width: 768px) {
+    .bh-hero__proof { grid-template-columns: repeat(4, 1fr); }
+    .bh-proc__list { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .bh-proc__list { grid-template-columns: repeat(5, 1fr); }
+  }
+</style>

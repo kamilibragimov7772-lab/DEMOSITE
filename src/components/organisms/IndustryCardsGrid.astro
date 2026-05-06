@@ -1,0 +1,382 @@
+---
+/**
+ * IndustryCardsGrid — organism.
+ * Composition: H2 + N industry-cards (5 + 1 bonus) + footer-CTA на /solutions/.
+ *
+ * Каждая карточка имеет тематическую SVG-иконку (по `slug`) с своей анимацией:
+ *   - dostavka: bike — колёса вращаются непрерывно
+ *   - retail: shop — лёгкое масштабирование
+ *   - distributory: layers — стопка покачивается (rotate)
+ *   - proizvoditeli: chef-hat — qualbobble
+ *   - farma: pill — пульсация opacity
+ *   - branding (bonus): sparkles — мерцание opacity (twinkle)
+ *
+ * Reveal через IntersectionObserver — карточки появляются stagger 80ms.
+ *
+ * Источник:
+ * - 04_visuals/01-homepage.spec.md §«Block 5: Решения для 5 отраслей»
+ * - 02_content/page_outlines/01-homepage.md §«H2: Решения для 5 отраслей»
+ */
+
+import CardBase from '@components/molecules/CardBase.astro';
+import Chip from '@components/molecules/Chip.astro';
+import Button from '@components/atoms/Button.astro';
+
+export interface IndustryCard {
+  /** Slug — для href '/solutions/<slug>/'. */
+  slug: string;
+  segment: string;
+  title: string;
+  /** Pain → solution kraткое описание. */
+  description: string;
+  /** Текст CTA-карточки (per tone-canon: «Открыть решения для [отрасль] →»). */
+  ctaLabel: string;
+  /** Опц. рекомендованный продукт (мини-чип внутри). */
+  recommended?: string;
+  /** Эмоджи / Lucide icon-name (через slot или string). */
+  icon?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  cards: ReadonlyArray<IndustryCard>;
+  hubCta?: { label: string; href: string };
+  /** Шестая «бонус» карточка — Брендирование (опц.). */
+  bonus?: IndustryCard & { variant: 'feature' };
+}
+
+const { heading, eyebrow, cards, hubCta, bonus } = Astro.props;
+
+/**
+ * Иконки по slug. Lucide-style 24×24, stroke=1.6.
+ * Анимируемые элементы помечены классом jind-* — стили в is:global ниже.
+ */
+const ICONS: Record<string, string> = {
+  // B1 — велокурьер
+  dostavka: `
+    <circle class="jind-wheel jind-wheel-l" cx="5.5" cy="17.5" r="3.5"/>
+    <circle class="jind-wheel jind-wheel-r" cx="18.5" cy="17.5" r="3.5"/>
+    <circle cx="15" cy="5" r="1"/>
+    <path d="M12 17.5V14l-3-3 4-3 2 3h2"/>
+  `,
+  // B2 — магазин (storefront)
+  retail: `
+    <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/>
+    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+    <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/>
+    <path d="M2 7h20"/>
+    <path class="jind-roof-line" d="M22 7v3a2 2 0 0 1-2 2 2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/>
+  `,
+  // B3 — паллетные слои (Layers, 3 параллельных слоя)
+  distributory: `
+    <path class="jind-layer jind-layer-1" d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/>
+    <path class="jind-layer jind-layer-2" d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/>
+    <path class="jind-layer jind-layer-3" d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>
+  `,
+  // B4 — chef hat
+  proizvoditeli: `
+    <path class="jind-chef" d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
+    <line x1="6" x2="18" y1="17" y2="17"/>
+  `,
+  // B5 — pill
+  farma: `
+    <path class="jind-pill" d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
+    <path d="m8.5 8.5 7 7"/>
+  `,
+  // Bonus — sparkles (брендирование)
+  branding: `
+    <path class="jind-spark jind-spark-1" d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+    <path class="jind-spark jind-spark-2" d="M5 3v4"/>
+    <path class="jind-spark jind-spark-3" d="M19 17v4"/>
+    <path class="jind-spark jind-spark-4" d="M3 5h4"/>
+    <path class="jind-spark jind-spark-5" d="M17 19h4"/>
+  `,
+};
+
+const getIcon = (slug: string): string => ICONS[slug] ?? ICONS.dostavka ?? '';
+---
+
+<section class="ind" aria-labelledby="ind-h2">
+  <div class="container">
+    {eyebrow && <p class="ind__eyebrow">{eyebrow}</p>}
+    <h2 id="ind-h2" class="ind__h2">{heading}</h2>
+
+    <ul class="ind__grid" data-ind-grid role="list">
+      {cards.map((card, idx) => (
+        <li class="ind__cell" style={`--idx: ${idx}`}>
+          <CardBase href={`/solutions/${card.slug}/`}>
+            <div slot="eyebrow" class="ind__head">
+              <span class="ind__icon" aria-hidden="true" data-ind-icon={card.slug}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" set:html={getIcon(card.slug)} />
+              </span>
+              <Chip variant="default" size="sm">{card.segment}</Chip>
+            </div>
+            <h3 slot="title" class="ind__title">{card.title}</h3>
+            <p class="ind__desc">{card.description}</p>
+            {card.recommended && (
+              <p class="ind__rec" slot="meta">
+                Рекомендованный комплект: <strong>{card.recommended}</strong>
+              </p>
+            )}
+            <span slot="cta" class="ind__cta-label">{card.ctaLabel}</span>
+          </CardBase>
+        </li>
+      ))}
+
+      {bonus && (
+        <li class="ind__cell" style={`--idx: ${cards.length}`}>
+          <CardBase href={`/branding/`} variant="feature">
+            <div slot="eyebrow" class="ind__head">
+              <span class="ind__icon ind__icon--accent" aria-hidden="true" data-ind-icon="branding">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" set:html={getIcon('branding')} />
+              </span>
+              <Chip variant="active" size="sm">{bonus.segment}</Chip>
+            </div>
+            <h3 slot="title" class="ind__title">{bonus.title}</h3>
+            <p class="ind__desc">{bonus.description}</p>
+            <span slot="cta" class="ind__cta-label">{bonus.ctaLabel}</span>
+          </CardBase>
+        </li>
+      )}
+    </ul>
+
+    {hubCta && (
+      <div class="ind__hub-cta">
+        <Button variant="ghost" size="base" href={hubCta.href}>{hubCta.label}</Button>
+      </div>
+    )}
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const grid = document.querySelector('[data-ind-grid]');
+    if (!grid) return;
+
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cells = Array.from(grid.querySelectorAll('.ind__cell'));
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      cells.forEach((c) => c.classList.add('is-revealed'));
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !entry.target.classList.contains('is-revealed')) {
+            entry.target.classList.add('is-revealed');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.25, rootMargin: '0px 0px -5% 0px' }
+    );
+
+    cells.forEach((c) => io.observe(c));
+  })();
+</script>
+
+<style>
+  .ind {
+    padding-block: var(--spacing-8);
+    background: var(--color-bg-page);
+  }
+  .ind__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .ind__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-6);
+  }
+  .ind__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Reveal: stagger fade-up через .is-revealed (через IntersectionObserver). */
+  .ind__cell {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--idx, 0) * 80ms);
+  }
+  .ind__cell.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .ind__head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3, 12px);
+    margin-block-end: var(--spacing-2, 8px);
+  }
+  .ind__icon {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md, 12px);
+    background: color-mix(in srgb, var(--color-action-primary, #6428A0) 10%, var(--color-bg-page, #fff));
+    color: var(--color-action-primary, #6428A0);
+    flex-shrink: 0;
+    transition:
+      transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+      background 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .ind__icon svg {
+    width: 26px;
+    height: 26px;
+    display: block;
+  }
+  .ind__icon--accent {
+    background: color-mix(in srgb, var(--color-action-primary, #6428A0) 18%, var(--color-bg-page, #fff));
+  }
+  .card--linked:hover .ind__icon,
+  .card--linked:focus-within .ind__icon {
+    transform: scale(1.08) rotate(-3deg);
+    background: var(--color-action-primary, #6428A0);
+    color: var(--color-text-on-brand, #fff);
+  }
+
+  .ind__title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+  }
+  .ind__desc {
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+  .ind__rec {
+    margin-block-start: var(--spacing-2);
+    padding-block-start: var(--spacing-3);
+    border-block-start: 1px dashed var(--color-border-subtle);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+  .ind__cta-label {
+    margin-block-start: var(--spacing-3);
+    color: var(--color-action-primary);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+  }
+  .ind__hub-cta {
+    margin-block-start: var(--spacing-6);
+    text-align: center;
+  }
+  @media (min-width: 768px)  { .ind__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .ind__grid { grid-template-columns: repeat(3, 1fr); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ind__cell {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .ind__icon { transition: none !important; }
+  }
+</style>
+
+<style is:global>
+  /* Тематические анимации иконок отраслей.
+     is:global, потому что SVG-элементы инжектируются через set:html и не получают Astro scope-attr. */
+
+  .ind__icon svg [class^='jind-'] {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  /* B1 dostavka — bike: колёса крутятся непрерывно (1.4s linear) */
+  [data-ind-icon="dostavka"] .jind-wheel {
+    animation: jind-wheel-spin 1.4s linear infinite;
+  }
+  @keyframes jind-wheel-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* B2 retail — крыша магазина мягко пульсирует */
+  [data-ind-icon="retail"] .jind-roof-line {
+    animation: jind-retail-pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes jind-retail-pulse {
+    0%, 100% { opacity: 1;    }
+    50%      { opacity: 0.5;  }
+  }
+
+  /* B3 distributory — слои паллеты дышат: каждый со своей фазой scale */
+  [data-ind-icon="distributory"] .jind-layer {
+    animation: jind-layer-breath 2.4s ease-in-out infinite;
+  }
+  [data-ind-icon="distributory"] .jind-layer-1 { animation-delay: 0s;   }
+  [data-ind-icon="distributory"] .jind-layer-2 { animation-delay: 0.3s; }
+  [data-ind-icon="distributory"] .jind-layer-3 { animation-delay: 0.6s; }
+  @keyframes jind-layer-breath {
+    0%, 100% { transform: scale(1);    }
+    50%      { transform: scale(1.04); }
+  }
+
+  /* B4 proizvoditeli — chef hat качается из стороны в сторону (как у пекаря у печи) */
+  [data-ind-icon="proizvoditeli"] .jind-chef {
+    animation: jind-chef-bobble 2.8s ease-in-out infinite;
+    transform-origin: center bottom;
+  }
+  @keyframes jind-chef-bobble {
+    0%, 100% { transform: rotate(0deg);  }
+    25%      { transform: rotate(-3deg); }
+    75%      { transform: rotate(3deg);  }
+  }
+
+  /* B5 farma — pill пульсирует opacity (как индикатор «приёма») */
+  [data-ind-icon="farma"] .jind-pill {
+    animation: jind-pill-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes jind-pill-pulse {
+    0%, 100% { opacity: 1;    }
+    50%      { opacity: 0.45; }
+  }
+
+  /* Bonus — sparkles мерцают (опасити twinkle) */
+  [data-ind-icon="branding"] .jind-spark {
+    animation: jind-spark-twinkle 2.4s ease-in-out infinite;
+  }
+  [data-ind-icon="branding"] .jind-spark-1 { animation-delay: 0s;    }
+  [data-ind-icon="branding"] .jind-spark-2 { animation-delay: 0.4s;  }
+  [data-ind-icon="branding"] .jind-spark-3 { animation-delay: 0.8s;  }
+  [data-ind-icon="branding"] .jind-spark-4 { animation-delay: 1.2s;  }
+  [data-ind-icon="branding"] .jind-spark-5 { animation-delay: 1.6s;  }
+  @keyframes jind-spark-twinkle {
+    0%, 100% { opacity: 0.4; transform: scale(0.92); }
+    50%      { opacity: 1;   transform: scale(1.06); }
+  }
+
+  /* На hover — все анимации иконок ускоряются для отклика */
+  .card--linked:hover [data-ind-icon] [class^='jind-'],
+  .card--linked:focus-within [data-ind-icon] [class^='jind-'] {
+    animation-duration: 1s !important;
+  }
+
+  /* Reduced motion — все тематические анимации иконок выключены */
+  @media (prefers-reduced-motion: reduce) {
+    [data-ind-icon] [class^='jind-'] {
+      animation: none !important;
+      transform: none !important;
+      opacity: 1 !important;
+    }
+  }
+</style>

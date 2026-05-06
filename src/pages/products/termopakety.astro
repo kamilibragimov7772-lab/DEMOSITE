@@ -1,0 +1,65 @@
+---
+/**
+ * /products/termopakety/ — Тонкий wrapper над единым каталогом.
+ * Задача: сохранить старый URL живым; UI тот же, что на /products/, но фильтр предустановлен.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import CatalogPage from '@components/organisms/CatalogPage.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { collectionPage, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const schema = [
+  collectionPage({
+    name: 'Термопакеты TERMY — каталог',
+    description: 'Многоразовые трёхслойные термопакеты Light / Standart / PRO в каталоге TERMY.',
+    numberOfItems: 18,
+  }),
+  breadcrumbList([
+    { name: 'Главная', url: siteUrl },
+    { name: 'Каталог', url: `${siteUrl}products/` },
+    { name: 'Термопакеты', url: `${siteUrl}products/termopakety/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Термопакеты Light, Standart, PRO — каталог"
+  description="Каталог термопакетов TERMY: Light / Standart / PRO, с дном, на клапане, Zip-Lock. Размеры 32×35 — 60×55 см. От 1 коробки."
+  ogType="website"
+  ogImage={`${siteUrl}assets/og/og-products.jpg`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'Каталог', href: '/products/' },
+      { name: 'Термопакеты' },
+    ]}
+  />
+
+  <CatalogPage initialCategory="termopakety" />
+
+  <FormBlock
+    id="cta"
+    variant="lead"
+    eyebrow="Получить КП"
+    heading="Получить КП по термопакетам"
+    description="Менеджер свяжется в течение 2 часов, согласует MOQ и пришлёт прайс по выбранным позициям."
+    submitLabel="Получить КП →"
+  />
+
+  <PreFooterCta
+    heading="Готовы посчитать?"
+    lead="Напишите в WhatsApp — менеджер ответит сразу."
+    primaryCta={{ label: 'Написать в WhatsApp', href: 'https://wa.me/78001011525' }}
+    secondaryCta={{ label: 'Позвонить +7 (800) 101-15-25', href: 'tel:+78001011525' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>

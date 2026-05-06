@@ -1,0 +1,87 @@
+---
+/**
+ * PreFooterCta — organism.
+ * Composition: H2 + lead + CTA-row на surface-information-gradient (тёмный indigo фон).
+ *
+ * Источник:
+ * - components_atomic.md §Organisms (Pre-footer CTA)
+ * - tone_of_voice.md §Footer CTA — повтор Primary внизу страницы
+ * - brandbook v1 .prefooter
+ */
+
+import Button from '@components/atoms/Button.astro';
+
+export interface Props {
+  heading: string;
+  lead?: string;
+  primaryCta: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+}
+
+const { heading, lead, primaryCta, secondaryCta } = Astro.props;
+---
+
+<section class="prefooter" aria-labelledby="prefooter-h">
+  <div class="container">
+    <div class="prefooter__inner">
+      <h2 id="prefooter-h" class="prefooter__h">{heading}</h2>
+      {lead && <p class="prefooter__lead">{lead}</p>}
+      <div class="prefooter__cta">
+        <Button variant="inverse" size="lg" href={primaryCta.href}>{primaryCta.label}</Button>
+        {secondaryCta && (
+          <Button variant="ghost" size="lg" href={secondaryCta.href} class="prefooter__btn-ghost-on-dark">{secondaryCta.label}</Button>
+        )}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .prefooter {
+    padding-block: var(--spacing-8);
+  }
+  .prefooter__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+    padding: var(--spacing-7);
+    background: linear-gradient(135deg, var(--color-utility-information-start), var(--color-utility-information-end));
+    color: var(--color-text-on-dark);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    align-items: center;
+  }
+  .prefooter__h {
+    color: var(--color-text-on-dark);
+    max-width: 28ch;
+  }
+  .prefooter__lead {
+    color: var(--color-text-on-dark);
+    opacity: 0.85;
+    max-width: 56ch;
+    line-height: var(--font-line-height-normal);
+  }
+  .prefooter__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-3);
+    justify-content: center;
+  }
+  /* Ghost-on-dark — overrides text colour для tertiary action. */
+  .prefooter__cta :global(.prefooter__btn-ghost-on-dark) {
+    color: var(--color-text-on-dark);
+    border: 1px solid var(--color-overlay-on-dark-mid);
+  }
+  .prefooter__cta :global(.prefooter__btn-ghost-on-dark:hover) {
+    background: var(--color-overlay-on-dark-low);
+    color: var(--color-text-on-dark);
+  }
+
+  @media (max-width: 767px) {
+    .prefooter__inner { padding: var(--spacing-5); }
+    .prefooter__cta :global(.btn) { width: 100%; }
+  }
+  @media (min-width: 768px) {
+    .prefooter__inner { padding: var(--spacing-8) var(--spacing-7); }
+  }
+</style>

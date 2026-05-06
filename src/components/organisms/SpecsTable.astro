@@ -1,0 +1,176 @@
+---
+/**
+ * SpecsTable — organism.
+ * Flat key-value таблица технических характеристик SKU (≈20 строк).
+ * В отличие от ComparisonTable (multi-column сравнение серий) — это plain «параметр / значение».
+ *
+ * Семантика: <table> с <th scope="row"> на label-колонке.
+ * Empty / gated rows подчёркиваются disclaimer'ом.
+ *
+ * Источник:
+ *   - 04_visuals/15-pdp-template.spec.md §«Tab: ТТХ» / «Hero / Specs-table»
+ *   - 02_content/page_outlines/15-product-card-template.md §«Блок 6. Specs flat table»
+ */
+
+export interface SpecRow {
+  label: string;
+  /** Значение (может быть «—» для пустого; «по запросу» для gated). */
+  value: string;
+  /** Опц. footnote (e.g. «по протоколу №012/A-27/02/25»). */
+  note?: string;
+  /** gated → подкрашивает строку (для GATED ТТХ требующих email-gate). */
+  gated?: boolean;
+}
+
+export interface Props {
+  heading?: string;
+  eyebrow?: string;
+  rows: ReadonlyArray<SpecRow>;
+  /** id для anchor-link. */
+  id?: string;
+  /** Вариант: full (heading + section) / inline (без section, для встраивания в Hero). */
+  variant?: 'full' | 'inline';
+  /** Caption под таблицей (e.g. «Все значения — расчётные на основе протокола…»). */
+  caption?: string;
+}
+
+const {
+  heading,
+  eyebrow,
+  rows,
+  id = 'specs',
+  variant = 'full',
+  caption,
+} = Astro.props;
+
+const headingId = `${id}-h`;
+---
+
+{variant === 'full' ? (
+  <section class="specs" id={id} aria-labelledby={headingId}>
+    <div class="container">
+      {eyebrow && <p class="specs__eyebrow">{eyebrow}</p>}
+      {heading && <h2 id={headingId} class="specs__h">{heading}</h2>}
+
+      <table class="specs__table">
+        <caption class="specs__caption-sr">{heading ?? 'Технические характеристики'}</caption>
+        <tbody>
+          {rows.map((r) => (
+            <tr class:list={['specs__row', r.gated && 'specs__row--gated']}>
+              <th scope="row" class="specs__label">{r.label}</th>
+              <td class="specs__value">
+                <span>{r.value}</span>
+                {r.note && <span class="specs__note">{r.note}</span>}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {caption && <p class="specs__caption">{caption}</p>}
+    </div>
+  </section>
+) : (
+  <div class="specs specs--inline">
+    {heading && <h3 class="specs__h-inline">{heading}</h3>}
+    <table class="specs__table">
+      <tbody>
+        {rows.map((r) => (
+          <tr class:list={['specs__row', r.gated && 'specs__row--gated']}>
+            <th scope="row" class="specs__label">{r.label}</th>
+            <td class="specs__value">
+              <span>{r.value}</span>
+              {r.note && <span class="specs__note">{r.note}</span>}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    {caption && <p class="specs__caption">{caption}</p>}
+  </div>
+)}
+
+<style>
+  .specs {
+    padding-block: var(--spacing-7);
+    background: var(--color-bg-page);
+  }
+  .specs--inline { padding-block: 0; }
+
+  .specs__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .specs__h {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-5);
+  }
+  .specs__h-inline {
+    font-size: var(--font-size-md);
+    margin-block-end: var(--spacing-3);
+  }
+
+  .specs__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+
+  .specs__caption-sr {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .specs__row + .specs__row { border-top: 1px solid var(--color-border-subtle); }
+
+  .specs__label {
+    text-align: start;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    padding: var(--spacing-3) var(--spacing-3) var(--spacing-3) 0;
+    width: 50%;
+    vertical-align: top;
+  }
+  .specs__value {
+    color: var(--color-text-primary);
+    padding: var(--spacing-3) 0;
+    vertical-align: top;
+  }
+  .specs__value > span:first-child {
+    display: block;
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .specs__note {
+    display: block;
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    margin-block-start: 2px;
+  }
+
+  .specs__row--gated .specs__value {
+    color: var(--color-text-tertiary);
+    font-style: italic;
+  }
+
+  .specs__caption {
+    margin-block-start: var(--spacing-4);
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-style: italic;
+    line-height: var(--font-line-height-normal);
+  }
+
+  @media (min-width: 768px) {
+    .specs__label { width: 40%; }
+  }
+</style>

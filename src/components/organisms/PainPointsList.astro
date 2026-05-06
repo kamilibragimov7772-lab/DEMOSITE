@@ -1,0 +1,109 @@
+---
+/**
+ * PainPointsList — organism.
+ * Список 3-6 «болей» сегмента: каждая боль = крупное число/значение + краткое описание.
+ *
+ * Pattern: «Stats-strip + bullet-cards» из spec'ов 03-07-solutions.
+ *
+ * Источник:
+ * - 04_visuals/03-solutions-dostavka.spec.md §«Block: Pain-points»
+ * - 04_visuals/04-solutions-retail.spec.md §«Block: Pain-points (Категорийные)»
+ * - components_atomic.md §Molecules (Stat / metric) — base atom
+ *
+ * Состояния: default; на интерактивности нет — pure display block.
+ * reduced-motion: нет анимаций (статика).
+ */
+
+export interface PainPoint {
+  /** Крупное значение / процент / число (опц.). */
+  value?: string;
+  /** Заголовок боли (короткая фраза). */
+  title: string;
+  /** Описание / расшифровка (опц.). */
+  description?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  /** 3-6 болей сегмента. */
+  items: ReadonlyArray<PainPoint>;
+}
+
+const { heading, eyebrow, items } = Astro.props;
+---
+
+<section class="pp" aria-labelledby="pp-h2">
+  <div class="container">
+    {eyebrow && <p class="pp__eyebrow">{eyebrow}</p>}
+    <h2 id="pp-h2" class="pp__h2">{heading}</h2>
+
+    <ul class="pp__grid" role="list">
+      {items.map((item) => (
+        <li class="pp__item">
+          {item.value && <strong class="pp__value num">{item.value}</strong>}
+          <h3 class="pp__title">{item.title}</h3>
+          {item.description && <p class="pp__desc">{item.description}</p>}
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .pp {
+    padding-block: var(--spacing-7);
+    background: var(--color-bg-surface);
+  }
+  .pp__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .pp__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-6);
+  }
+  .pp__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pp__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-5);
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-subtle);
+    border-inline-start: 4px solid var(--color-feedback-error);
+    border-radius: var(--radius-base);
+  }
+  .pp__value {
+    color: var(--color-feedback-error);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tight);
+  }
+  .pp__title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--font-line-height-snug);
+  }
+  .pp__desc {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+
+  @media (min-width: 768px)  { .pp__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .pp__grid { grid-template-columns: repeat(3, 1fr); } }
+</style>

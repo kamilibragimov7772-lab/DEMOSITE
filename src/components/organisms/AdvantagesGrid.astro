@@ -1,0 +1,111 @@
+---
+/**
+ * AdvantagesGrid — organism.
+ * Composition: H2 + 4 крупных advantage-плитки + 8 пилюль (chips, фактоиды).
+ *
+ * Источник:
+ * - 04_visuals/01-homepage.spec.md §«Block 4: УТП "Больше, чем производитель"»
+ * - 02_content/page_outlines/01-homepage.md §«H2: Больше, чем производитель»
+ */
+
+import Chip from '@components/molecules/Chip.astro';
+
+export interface Advantage {
+  title: string;
+  description: string;
+}
+
+export interface Props {
+  heading: string;
+  /** 4 главных преимущества. */
+  advantages: ReadonlyArray<Advantage>;
+  /** ≤12 фактоидов-пилюль (factoids). Из outline'а — 8 шт. */
+  pills: ReadonlyArray<string>;
+  eyebrow?: string;
+}
+
+const { heading, advantages, pills, eyebrow } = Astro.props;
+---
+
+<section class="adv" aria-labelledby="adv-h2">
+  <div class="container">
+    {eyebrow && <p class="adv__eyebrow">{eyebrow}</p>}
+    <h2 id="adv-h2" class="adv__h2">{heading}</h2>
+
+    <ul class="adv__grid" role="list">
+      {advantages.map((a) => (
+        <li class="adv__item">
+          <h3 class="adv__title">{a.title}</h3>
+          <p class="adv__desc">{a.description}</p>
+        </li>
+      ))}
+    </ul>
+
+    <ul class="adv__pills" role="list" aria-label="Ключевые факты о компании">
+      {pills.map((p) => (
+        <li><Chip variant="default" size="base">{p}</Chip></li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .adv {
+    padding-block: var(--spacing-8);
+  }
+  .adv__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .adv__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-6);
+  }
+
+  .adv__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+    margin: 0 0 var(--spacing-6);
+    padding: 0;
+    list-style: none;
+  }
+  .adv__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-5);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+  }
+  .adv__title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+  .adv__desc {
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+
+  .adv__pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .adv__grid { grid-template-columns: repeat(2, 1fr); gap: var(--spacing-5); }
+  }
+  @media (min-width: 1024px) {
+    .adv__grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>

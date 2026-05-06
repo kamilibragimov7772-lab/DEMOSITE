@@ -1,0 +1,225 @@
+---
+/**
+ * Input — atom.
+ * Variants: text / email / tel / number / textarea / select.
+ * Состояния: default / focus / error / disabled / read-only / loading.
+ *
+ * Использовать через FormField (molecule), который оборачивает label + helper + error.
+ * Источник: 03_design_system/components_atomic.md §Atoms (Input).
+ */
+
+type InputType = 'text' | 'email' | 'tel' | 'number' | 'url' | 'search' | 'password';
+
+export interface Props {
+  id: string;
+  name: string;
+  type?: InputType | 'textarea' | 'select';
+  value?: string | number;
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  readonly?: boolean;
+  autocomplete?: string;
+  inputmode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
+  pattern?: string;
+  minlength?: number;
+  maxlength?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  rows?: number;
+  invalid?: boolean;
+  describedBy?: string;
+  loading?: boolean;
+  size?: 'sm' | 'base';
+  /** Опции для type="select". value/label. */
+  options?: ReadonlyArray<{ value: string; label: string }>;
+  class?: string;
+}
+
+const {
+  id,
+  name,
+  type = 'text',
+  value,
+  placeholder,
+  required = false,
+  disabled = false,
+  readonly = false,
+  autocomplete,
+  inputmode,
+  pattern,
+  minlength,
+  maxlength,
+  min,
+  max,
+  step,
+  rows = 4,
+  invalid = false,
+  describedBy,
+  loading = false,
+  size = 'base',
+  options,
+  class: className,
+} = Astro.props;
+
+const classes = [
+  'input',
+  `input--${size}`,
+  invalid ? 'input--invalid' : '',
+  loading ? 'input--loading' : '',
+  className ?? '',
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+{
+  type === 'textarea' ? (
+    <textarea
+      id={id}
+      name={name}
+      class={classes}
+      placeholder={placeholder}
+      required={required}
+      disabled={disabled}
+      readonly={readonly}
+      rows={rows}
+      maxlength={maxlength}
+      minlength={minlength}
+      aria-invalid={invalid || undefined}
+      aria-describedby={describedBy}
+      aria-busy={loading || undefined}
+    >{value ?? ''}</textarea>
+  ) : type === 'select' ? (
+    <select
+      id={id}
+      name={name}
+      class={classes}
+      required={required}
+      disabled={disabled}
+      aria-invalid={invalid || undefined}
+      aria-describedby={describedBy}
+    >
+      {options?.map((opt) => (
+        <option value={opt.value} selected={String(value) === opt.value}>{opt.label}</option>
+      ))}
+    </select>
+  ) : (
+    <input
+      id={id}
+      name={name}
+      class={classes}
+      type={type}
+      value={value as string | number | undefined}
+      placeholder={placeholder}
+      required={required}
+      disabled={disabled}
+      readonly={readonly}
+      autocomplete={autocomplete}
+      inputmode={inputmode}
+      pattern={pattern}
+      minlength={minlength}
+      maxlength={maxlength}
+      min={min}
+      max={max}
+      step={step}
+      aria-invalid={invalid || undefined}
+      aria-describedby={describedBy}
+      aria-busy={loading || undefined}
+    />
+  )
+}
+
+<style>
+  .input {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-bg-page);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-family-sans);
+    font-size: var(--font-size-base);
+    line-height: var(--font-line-height-normal);
+    transition:
+      border-color var(--duration-fast) var(--easing-standard),
+      box-shadow var(--duration-fast) var(--easing-standard);
+  }
+
+  .input--sm {
+    min-height: 36px;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+  }
+
+  .input::placeholder { color: var(--color-text-tertiary); opacity: 1; }
+
+  /* focus state */
+  .input:focus {
+    outline: none;
+    border-color: var(--color-border-focus);
+    box-shadow: var(--shadow-focus-ring);
+  }
+
+  /* invalid / error */
+  .input--invalid,
+  .input[aria-invalid='true'] {
+    border-color: var(--color-feedback-error);
+    background: var(--color-feedback-error-bg);
+  }
+  .input--invalid:focus,
+  .input[aria-invalid='true']:focus {
+    box-shadow: var(--shadow-focus-ring-error);
+  }
+
+  /* disabled */
+  .input:disabled {
+    background: var(--color-bg-surface);
+    color: var(--color-text-tertiary);
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  .input:read-only {
+    background: var(--color-bg-surface-warm);
+    color: var(--color-text-secondary);
+  }
+
+  /* textarea-specific */
+  textarea.input {
+    min-height: 96px;
+    resize: vertical;
+    line-height: var(--font-line-height-normal);
+  }
+
+  /* select chevron via background — простое решение без icon-injection */
+  select.input {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%235A6368' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right var(--spacing-3) center;
+    padding-right: var(--spacing-7);
+  }
+
+  .input--loading {
+    background-image: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-overlay-brand-tint-low),
+      transparent
+    );
+    background-size: 200% 100%;
+    animation: input-shimmer 1.4s linear infinite;
+  }
+  @keyframes input-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .input--loading { animation: none; }
+  }
+</style>

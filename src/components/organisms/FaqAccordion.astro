@@ -1,0 +1,143 @@
+---
+/**
+ * FaqAccordion — organism.
+ * Composition: H2 + 5-15 Q-A через native <details>/<summary> (без JS).
+ *
+ * Состояния: default / hover (bg-surface) / open / focus-visible.
+ * reduced-motion → instant snap (без max-height transition).
+ *
+ * Источник:
+ * - 04_visuals/01-homepage.spec.md §«Block 11: FAQ»
+ * - 02_content/page_outlines/01-homepage.md §«H2: Частые вопросы»
+ * - components_atomic.md §Organisms (FAQ-accordion)
+ *
+ * Если faqPage schema нужен — вызывайте через @lib/schema из родительской страницы.
+ */
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  items: ReadonlyArray<FaqItem>;
+  /** id для anchor-link (если на странице несколько FAQ-секций). */
+  id?: string;
+}
+
+const { heading, eyebrow, items, id = 'faq' } = Astro.props;
+---
+
+<section class="faq" id={id} aria-labelledby={`${id}-h2`}>
+  <div class="container">
+    {eyebrow && <p class="faq__eyebrow">{eyebrow}</p>}
+    <h2 id={`${id}-h2`} class="faq__h2">{heading}</h2>
+
+    <ul class="faq__list" role="list">
+      {items.map((item) => (
+        <li>
+          <details class="faq__item" name={`${id}-group`}>
+            <summary class="faq__summary">
+              <span class="faq__q">{item.question}</span>
+              <span class="faq__icon" aria-hidden="true">+</span>
+            </summary>
+            <div class="faq__answer">
+              <p>{item.answer}</p>
+            </div>
+          </details>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .faq {
+    padding-block: var(--spacing-8);
+  }
+  .faq__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .faq__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-6);
+  }
+
+  .faq__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .faq__item {
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    overflow: hidden;
+    transition: border-color var(--duration-fast) var(--easing-standard);
+  }
+  .faq__item[open] {
+    border-color: var(--color-border-focus);
+  }
+  .faq__item:hover {
+    background: var(--color-bg-surface);
+  }
+
+  .faq__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4) var(--spacing-5);
+    min-height: 56px;
+    cursor: pointer;
+    list-style: none;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-md);
+    color: var(--color-text-primary);
+  }
+  .faq__summary::-webkit-details-marker { display: none; }
+  .faq__q { flex: 1 1 auto; line-height: 1.4; }
+  .faq__icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-pill);
+    color: var(--color-action-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    transition: transform var(--duration-normal) var(--easing-standard);
+  }
+  .faq__item[open] .faq__icon {
+    transform: rotate(45deg);
+    background: var(--color-action-primary);
+    color: var(--color-text-on-brand);
+    border-color: var(--color-action-primary);
+  }
+
+  .faq__answer {
+    padding: 0 var(--spacing-5) var(--spacing-5);
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+  .faq__answer p { margin: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq__icon { transition: none; }
+  }
+</style>

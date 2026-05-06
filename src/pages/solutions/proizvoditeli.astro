@@ -1,0 +1,239 @@
+---
+/**
+ * /solutions/proizvoditeli/ — Industry-page для B4 (производители скоропорта).
+ *
+ * Spec: 04_visuals/06-solutions-proizvoditeli.spec.md
+ * Outline: 02_content/page_outlines/06-solutions-proizvoditeli.md
+ *
+ * Особенность: Temperature-marker-row (4 режима) + инженерный расчёт под маршрут.
+ * Schema: Service + BreadcrumbList.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import IndustryHero from '@components/organisms/IndustryHero.astro';
+import PainPointsList from '@components/organisms/PainPointsList.astro';
+import TempMarkerRow from '@components/organisms/TempMarkerRow.astro';
+import ProductTriad from '@components/organisms/ProductTriad.astro';
+import CaseHighlight from '@components/organisms/CaseHighlight.astro';
+import DocumentsList from '@components/organisms/DocumentsList.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { service, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const hero = {
+  eyebrow: 'B4 · Логистика / технолог',
+  h1: 'Производители — страховка партии до конца пути',
+  lead: 'Партия защищена до конца пути. Комплект PRO + SHOCK Freeze + Термосумка большая, режим −15°C до 72 ч, замена партии по протоколу.',
+  primaryCta: { label: 'Получить инженерный расчёт →', href: '#cta' },
+  secondaryCta: { label: 'Смотреть кейс мясокомбината →', href: '#case-highlight' },
+  stats: [
+    { value: '−15°C',   label: 'до 72 часов в комплекте' },
+    { value: '1 см',    label: 'ВПП в стенке PRO' },
+    { value: '300+ км', label: 'по холодовой цепи' },
+    { value: 'протокол', label: 'замена партии' },
+  ],
+  mascot: '🥩',
+};
+
+const painPoints = [
+  {
+    title: 'Сезон: летом порча партии = убыток в миллионах',
+    description: 'Жара ломает обычные термопакеты — рекламации съедают прибыль.',
+  },
+  {
+    title: 'Сети возвращают партию из-за нарушения цепи холода',
+    description: 'Один сорванный режим — штраф + потеря договора с federal-сетью.',
+  },
+  {
+    title: 'Экспорт требует документированного режима',
+    description: 'ОАЭ / Сейшелы / Узбекистан — без протокола испытаний партия не уходит.',
+  },
+  {
+    title: 'Разные грузы — разные комплекты',
+    description: 'Мясо / рыба / молочка / охлаждённое vs замороженное — нужен инженерный расчёт.',
+  },
+];
+
+const tempMarkers = [
+  { mode: 'cool' as const, temperature: '+2…+8°C',  label: 'Охлаждённое: молочка, бьюти, БАДы' },
+  { mode: 'below' as const, temperature: '0…−2°C',  label: 'Свежее мясо, рыба охлаждённая' },
+  { mode: 'deep' as const, temperature: '−15°C',    label: 'Глубокая заморозка: мясо, рыба, мороженое' },
+  { mode: 'hot' as const, temperature: '≥+45°C',   label: 'Горячая доставка: готовая еда, кейтеринг' },
+];
+
+const products = [
+  {
+    href: '/products/termopakety/pro-60x55/',
+    category: 'PRO ВПП 1 см',
+    title: 'Термопакет PRO 60×55',
+    specs: [
+      'ВПП-стенка 10 мм (в 10× толще Standart)',
+      '−15°C до 72 часов в комплекте с SHOCK Freeze',
+      'Прочность на разрыв — для крупных партий',
+      'Брендирование от 100 шт под СТМ сети',
+    ],
+    priceFrom: 'от 89 ₽/шт',
+    ctaLabel: 'Открыть карточку PRO 60×55 →',
+  },
+  {
+    href: '/products/akkumulyatory-holoda/freeze/',
+    category: 'SHOCK® Freeze',
+    title: 'SHOCK® Freeze 600/1000 мл',
+    specs: [
+      'Режим 0…−15°C, зелёный цвет — заметность',
+      '30+ циклов глубокой заморозки',
+      'ГОСТ Р 50962-96, миграция в норме',
+      'Тампопечать лого от 1 000 шт',
+    ],
+    priceFrom: 'от 79 ₽/шт',
+    ctaLabel: 'Открыть карточку SHOCK Freeze →',
+  },
+  {
+    href: '/products/termosumki-bolshie/',
+    category: 'Термосумка',
+    title: 'Термосумка большая 50–120 л',
+    specs: [
+      'Линейка 50 / 80 / 120 л',
+      '0…−2°C на маршруте 300+ км',
+      'Многоразовая, сертифицированная',
+      'Брендирование наклейкой за 1 неделю',
+    ],
+    priceFrom: 'по запросу',
+    ctaLabel: 'Открыть карточки термосумок →',
+  },
+];
+
+const caseStory = {
+  task: 'Мясокомбинат отгружает партию по маршруту 300+ км в federal-сеть. Сезон — лето; внешняя температура +35°C. Требование сети: 0…−15°C на всём маршруте.',
+  solution: 'Термопакет PRO 60×55 + 4× SHOCK Зелёный Freeze 1000 мл + Термосумка большая 50 л. Расчёт под груз: вес партии, объём, время в пути, точки температурного контроля.',
+  result: 'Удержание режима 0…−2°C на всём маршруте 300+ км подтверждено температурным регистратором. Partнёр-сеть приняла партию без замечаний. Рекламаций по сезону — 0.',
+};
+
+const caseMetrics = [
+  { label: 'Дистанция',        value: '300+ км' },
+  { label: 'Режим в пути',      value: '0…−2°C' },
+  { label: 'Аккумуляторов',    value: '4× Freeze' },
+];
+
+const documents = [
+  {
+    title: 'ТР ТС 005/2011',
+    description: 'Декларация соответствия на упаковку для federal-сетей.',
+    ctaLabel: 'Скачать декларацию ТР ТС →',
+    href: '/assets/docs/declaration-tr-ts.pdf',
+    size: 'PDF, 720 КБ',
+  },
+  {
+    title: 'ISO 9001',
+    description: 'Сертификат системы менеджмента качества.',
+    ctaLabel: 'Скачать сертификат ISO 9001 →',
+    href: '/assets/docs/iso-9001.pdf',
+    size: 'PDF, 540 КБ',
+  },
+  {
+    title: 'Протокол испытаний термозащиты для скоропорта',
+    description: 'Расчёт удержания режима на маршруте 300+ км при 0…−15°C.',
+    ctaLabel: 'Скачать протокол испытаний →',
+    href: '/assets/docs/protocol-skoroport.pdf',
+    size: 'PDF, 1.4 МБ',
+  },
+  {
+    title: 'ГОСТ Р 50962-96',
+    description: 'Действующий ГОСТ на аккумуляторы холода SHOCK®.',
+    ctaLabel: 'Скачать выписку ГОСТ →',
+    href: '/assets/docs/gost.pdf',
+    size: 'PDF, 480 КБ',
+  },
+];
+
+const schema = [
+  service({
+    name: 'Термоупаковка для производителей скоропорта',
+    description: 'Комплект PRO + SHOCK + термосумка большая для мяса, рыбы, молочки. Режим −15°C до 72 ч, протоколы испытаний, замена партии.',
+    audience: 'Производители скоропорта (B4)',
+  }),
+  breadcrumbList([
+    { name: 'Главная',  url: siteUrl },
+    { name: 'Решения',  url: `${siteUrl}solutions/` },
+    { name: 'Производители скоропорта', url: `${siteUrl}solutions/proizvoditeli/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Термоупаковка для скоропорта"
+  description="Комплект PRO + SHOCK + термосумка большая для мяса, рыбы, молочки. Режим −15°C до 72 ч, протоколы испытаний, замена партии."
+  ogType="website"
+  ogImage={`${siteUrl}assets/og/og-solutions-proizvoditeli.jpg`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'Решения', href: '/solutions/' },
+      { name: 'Производители скоропорта' },
+    ]}
+  />
+
+  <IndustryHero {...hero} />
+
+  <PainPointsList
+    eyebrow="Боли руководителя логистики"
+    heading="Что блокирует поставку скоропорта"
+    items={painPoints}
+  />
+
+  <TempMarkerRow
+    eyebrow="Температурные режимы"
+    heading="4 режима под ваш груз и маршрут"
+    lead="Каждый режим — свой комплект. Расчёт под маршрут с точками контроля температуры подтверждается протоколом испытаний."
+    markers={tempMarkers}
+  />
+
+  <ProductTriad
+    eyebrow="Рекомендованный комплект"
+    heading="Что мы предлагаем производителям"
+    lead="PRO + SHOCK Freeze + Термосумка большая — комплект под маршрут 300+ км при 0…−15°C. Под другие сценарии — инженерный расчёт под груз."
+    products={products}
+    hubCta={{ label: 'Все продукты в каталоге →', href: '/products/' }}
+  />
+
+  <CaseHighlight
+    eyebrow="Кейс — расчётный пример"
+    heading="Мясокомбинат: 300+ км при 0…−15°C летом"
+    segmentLabel="Производство скоропорта"
+    title="Удержание режима подтверждено температурным регистратором"
+    story={caseStory}
+    metrics={caseMetrics}
+    isCalculatedExample={true}
+  />
+
+  <DocumentsList
+    eyebrow="Документы холодовой цепи"
+    heading="Документы для аудита и тендеров"
+    lead="Compliance-пакет для аудита federal-сетей и экспортных партнёров: ТР ТС, ISO 9001, ГОСТ, протокол испытаний под скоропорт."
+    items={documents}
+  />
+
+  <FormBlock
+    id="cta"
+    variant="lead"
+    eyebrow="Инженерный расчёт"
+    heading="Получить инженерный расчёт под ваш маршрут"
+    description="Технолог TERMY свяжется в течение 2 часов, рассчитает комплект под ваш груз, маршрут и сезон. Укажите тип груза, длину маршрута и целевую температуру в комментарии."
+    submitLabel="Получить инженерный расчёт →"
+  />
+
+  <PreFooterCta
+    heading="Срочный расчёт?"
+    lead="Напишите в WhatsApp — технолог ответит сразу и подберёт комплект."
+    primaryCta={{ label: 'Расчёт в WhatsApp', href: 'https://wa.me/78001011525' }}
+    secondaryCta={{ label: 'Позвонить +7 (800) 101-15-25', href: 'tel:+78001011525' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>

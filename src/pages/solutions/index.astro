@@ -1,0 +1,205 @@
+---
+/**
+ * /solutions/ — хаб 5 отраслевых решений (Wave 1).
+ *
+ * Реализация по spec'у `04_visuals/02-solutions-hub.spec.md` + outline `02_content/page_outlines/02-solutions-hub.md`.
+ * Template: Hub (5 cards-grid + FAQ + Pre-footer + Form).
+ *
+ * Schema.org: CollectionPage + BreadcrumbList («Главная › Решения»).
+ *
+ * Копирайт — placeholder из page outline (тон canon).
+ * Финальный копирайт — ghostwriter.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import IndustryCardsGrid from '@components/organisms/IndustryCardsGrid.astro';
+import FaqAccordion from '@components/organisms/FaqAccordion.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { collectionPage, breadcrumbList, faqPage } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+/* ========================================================================
+   КОНТЕНТ — placeholder из page_outlines/02-solutions-hub.md.
+   Финальный копирайт — ghostwriter.
+   ======================================================================== */
+
+// Hero (хаб — без CTA в hero per outline; CTA уезжает в Block 5)
+const hero = {
+  eyebrow: 'Под отрасль',
+  h1: 'Решения для вашего бизнеса',
+  lead: 'TERMY помогает пяти ключевым B2B-сегментам: от курьерских сервисов до фарм-смежных. Выберите свой и узнайте, как мы экономим вам деньги.',
+};
+
+// Block 2: 5 industry cards + bonus брендирование (по outline §H2: 5 отраслевых направлений)
+const industries = [
+  {
+    slug: 'dostavka',
+    segment: 'B1',
+    segmentLabel: 'Курьерские сервисы',
+    title: 'Доставка еды — без рекламаций',
+    description: 'Сохраняем продукты в пути. Гарантия прочности упаковки, замена партии за 24 часа, режим +2…+8°C до 7 часов.',
+    ctaLabel: 'Открыть решения для доставки →',
+    recommended: 'Standart 42×50 + 2× SHOCK 450',
+  },
+  {
+    slug: 'retail',
+    segment: 'B2',
+    segmentLabel: 'Ритейл',
+    title: 'Крупный ритейл — видимость и маржа',
+    description: 'Упаковка с вашим логотипом + узнаваемый SHOCK в витрине = потребитель видит, берёт, рассказывает. Брендирование от 100 шт, 2–4 недели.',
+    ctaLabel: 'Открыть решения для ритейла →',
+    recommended: 'PRO 42×50 + Термосумка большая',
+  },
+  {
+    slug: 'distributory',
+    segment: 'B3',
+    segmentLabel: 'Дистрибьюция',
+    title: 'Дистрибьюторы — надёжная поставка',
+    description: '100 000 шт на складе, поставка за 24 часа, собственное производство, от 1 коробки. TERMY — ваш резервный поставщик.',
+    ctaLabel: 'Открыть решения для дистрибьюторов →',
+    recommended: 'Standart + SHOCK 450 от 1 коробки',
+  },
+  {
+    slug: 'proizvoditeli',
+    segment: 'B4',
+    segmentLabel: 'Производство',
+    title: 'Производители — страховка партии',
+    description: 'Партия защищена до конца пути. Комплект PRO + SHOCK + Термосумка большая, режим −15°C до 72 ч, замена партии по протоколу.',
+    ctaLabel: 'Открыть решения для производителей →',
+    recommended: 'PRO 60×55 + 4× SHOCK Freeze',
+  },
+  {
+    slug: 'farma',
+    segment: 'B5',
+    segmentLabel: 'Фарм-смежные',
+    title: 'Фарм-смежные сегменты: бьюти, БАДы, диагностика',
+    description: 'Холодовая цепь подтверждается документацией: протоколы испытаний, ТР ТС 005/2011, режим +2…+8°C ± 0,5°C.',
+    ctaLabel: 'Открыть решения для фарм-смежных →',
+    recommended: 'Термопакет с дном 40 л + 3× SHOCK Cool',
+  },
+];
+
+// FAQ (5 Q-A per spec)
+const faqs = [
+  {
+    question: 'Как выбрать серию термоупаковки под мою отрасль?',
+    answer: 'Если у вас курьерская доставка — Standart 42×50 + SHOCK 450 Cool. Ритейл — PRO с шелкографией. Дистрибуция — мульти-серия от 1 коробки. Скоропорт — PRO 60×55 + Термосумка 50 л + SHOCK Freeze. Фарм-смежные — Standart с дном + SHOCK Cool. Подбор бесплатный — менеджер рассчитает за 2 часа.',
+  },
+  {
+    question: 'Какой минимальный заказ (МОЗ) на серийные позиции?',
+    answer: 'От 1 коробки на Standart, SHOCK 450 без брендирования. Брендирование: шелкография от 100 шт, флексография от 10 000, наклейки SHOCK от 1 000. Это позволяет работать как с малым ритейлом, так и с дистрибьюторами.',
+  },
+  {
+    question: 'Какие сроки от заявки до отгрузки?',
+    answer: 'Серийные позиции — 24 часа со склада в Подмосковье. Производство нестандартного размера — 2-5 дней. Брендирование — 2-4 недели в зависимости от метода и тиража. Полный цикл с макетом — 14-21 день.',
+  },
+  {
+    question: 'Какие сертификаты есть для тендеров?',
+    answer: 'ГОСТ Р 50962-96 на SHOCK, ТУ 22.22.11-001-47645032-2022 на термопакеты, ТР ТС 005/2011 на упаковку, ISO 9001 на систему менеджмента. Протоколы испытаний — по запросу через email-gate. РУ Росздравнадзора нет — для лекарств с обязательным РУ рекомендуем профильных поставщиков.',
+  },
+  {
+    question: 'Можно ли брендировать упаковку под СТМ сети?',
+    answer: 'Да. Шелкография от 100 шт (1-4 цвета, Pantone), флексография от 10 000 шт. Бесплатный макет с дизайнером, согласование 1-2 дня. Поддерживаем фирменные цвета сетей и их брендбук-требования.',
+  },
+];
+
+const schema = [
+  collectionPage({
+    name: 'Решения для бизнеса — термоупаковка TERMY',
+    description: 'Термоупаковка для 5 ниш: доставка, ритейл, дистрибуция, скоропорт, фарм-смежные. Найдите своё решение и получите расчёт за 2 часа.',
+    numberOfItems: industries.length,
+  }),
+  breadcrumbList([
+    { name: 'Главная', url: siteUrl },
+    { name: 'Решения', url: `${siteUrl}solutions/` },
+  ]),
+  faqPage(faqs),
+];
+---
+
+<BaseLayout
+  title="Решения для бизнеса — термоупаковка"
+  description="Термоупаковка для 5 ниш: доставка, ритейл, дистрибуция, скоропорт, фарм-смежные. Найдите своё решение и получите расчёт за 2 часа."
+  ogType="website"
+  ogImage={`${siteUrl}assets/og/og-solutions.jpg`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'Решения' },
+    ]}
+  />
+
+  <section class="hub-hero" aria-labelledby="hub-hero-h1">
+    <div class="container">
+      <p class="hub-hero__eyebrow">{hero.eyebrow}</p>
+      <h1 id="hub-hero-h1" class="hub-hero__h1">{hero.h1}</h1>
+      <p class="hub-hero__lead">{hero.lead}</p>
+    </div>
+  </section>
+
+  <IndustryCardsGrid
+    eyebrow="5 отраслевых направлений"
+    heading="Найдите решение под ваш сегмент"
+    cards={industries}
+  />
+
+  <FaqAccordion
+    id="faq-solutions"
+    eyebrow="Частые вопросы"
+    heading="Как выбрать решение под отрасль"
+    items={faqs}
+  />
+
+  <FormBlock
+    id="solutions-hub"
+    variant="lead"
+    eyebrow="Расчёт под отрасль"
+    heading="Получить расчёт для вашей отрасли"
+    description="Заполните форму и укажите вашу отрасль в комментарии. Менеджер свяжется в течение 2 часов и подберёт комплект под груз, маршрут и тираж."
+    submitLabel="Получить расчёт →"
+  />
+
+  <PreFooterCta
+    heading="Не хотите заполнять форму?"
+    lead="Напишите в WhatsApp или позвоните — менеджер ответит сразу."
+    primaryCta={{ label: 'Написать в WhatsApp', href: 'https://wa.me/78001011525' }}
+    secondaryCta={{ label: 'Позвонить +7 (800) 101-15-25', href: 'tel:+78001011525' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>
+
+<style>
+  .hub-hero {
+    padding-block: var(--spacing-7) var(--spacing-6);
+    background: var(--color-bg-page);
+  }
+  .hub-hero__eyebrow {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .hub-hero__h1 {
+    max-width: 24ch;
+    font-size: var(--font-size-h1-fluid);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tighter);
+    margin-block-end: var(--spacing-4);
+  }
+  .hub-hero__lead {
+    max-width: 56ch;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: var(--font-line-height-normal);
+  }
+</style>

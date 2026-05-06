@@ -1,0 +1,257 @@
+---
+/**
+ * Button — atom.
+ * Variants: primary | secondary | ghost | link | inverse
+ * Sizes:    sm | base | lg
+ * 7 состояний: default / hover / active / focus-visible / disabled / loading / (error не применимо к кнопке).
+ *
+ * Источник: 03_design_system/components_atomic.md §Atoms (Button — primary/secondary/ghost/link/inverse).
+ */
+
+type Variant = 'primary' | 'secondary' | 'ghost' | 'link' | 'inverse';
+type Size = 'sm' | 'base' | 'lg';
+
+export interface Props {
+  variant?: Variant;
+  size?: Size;
+  type?: 'button' | 'submit' | 'reset';
+  href?: string | URL;
+  disabled?: boolean;
+  loading?: boolean;
+  fullWidth?: boolean;
+  ariaLabel?: string;
+  /** Для ссылок-кнопок: rel и target. */
+  rel?: string;
+  target?: '_self' | '_blank';
+  /** Подсказка прогрессивного раскрытия. */
+  ariaExpanded?: boolean;
+  ariaControls?: string;
+  /** id для кнопки (для aria-controls / aria-describedby и т.п.). */
+  id?: string;
+  /** Дополнительный data-attribute для analytics. */
+  dataEvent?: string;
+  class?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'base',
+  type = 'button',
+  href,
+  disabled = false,
+  loading = false,
+  fullWidth = false,
+  ariaLabel,
+  rel,
+  target,
+  ariaExpanded,
+  ariaControls,
+  id,
+  dataEvent,
+  class: className,
+} = Astro.props;
+
+const isLink = typeof href !== 'undefined';
+
+const classes = [
+  'btn',
+  `btn--${variant}`,
+  `btn--${size}`,
+  fullWidth ? 'btn--full' : '',
+  loading ? 'btn--loading' : '',
+  className ?? '',
+]
+  .filter(Boolean)
+  .join(' ');
+
+// Безопасный rel для внешних ссылок с target=_blank.
+const safeRel =
+  isLink && target === '_blank'
+    ? rel
+      ? rel.includes('noopener')
+        ? rel
+        : `${rel} noopener noreferrer`
+      : 'noopener noreferrer'
+    : rel;
+---
+
+{
+  isLink ? (
+    <a
+      class={classes}
+      href={href?.toString()}
+      role={disabled ? 'link' : undefined}
+      aria-disabled={disabled || undefined}
+      aria-busy={loading || undefined}
+      aria-label={ariaLabel}
+      aria-expanded={ariaExpanded}
+      aria-controls={ariaControls}
+      id={id}
+      rel={safeRel}
+      target={target}
+      data-event={dataEvent}
+    >
+      {loading && <span class="btn__spinner" aria-hidden="true" />}
+      <span class="btn__label">
+        <slot />
+      </span>
+    </a>
+  ) : (
+    <button
+      class={classes}
+      type={type}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      aria-label={ariaLabel}
+      aria-expanded={ariaExpanded}
+      aria-controls={ariaControls}
+      id={id}
+      data-event={dataEvent}
+    >
+      {loading && <span class="btn__spinner" aria-hidden="true" />}
+      <span class="btn__label">
+        <slot />
+      </span>
+    </button>
+  )
+}
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    min-height: 44px;
+    padding: var(--spacing-3) var(--spacing-5);
+    border-radius: var(--radius-pill);
+    border: 1px solid transparent;
+    font-family: var(--font-family-sans);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background-color var(--duration-fast) var(--easing-standard),
+      color var(--duration-fast) var(--easing-standard),
+      border-color var(--duration-fast) var(--easing-standard),
+      box-shadow var(--duration-fast) var(--easing-standard),
+      transform var(--duration-instant) var(--easing-accelerate),
+      opacity var(--duration-fast) var(--easing-standard);
+    will-change: auto;
+  }
+
+  /* --- Sizes --- */
+  .btn--sm {
+    min-height: 36px;
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-sm);
+  }
+  .btn--lg {
+    min-height: 52px;
+    padding: var(--spacing-4) var(--spacing-6);
+    font-size: var(--font-size-md);
+  }
+
+  /* --- Primary (gradient) --- */
+  .btn--primary {
+    background: linear-gradient(
+      135deg,
+      var(--color-action-primary),
+      var(--color-brand-primary-end)
+    );
+    color: var(--color-text-on-brand);
+    box-shadow: var(--shadow-sm);
+  }
+  .btn--primary:hover:not(:disabled):not([aria-disabled='true']) {
+    box-shadow: var(--shadow-base);
+    transform: translateY(-1px);
+  }
+  .btn--primary:active:not(:disabled):not([aria-disabled='true']) {
+    transform: translateY(1px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* --- Secondary (white-on-page) --- */
+  .btn--secondary {
+    background: var(--color-action-secondary);
+    color: var(--color-action-secondary-text);
+    border-color: var(--color-border-strong);
+  }
+  .btn--secondary:hover:not(:disabled):not([aria-disabled='true']) {
+    border-color: var(--color-action-primary);
+    color: var(--color-action-primary);
+    transform: translateY(-1px);
+  }
+  .btn--secondary:active:not(:disabled):not([aria-disabled='true']) {
+    transform: translateY(1px);
+  }
+
+  /* --- Ghost (text + brand color) --- */
+  .btn--ghost {
+    background: transparent;
+    color: var(--color-action-primary);
+  }
+  .btn--ghost:hover:not(:disabled):not([aria-disabled='true']) {
+    color: var(--color-action-primary-hover);
+    background: var(--color-bg-surface);
+  }
+
+  /* --- Link (inline-text) --- */
+  .btn--link {
+    background: transparent;
+    color: var(--color-text-link);
+    padding-inline: 0;
+    min-height: auto;
+    border-radius: 0;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .btn--link:hover:not(:disabled):not([aria-disabled='true']) {
+    text-decoration-thickness: 2px;
+  }
+
+  /* --- Inverse (white on dark surfaces — footer, top-strip) --- */
+  .btn--inverse {
+    background: var(--color-text-on-dark);
+    color: var(--color-bg-dark);
+  }
+  .btn--inverse:hover:not(:disabled):not([aria-disabled='true']) {
+    opacity: 0.92;
+    transform: translateY(-1px);
+  }
+
+  /* --- Full width --- */
+  .btn--full { width: 100%; }
+
+  /* --- Disabled --- */
+  .btn:disabled,
+  .btn[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+  }
+
+  /* --- Loading state --- */
+  .btn--loading .btn__label { opacity: 0.7; }
+  .btn__spinner {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: btn-spin 1.2s linear infinite;
+  }
+  @keyframes btn-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn__spinner { animation: none; }
+    .btn:hover, .btn:active { transform: none !important; }
+  }
+</style>

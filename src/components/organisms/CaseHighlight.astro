@@ -1,0 +1,235 @@
+---
+/**
+ * CaseHighlight — organism.
+ * Одиночный кейс-блок (1-2 кейса) для industry-pages.
+ * Расширенный формат: H2 + Задача → Решение → Результат + Metrics + Disclaimer.
+ *
+ * Не путать с CaseCardsGrid (5 карточек на главной) — здесь полный формат.
+ *
+ * Источник:
+ * - 04_visuals/03-07-solutions.spec.md §Block: Кейс «расчётный пример»
+ * - 02_content/page_outlines/03-07.md §H2: Кейс
+ * - tone_of_voice.md §Edge cases — «Кейс расчётный»
+ * - components_atomic.md §Organisms (Case-card) — base
+ */
+
+import Chip from '@components/molecules/Chip.astro';
+
+export interface CaseMetric {
+  label: string;
+  value: string;
+}
+
+export interface CaseStoryArc {
+  /** Описание задачи. */
+  task: string;
+  /** Описание решения. */
+  solution: string;
+  /** Описание результата (с цифрой). */
+  result: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  /** Сегмент-чип. */
+  segmentLabel?: string;
+  title: string;
+  /** Структура «Задача / Решение / Результат». */
+  story: CaseStoryArc;
+  /** Цифры результата (опц.). */
+  metrics?: ReadonlyArray<CaseMetric>;
+  /** Признак расчётного примера (default: true для Wave 1 — все кейсы NDA). */
+  isCalculatedExample?: boolean;
+  /** Кастомный disclaimer (опц., если стандартный не подходит). */
+  disclaimer?: string;
+  /** id для anchor-scroll (default: 'case-highlight'). */
+  id?: string;
+}
+
+const {
+  heading,
+  eyebrow,
+  segmentLabel,
+  title,
+  story,
+  metrics = [],
+  isCalculatedExample = true,
+  disclaimer = 'Кейс расчётный — построен на основе реальных проектов с применением комплекта TERMY. Имя клиента не разглашается по NDA.',
+  id = 'case-highlight',
+} = Astro.props;
+---
+
+<section class="ch" id={id} aria-labelledby="ch-h2">
+  <div class="container">
+    {eyebrow && <p class="ch__eyebrow">{eyebrow}</p>}
+    <h2 id="ch-h2" class="ch__h2">{heading}</h2>
+
+    <article class="ch__card">
+      <header class="ch__head">
+        {segmentLabel && (
+          <Chip variant="default" size="sm">{segmentLabel}</Chip>
+        )}
+        <h3 class="ch__title">{title}</h3>
+      </header>
+
+      <dl class="ch__story">
+        <div class="ch__row">
+          <dt class="ch__label">Задача</dt>
+          <dd class="ch__text">{story.task}</dd>
+        </div>
+        <div class="ch__row">
+          <dt class="ch__label">Решение</dt>
+          <dd class="ch__text">{story.solution}</dd>
+        </div>
+        <div class="ch__row">
+          <dt class="ch__label">Результат</dt>
+          <dd class="ch__text ch__text--strong">{story.result}</dd>
+        </div>
+      </dl>
+
+      {metrics.length > 0 && (
+        <ul class="ch__metrics" role="list">
+          {metrics.map((m) => (
+            <li class="ch__metric">
+              <strong class="num">{m.value}</strong>
+              <span class="ch__metric-label">{m.label}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {isCalculatedExample && (
+        <p class="ch__disclaimer">
+          <span class="ch__tag">Расчётный пример</span>
+          {disclaimer}
+        </p>
+      )}
+    </article>
+  </div>
+</section>
+
+<style>
+  .ch {
+    padding-block: var(--spacing-8);
+    background: var(--color-bg-surface-warm);
+  }
+  .ch__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .ch__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-6);
+  }
+  .ch__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+    padding: var(--spacing-6);
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+  }
+  .ch__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+  .ch__title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--font-line-height-snug);
+  }
+  .ch__story {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    margin: 0;
+  }
+  .ch__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-1);
+    padding-block-start: var(--spacing-3);
+    border-block-start: 1px dashed var(--color-border-subtle);
+  }
+  .ch__row:first-child {
+    padding-block-start: 0;
+    border-block-start: none;
+  }
+  .ch__label {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+  }
+  .ch__text {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+  .ch__text--strong {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+  }
+  .ch__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-5);
+    margin: 0;
+    padding: var(--spacing-4) 0 0;
+    border-block-start: 1px solid var(--color-border-subtle);
+    list-style: none;
+  }
+  .ch__metric {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+  .ch__metric strong {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--font-line-height-tight);
+  }
+  .ch__metric-label {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+  }
+  .ch__disclaimer {
+    margin: 0;
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    line-height: var(--font-line-height-normal);
+  }
+  .ch__tag {
+    display: inline-block;
+    margin-inline-end: var(--spacing-2);
+    padding: 2px var(--spacing-2);
+    background: var(--color-feedback-error-bg);
+    color: var(--color-feedback-error);
+    border-radius: var(--radius-xs);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-letter-spacing-wide);
+    text-transform: uppercase;
+  }
+
+  @media (min-width: 768px) {
+    .ch__row {
+      grid-template-columns: 120px 1fr;
+      gap: var(--spacing-4);
+      align-items: baseline;
+    }
+    .ch__label {
+      padding-block-start: 4px;
+    }
+  }
+</style>

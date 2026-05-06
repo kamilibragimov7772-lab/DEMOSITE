@@ -1,0 +1,198 @@
+---
+/**
+ * ComparisonTable — organism.
+ * Сравнительная таблица: 2-N колонок × N строк.
+ * Использования:
+ *   - termopakety: Light vs Standart vs PRO (3 col × 8 rows)
+ *   - akkumulyatory-holoda: Cool vs Gel vs Freeze (3 col × 6 rows)
+ *   - zhidkie-hladoelementy: жидкие vs SHOCK твёрдые (2 col × 6 rows)
+ *   - termoshoppery: одноразовые vs многоразовые термосумки (2 col × 5 rows)
+ *
+ * Mobile: scrollable horizontally с sticky-first-col.
+ * Desktop: full-width sticky-top header.
+ *
+ * Состояния: default; row hover; current-highlight (опц., через rowHighlightIndex).
+ *
+ * Источник:
+ * - 04_visuals/09-14-*.spec.md §«Comparison table»
+ * - 02_content/page_outlines/09-14-*.md §«H2: Сравнительная таблица»
+ * - components_atomic.md §Organisms (Comparison-table)
+ */
+
+export interface ComparisonRow {
+  /** Первая колонка — параметр / характеристика. */
+  label: string;
+  /** Значения по колонкам (длина = columns.length). */
+  values: ReadonlyArray<string>;
+  /** Опц. подсказка / footnote. */
+  note?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  /** Lead-абзац (опц.). */
+  lead?: string;
+  /** Заголовки колонок (без первой колонки-параметров). */
+  columns: ReadonlyArray<string>;
+  rows: ReadonlyArray<ComparisonRow>;
+  /** Индекс колонки для подсветки (0-based, без учёта параметра). */
+  highlightCol?: number;
+  /** Опц. caption-aria для скрин-ридеров. */
+  caption?: string;
+  id?: string;
+}
+
+const { heading, eyebrow, lead, columns, rows, highlightCol, caption, id = 'compare' } = Astro.props;
+---
+
+<section class="cmp" id={id} aria-labelledby={`${id}-h2`}>
+  <div class="container">
+    {eyebrow && <p class="cmp__eyebrow">{eyebrow}</p>}
+    <h2 id={`${id}-h2`} class="cmp__h2">{heading}</h2>
+    {lead && <p class="cmp__lead">{lead}</p>}
+
+    <div class="cmp__scroll" tabindex="0" aria-label="Сравнительная таблица — прокручивайте горизонтально">
+      <table class="cmp__table">
+        {caption && <caption class="cmp__caption">{caption}</caption>}
+        <thead>
+          <tr>
+            <th scope="col" class="cmp__th cmp__th--param">Параметр</th>
+            {columns.map((c, idx) => (
+              <th
+                scope="col"
+                class={`cmp__th${highlightCol === idx ? ' cmp__th--hl' : ''}`}
+              >
+                {c}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr class="cmp__tr">
+              <th scope="row" class="cmp__th-row">
+                {r.label}
+                {r.note && <span class="cmp__note"> · {r.note}</span>}
+              </th>
+              {r.values.map((v, idx) => (
+                <td class={`cmp__td num${highlightCol === idx ? ' cmp__td--hl' : ''}`}>{v}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cmp {
+    padding-block: var(--spacing-7);
+    background: var(--color-bg-surface-warm);
+  }
+  .cmp__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .cmp__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-3);
+  }
+  .cmp__lead {
+    max-width: 64ch;
+    color: var(--color-text-secondary);
+    margin-block-end: var(--spacing-5);
+    line-height: var(--font-line-height-normal);
+  }
+
+  .cmp__scroll {
+    overflow-x: auto;
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+    box-shadow: var(--shadow-sm);
+  }
+  .cmp__scroll:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  .cmp__table {
+    width: 100%;
+    min-width: 480px;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+  }
+  .cmp__caption {
+    text-align: left;
+    padding: var(--spacing-3) var(--spacing-4);
+    color: var(--color-text-tertiary);
+    font-style: italic;
+    caption-side: top;
+  }
+
+  .cmp__th,
+  .cmp__th-row,
+  .cmp__td {
+    padding: var(--spacing-3) var(--spacing-4);
+    text-align: left;
+    vertical-align: top;
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+  .cmp__th {
+    background: var(--color-bg-surface-warm);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+    letter-spacing: var(--font-letter-spacing-snug);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  .cmp__th--param {
+    background: var(--color-bg-page);
+  }
+  .cmp__th--hl {
+    background: var(--color-overlay-brand-tint-low);
+    color: var(--color-action-primary);
+  }
+
+  .cmp__th-row {
+    background: var(--color-bg-page);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+    position: sticky;
+    inset-inline-start: 0;
+    z-index: 1;
+    min-width: 160px;
+  }
+  .cmp__note {
+    color: var(--color-text-tertiary);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-xs);
+  }
+
+  .cmp__td {
+    color: var(--color-text-secondary);
+    font-family: var(--font-family-monospace);
+  }
+  .cmp__td--hl {
+    background: var(--color-overlay-brand-tint-low);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .cmp__tr:hover .cmp__td,
+  .cmp__tr:hover .cmp__th-row {
+    background: var(--color-bg-surface);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cmp__tr { transition: none; }
+  }
+</style>

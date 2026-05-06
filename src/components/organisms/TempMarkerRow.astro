@@ -1,0 +1,154 @@
+---
+/**
+ * TempMarkerRow — organism.
+ * Ряд из 4 temperature-marker'ов (Cool / Below / Deep / Hot).
+ *
+ * Каждый маркер — фирменный элемент brandbook (gradient + температурный режим + label).
+ * Decorative — non-interactive по умолчанию, но можно сделать ссылками на категорию/продукт.
+ *
+ * Источник:
+ * - 04_visuals/06-solutions-proizvoditeli.spec.md §Block: Temperature-marker row
+ * - components_atomic.md §Atoms (Temperature marker — фирменный) — line 47
+ * - tokens.json: temp-cool/below/deep/hot-* gradients
+ * - brandbook стр. 24
+ */
+
+export interface TempMarker {
+  /** Режим: cool (+2..+8), below (<0), deep (-15), hot (≥+45). */
+  mode: 'cool' | 'below' | 'deep' | 'hot';
+  /** Видимая температура (е.g. «+2…+8°C», «−15°C»). */
+  temperature: string;
+  /** Подпись режима / контекст применения (е.g. «свежие продукты», «глубокая заморозка»). */
+  label: string;
+  /** Опц. ссылка на PDP / категорию (трансформирует marker в clickable link). */
+  href?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  /** Lead-абзац (опц.). */
+  lead?: string;
+  markers: ReadonlyArray<TempMarker>;
+}
+
+const { heading, eyebrow, lead, markers } = Astro.props;
+---
+
+<section class="tmr" aria-labelledby="tmr-h2">
+  <div class="container">
+    {eyebrow && <p class="tmr__eyebrow">{eyebrow}</p>}
+    <h2 id="tmr-h2" class="tmr__h2">{heading}</h2>
+    {lead && <p class="tmr__lead">{lead}</p>}
+
+    <ul class="tmr__row" role="list">
+      {markers.map((m: TempMarker) => (
+        <li>
+          {m.href ? (
+            <a
+              class={`tmr__marker tmr__marker--${m.mode}`}
+              href={m.href}
+              aria-label={`${m.label}, ${m.temperature}`}
+            >
+              <span class="tmr__temp num">{m.temperature}</span>
+              <span class="tmr__label">{m.label}</span>
+            </a>
+          ) : (
+            <div class={`tmr__marker tmr__marker--${m.mode}`}>
+              <span class="tmr__temp num">{m.temperature}</span>
+              <span class="tmr__label">{m.label}</span>
+            </div>
+          )}
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .tmr {
+    padding-block: var(--spacing-7);
+    background: var(--color-bg-page);
+  }
+  .tmr__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .tmr__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-3);
+  }
+  .tmr__lead {
+    max-width: 56ch;
+    color: var(--color-text-secondary);
+    margin-block-end: var(--spacing-5);
+    line-height: var(--font-line-height-normal);
+  }
+  .tmr__row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tmr__marker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-5) var(--spacing-3);
+    border-radius: var(--radius-base);
+    color: var(--color-text-on-dark);
+    text-align: center;
+    text-decoration: none;
+    min-height: 120px;
+    transition: transform var(--duration-fast) var(--easing-standard),
+                box-shadow var(--duration-fast) var(--easing-standard);
+  }
+  .tmr__marker--cool {
+    background: linear-gradient(135deg, var(--color-temp-cool-start), var(--color-temp-cool-end));
+  }
+  .tmr__marker--below {
+    background: linear-gradient(135deg, var(--color-temp-below-start), var(--color-temp-below-end));
+  }
+  .tmr__marker--deep {
+    background: linear-gradient(135deg, var(--color-temp-deep-start), var(--color-temp-deep-end));
+  }
+  .tmr__marker--hot {
+    background: linear-gradient(135deg, var(--color-temp-hot-start), var(--color-temp-hot-end));
+  }
+
+  /* Hover only on linked markers. */
+  a.tmr__marker:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-base);
+  }
+
+  .tmr__temp {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-tight);
+    line-height: var(--font-line-height-tight);
+  }
+  .tmr__label {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--font-line-height-snug);
+    opacity: 0.95;
+  }
+
+  @media (min-width: 768px) {
+    .tmr__row { grid-template-columns: repeat(4, 1fr); }
+    .tmr__marker { min-height: 140px; }
+    .tmr__temp { font-size: var(--font-size-2xl); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    a.tmr__marker:hover { transform: none; }
+  }
+</style>

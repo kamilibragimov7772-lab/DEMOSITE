@@ -1,0 +1,189 @@
+---
+/**
+ * DeliveryMap — organism.
+ * Таблица регионов / зон доставки: способ × сроки × стоимость × МОЗ.
+ *
+ * Honest tone: «доставим за один день» — НЕТ. Только конкретные сроки по зонам.
+ * Mobile: scrollable horizontally (как ComparisonTable).
+ *
+ * Composition: H2 + lead + table (зона × срок × стоимость × МОЗ).
+ * Состояния: default; row hover (bg-surface); sticky-thead.
+ *
+ * Источник:
+ * - 02_content/page_outlines/30-delivery.md §«H2: Способы и сроки доставки» + §«H2: Доставка по СНГ»
+ *   (spec.md для /delivery/ отсутствует в phase 4 — derived from outline; см. escalations).
+ */
+
+export interface DeliveryRow {
+  /** Зона / способ (Москва — самовывоз, Москва+МО курьер, РФ ТК, СНГ). */
+  zone: string;
+  /** Срок (24 ч / 1-3 дня / 5-10 дней). */
+  term: string;
+  /** Стоимость (бесплатно / по тарифу ТК / договорная). */
+  price: string;
+  /** МОЗ (опц.). */
+  moq?: string;
+  /** Заметка / footnote (опц.). */
+  note?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  lead?: string;
+  rows: ReadonlyArray<DeliveryRow>;
+  /** Опц. caption для скрин-ридеров. */
+  caption?: string;
+  id?: string;
+}
+
+const { heading, eyebrow, lead, rows, caption, id = 'delivery-map' } = Astro.props;
+---
+
+<section class="dm" id={id} aria-labelledby={`${id}-h2`}>
+  <div class="container">
+    {eyebrow && <p class="dm__eyebrow">{eyebrow}</p>}
+    <h2 id={`${id}-h2`} class="dm__h2">{heading}</h2>
+    {lead && <p class="dm__lead">{lead}</p>}
+
+    <div class="dm__scroll" tabindex="0" aria-label="Таблица условий доставки — прокручивайте горизонтально">
+      <table class="dm__table">
+        {caption && <caption class="dm__caption">{caption}</caption>}
+        <thead>
+          <tr>
+            <th scope="col" class="dm__th dm__th--zone">Зона / способ</th>
+            <th scope="col" class="dm__th">Срок</th>
+            <th scope="col" class="dm__th">Стоимость</th>
+            <th scope="col" class="dm__th">МОЗ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => (
+            <tr class="dm__row">
+              <th scope="row" class="dm__rh">{r.zone}</th>
+              <td class="dm__td num">{r.term}</td>
+              <td class="dm__td">{r.price}</td>
+              <td class="dm__td num">{r.moq ?? '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    {rows.some((r) => r.note) && (
+      <ul class="dm__notes">
+        {rows.filter((r) => r.note).map((r) => (
+          <li class="dm__note">
+            <strong>{r.zone}:</strong> {r.note}
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</section>
+
+<style>
+  .dm {
+    padding-block: var(--spacing-8);
+  }
+  .dm__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .dm__h2 {
+    max-width: 36ch;
+    margin-block-end: var(--spacing-4);
+  }
+  .dm__lead {
+    max-width: 60ch;
+    margin-block-end: var(--spacing-6);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: var(--font-line-height-normal);
+  }
+
+  .dm__scroll {
+    overflow-x: auto;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    background: var(--color-bg-page);
+    -webkit-overflow-scrolling: touch;
+  }
+  .dm__scroll:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  .dm__table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+  }
+  .dm__caption {
+    text-align: start;
+    padding: var(--spacing-3) var(--spacing-4);
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--font-letter-spacing-widest);
+    caption-side: top;
+  }
+
+  .dm__th, .dm__rh, .dm__td {
+    padding: var(--spacing-3) var(--spacing-4);
+    text-align: start;
+    vertical-align: top;
+    border-block-end: 1px solid var(--color-border-subtle);
+  }
+  .dm__th {
+    background: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--font-letter-spacing-widest);
+    position: sticky;
+    top: 0;
+  }
+  .dm__th--zone {
+    min-width: 200px;
+  }
+  .dm__rh {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    background: var(--color-bg-page);
+  }
+  .dm__td {
+    color: var(--color-text-secondary);
+  }
+  .dm__row:hover .dm__rh,
+  .dm__row:hover .dm__td {
+    background: var(--color-bg-surface);
+  }
+  .dm__row:last-child .dm__rh,
+  .dm__row:last-child .dm__td {
+    border-block-end: none;
+  }
+
+  .dm__notes {
+    list-style: none;
+    margin: var(--spacing-4) 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+  .dm__note {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+  }
+  .dm__note strong {
+    color: var(--color-text-primary);
+  }
+</style>

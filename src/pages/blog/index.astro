@@ -1,0 +1,224 @@
+---
+/**
+ * /blog/ — листинг блога.
+ *
+ * Wave 1: один SEO-якорь («Сколько часов термопакет держит холод») + плейсхолдеры
+ * для grid-разметки. Wave 2 — добавляются дополнительные посты (~9 статей).
+ *
+ * Schema.org: CollectionPage + BreadcrumbList.
+ */
+
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import CardBase from '@components/molecules/CardBase.astro';
+import Chip from '@components/molecules/Chip.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { collectionPage, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const breadcrumbs = [
+  { name: 'Главная', url: siteUrl },
+  { name: 'Блог',    url: `${siteUrl}blog/` },
+];
+
+// Все опубликованные посты, отсортированные по дате (новые сверху)
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+
+const schema = [
+  collectionPage({
+    name: 'Блог TERMY',
+    description: 'Технические статьи и кейсы по термоупаковке: тесты, протоколы, подбор комплекта под задачу.',
+    numberOfItems: posts.length,
+  }),
+  breadcrumbList(breadcrumbs),
+];
+
+function formatDateRu(d: Date): string {
+  return new Intl.DateTimeFormat('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(d);
+}
+---
+
+<BaseLayout
+  title="Блог TERMY — технические статьи о термоупаковке"
+  description="Тесты, протоколы, подбор комплектов: как работает термопакет, сколько держит SHOCK®, как считать комплект под маршрут."
+  ogType="website"
+  ogImage="/assets/og/og-blog.jpg"
+  schema={schema}
+>
+  <div class="container">
+    <Breadcrumbs items={breadcrumbs} />
+  </div>
+
+  {/* Hero */}
+  <section class="bl-hero" aria-labelledby="bl-h1">
+    <div class="container bl-hero__inner">
+      <p class="bl-hero__eyebrow">Блог</p>
+      <h1 id="bl-h1" class="bl-hero__h1">Технические статьи о термоупаковке</h1>
+      <p class="bl-hero__lead">
+        Тесты, протоколы, подбор комплектов. Без маркетинга — конкретные цифры
+        и понятные графики.
+      </p>
+    </div>
+  </section>
+
+  {/* Posts grid */}
+  <section class="bl-list" aria-labelledby="bl-list-h">
+    <div class="container">
+      <h2 id="bl-list-h" class="bl-list__h">Все статьи</h2>
+
+      {posts.length === 0 ? (
+        <p class="bl-list__empty">
+          Скоро здесь будут опубликованы технические статьи. Пока — следите за
+          обновлениями или подпишитесь на email-рассылку через форму прайс-листа в подвале.
+        </p>
+      ) : (
+        <ul class="bl-list__grid" role="list">
+          {posts.map((post) => {
+            const href = `/blog/${post.id.replace(/\.mdx?$/, '')}/`;
+            return (
+              <li>
+                <CardBase href={href}>
+                  <div slot="eyebrow">
+                    {post.data.tags.length > 0 && (
+                      <Chip variant="default" size="sm">{post.data.tags[0]}</Chip>
+                    )}
+                  </div>
+                  <h3 slot="title" class="bl-list__title">{post.data.title}</h3>
+                  <p class="bl-list__excerpt">{post.data.excerpt}</p>
+                  <p class="bl-list__meta" slot="meta">
+                    <time datetime={post.data.pubDate.toISOString()}>{formatDateRu(post.data.pubDate)}</time>
+                    {post.data.tags.length > 1 && (
+                      <span class="bl-list__tags">
+                        {post.data.tags.slice(1).map((t) => (
+                          <span class="bl-list__tag">#{t}</span>
+                        ))}
+                      </span>
+                    )}
+                  </p>
+                  <span slot="cta" class="bl-list__arrow">Читать →</span>
+                </CardBase>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  </section>
+
+  {/* Internal cluster */}
+  <section class="bl-cluster" aria-labelledby="bl-cluster-h">
+    <div class="container">
+      <h2 id="bl-cluster-h" class="bl-cluster__h">По темам блога</h2>
+      <p class="bl-cluster__lead">
+        Связанные разделы каталога и решений — для тех, кто пришёл из статьи и хочет сразу к продукту.
+      </p>
+      <ul class="bl-cluster__list" role="list">
+        <li><a href="/products/termopakety/" class="bl-cluster__link">Каталог термопакетов →</a></li>
+        <li><a href="/products/akkumulyatory-holoda/" class="bl-cluster__link">Аккумуляторы SHOCK® →</a></li>
+        <li><a href="/solutions/dostavka/" class="bl-cluster__link">Решения для доставки →</a></li>
+        <li><a href="/cases/" class="bl-cluster__link">Все кейсы →</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <StickyWhatsApp />
+</BaseLayout>
+
+<style>
+  .bl-hero { padding-block: var(--spacing-6) var(--spacing-7); background: var(--color-bg-page); }
+  .bl-hero__inner { display: flex; flex-direction: column; gap: var(--spacing-3); max-width: 800px; }
+  .bl-hero__eyebrow {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .bl-hero__h1 {
+    margin: 0;
+    font-size: var(--font-size-h1-fluid);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tighter);
+  }
+  .bl-hero__lead { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-md); line-height: var(--font-line-height-normal); }
+
+  .bl-list { padding-block: var(--spacing-7) var(--spacing-8); background: var(--color-bg-page); }
+  .bl-list__h { margin-block-end: var(--spacing-5); }
+  .bl-list__empty {
+    padding: var(--spacing-6);
+    background: var(--color-bg-surface);
+    border: 1px dashed var(--color-border-default);
+    border-radius: var(--radius-base);
+    color: var(--color-text-secondary);
+    text-align: center;
+    line-height: var(--font-line-height-normal);
+  }
+  .bl-list__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .bl-list__title { font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); }
+  .bl-list__excerpt { color: var(--color-text-secondary); line-height: var(--font-line-height-normal); }
+  .bl-list__meta {
+    margin: var(--spacing-3) 0 0;
+    padding-block-start: var(--spacing-3);
+    border-block-start: 1px solid var(--color-border-subtle);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-3);
+    align-items: center;
+  }
+  .bl-list__tags { display: inline-flex; flex-wrap: wrap; gap: var(--spacing-2); }
+  .bl-list__tag { color: var(--color-text-tertiary); }
+  .bl-list__arrow {
+    margin-block-start: var(--spacing-2);
+    color: var(--color-action-primary);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+  }
+
+  .bl-cluster { padding-block: var(--spacing-7); background: var(--color-bg-surface-warm); }
+  .bl-cluster__h { margin-block-end: var(--spacing-3); }
+  .bl-cluster__lead { max-width: 56ch; color: var(--color-text-secondary); margin-block-end: var(--spacing-5); line-height: var(--font-line-height-normal); }
+  .bl-cluster__list { display: grid; grid-template-columns: 1fr; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+  .bl-cluster__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    color: var(--color-action-primary);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    transition: border-color var(--duration-fast) var(--easing-standard);
+  }
+  .bl-cluster__link:hover, .bl-cluster__link:focus-visible {
+    border-color: var(--color-action-primary);
+  }
+
+  @media (min-width: 768px) {
+    .bl-list__grid { grid-template-columns: repeat(2, 1fr); }
+    .bl-cluster__list { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .bl-list__grid { grid-template-columns: repeat(3, 1fr); }
+    .bl-cluster__list { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>

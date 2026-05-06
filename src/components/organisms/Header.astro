@@ -1,0 +1,399 @@
+---
+/**
+ * Header — organism.
+ * Composition: Logo + Nav (5 items) + Phone + WhatsApp + «Получить расчёт» Primary CTA + Mobile drawer.
+ *
+ * Sticky-режим: стиль toggling — через CSS sticky без JS scroll-listener.
+ * Mobile-drawer — `<details>` element для accessibility-first без JS.
+ *
+ * Источники:
+ * - 01_ia/sitemap.md §3 (header navigation)
+ * - 03_design_system/components_atomic.md §Organisms (Header)
+ * - tone_of_voice.md (CTA «Получить расчёт»; «Позвонить +7…»; «Написать в WhatsApp»)
+ */
+
+import { PRIMARY_NAV } from '@lib/nav';
+import { ORG_PHONE } from '@lib/schema';
+import Button from '@components/atoms/Button.astro';
+
+const currentPath = Astro.url.pathname;
+
+const isActive = (href: string): boolean => {
+  if (href === '/') return currentPath === '/';
+  return currentPath.startsWith(href);
+};
+
+const phoneHref = `tel:${ORG_PHONE.replace(/[^+\d]/g, '')}`;
+const whatsappHref = `https://wa.me/${ORG_PHONE.replace(/[^\d]/g, '')}`;
+---
+
+<header class="hdr" role="banner">
+  <div class="hdr__inner container">
+    <a class="hdr__logo" href="/" aria-label="TERMY — на главную">
+      <span class="hdr__logo-text">TERMY<span class="hdr__logo-star" aria-hidden="true"><svg viewBox="-50 -50 100 100" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><rect x="-7" y="-44" width="14" height="88" rx="3"/><rect x="-7" y="-44" width="14" height="88" rx="3" transform="rotate(60)"/><rect x="-7" y="-44" width="14" height="88" rx="3" transform="rotate(120)"/></g></svg></span></span>
+    </a>
+
+    <nav class="hdr__nav" aria-label="Основная навигация">
+      <ul class="hdr__nav-list" role="list">
+        {PRIMARY_NAV.map((item) => (
+          <li class="hdr__nav-item">
+            {item.children && item.children.length > 0 ? (
+              <details class="hdr__menu">
+                <summary
+                  class={`hdr__menu-summary${isActive(item.href) ? ' is-active' : ''}`}
+                  aria-haspopup="menu"
+                >
+                  <a class="hdr__menu-link" href={item.href}>{item.label}</a>
+                  <span class="hdr__chevron" aria-hidden="true">▾</span>
+                </summary>
+                <ul class="hdr__submenu" role="list">
+                  {item.children.map((child) => (
+                    <li>
+                      <a
+                        class={`hdr__sublink${isActive(child.href) ? ' is-active' : ''}`}
+                        href={child.href}
+                      >{child.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ) : (
+              <a
+                class={`hdr__link${isActive(item.href) ? ' is-active' : ''}`}
+                href={item.href}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+              >{item.label}</a>
+            )}
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="hdr__actions">
+      <a class="hdr__phone" href={phoneHref} aria-label={`Позвонить ${ORG_PHONE}`}>
+        <span aria-hidden="true">☎</span>
+        <span class="hdr__phone-text">{ORG_PHONE}</span>
+      </a>
+      <a class="hdr__wa" href={whatsappHref} target="_blank" rel="noopener noreferrer" aria-label="Написать в WhatsApp">
+        WhatsApp
+      </a>
+      <Button variant="primary" size="sm" href="/contacts/#cta">Получить расчёт</Button>
+    </div>
+
+    <details class="hdr__drawer">
+      <summary class="hdr__burger" aria-label="Открыть меню" aria-controls="hdr-drawer-content">
+        <span class="hdr__burger-line" aria-hidden="true"></span>
+        <span class="hdr__burger-line" aria-hidden="true"></span>
+        <span class="hdr__burger-line" aria-hidden="true"></span>
+      </summary>
+      <nav id="hdr-drawer-content" class="hdr__drawer-nav" aria-label="Мобильная навигация">
+        <ul role="list">
+          {PRIMARY_NAV.flatMap((item) =>
+            item.children && item.children.length > 0
+              ? [
+                  <li><a href={item.href} class="hdr__drawer-link hdr__drawer-link--parent">{item.label}</a></li>,
+                  ...item.children.map((child) => (
+                    <li><a href={child.href} class="hdr__drawer-link hdr__drawer-link--child">— {child.label}</a></li>
+                  )),
+                ]
+              : [<li><a href={item.href} class="hdr__drawer-link hdr__drawer-link--parent">{item.label}</a></li>],
+          )}
+        </ul>
+        <div class="hdr__drawer-actions">
+          <a href={phoneHref} class="hdr__drawer-link">{ORG_PHONE}</a>
+          <a href={whatsappHref} class="hdr__drawer-link" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          <Button variant="primary" size="base" href="/contacts/#cta" fullWidth>Получить расчёт</Button>
+        </div>
+      </nav>
+    </details>
+  </div>
+</header>
+
+<script is:inline>
+/* Hover-driven dropdown для desktop. На touch (no hover) — нативный <details> click. */
+(() => {
+  if (!matchMedia('(hover: hover)').matches) return;
+  const menus = document.querySelectorAll('.hdr__menu');
+  menus.forEach((m) => {
+    let closeTimer = null;
+    const open = () => { clearTimeout(closeTimer); m.setAttribute('open', ''); };
+    const close = () => { closeTimer = setTimeout(() => m.removeAttribute('open'), 150); };
+    m.addEventListener('mouseenter', open);
+    m.addEventListener('mouseleave', close);
+    m.addEventListener('focusin', open);
+    m.addEventListener('focusout', (e) => { if (!m.contains(e.relatedTarget)) close(); });
+    /* Click on summary/link still works as expected — на главной ссылку. Native [open] toggle на mobile. */
+  });
+})();
+</script>
+
+<style>
+  .hdr {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    background: var(--color-bg-page);
+    border-bottom: 1px solid var(--color-border-subtle);
+    transition: box-shadow var(--duration-fast) var(--easing-standard);
+  }
+  .hdr:hover { box-shadow: var(--shadow-sm); }
+
+  .hdr__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    min-height: 64px;
+    padding-block: var(--spacing-3);
+  }
+
+  /* Logo */
+  .hdr__logo {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--spacing-1);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    font-weight: var(--font-weight-extrabold);
+    font-size: var(--font-size-xl);
+    letter-spacing: var(--font-letter-spacing-tighter);
+    flex-shrink: 0;
+  }
+  .hdr__logo-text { font-feature-settings: 'cv11'; }
+  .hdr__logo:hover { opacity: 0.92; }
+
+  /* SVG-звёздочка у лого. 6-конечная, нарисована вокруг 0,0 → строго центрированное вращение. */
+  .hdr__logo-star {
+    display: inline-block;
+    width: 0.32em;
+    height: 0.32em;
+    margin-inline-start: 0.08em;
+    color: var(--color-action-primary);
+    vertical-align: top;
+    line-height: 1;
+    /* Поднимаем звёздочку, имитируя positioning <sup>. */
+    transform: translateY(0.04em);
+  }
+  .hdr__logo-star svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    transform-origin: 50% 50%;
+    animation: hdr-star-spin 8s linear infinite;
+    will-change: transform;
+  }
+  @keyframes hdr-star-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* Nav (desktop) */
+  .hdr__nav { display: none; flex: 1 1 auto; }
+  .hdr__nav-list {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .hdr__link,
+  .hdr__menu-link {
+    display: inline-flex;
+    align-items: center;
+    height: 44px;
+    padding-inline: var(--spacing-2);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border-radius: var(--radius-xs);
+    transition: color var(--duration-fast) var(--easing-standard);
+  }
+  .hdr__link:hover,
+  .hdr__menu-link:hover { color: var(--color-action-primary); }
+  .hdr__link.is-active,
+  .hdr__menu-summary.is-active .hdr__menu-link { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); }
+
+  /* Dropdown menu */
+  .hdr__menu { position: relative; }
+  .hdr__menu-summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    cursor: pointer;
+    list-style: none;
+  }
+  .hdr__menu-summary::-webkit-details-marker { display: none; }
+  .hdr__chevron {
+    color: var(--color-text-tertiary);
+    transition: transform var(--duration-fast) var(--easing-standard);
+  }
+  .hdr__menu[open] .hdr__chevron,
+  .hdr__menu:hover .hdr__chevron,
+  .hdr__menu:focus-within .hdr__chevron { transform: rotate(180deg); }
+
+  .hdr__submenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 240px;
+    margin: 0;
+    padding: var(--spacing-3);
+    list-style: none;
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+    box-shadow: var(--shadow-base);
+    z-index: var(--z-elevated);
+  }
+
+  /* === Desktop / hover-capable: открытие dropdown по hover (без необходимости клика).
+     На touch-устройствах (hover: none) используется нативный <details> click. === */
+  @media (hover: hover) {
+    /* Невидимый «мостик» 8px сверху submenu, чтобы курсор не терял hover при движении. */
+    .hdr__menu .hdr__submenu::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 0;
+      right: 0;
+      height: 8px;
+    }
+    /* Default rendered, но скрыт. Important чтобы перекрыть native <details> closed. */
+    .hdr__menu .hdr__submenu {
+      display: block !important;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-4px);
+      pointer-events: none;
+      transition:
+        opacity var(--duration-fast) var(--easing-standard),
+        transform var(--duration-fast) var(--easing-standard),
+        visibility 0s linear var(--duration-fast);
+    }
+    /* Show on hover / focus-within / [open] */
+    .hdr__menu:hover .hdr__submenu,
+    .hdr__menu:focus-within .hdr__submenu,
+    .hdr__menu[open] .hdr__submenu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      pointer-events: auto;
+      transition-delay: 0s;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hdr__menu .hdr__submenu { transition: none; transform: none; }
+  }
+  .hdr__sublink {
+    display: block;
+    padding: var(--spacing-2) var(--spacing-3);
+    color: var(--color-text-primary);
+    border-radius: var(--radius-xs);
+    text-decoration: none;
+    font-size: var(--font-size-base);
+    transition: background var(--duration-fast) var(--easing-standard), color var(--duration-fast) var(--easing-standard);
+  }
+  .hdr__sublink:hover { background: var(--color-bg-surface); color: var(--color-action-primary); }
+  .hdr__sublink.is-active { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); }
+
+  /* Actions (desktop) */
+  .hdr__actions {
+    display: none;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin-inline-start: auto;
+  }
+  .hdr__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .hdr__phone:hover { color: var(--color-action-primary); }
+  .hdr__wa {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    padding-inline: var(--spacing-3);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-pill);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    transition: border-color var(--duration-fast) var(--easing-standard), color var(--duration-fast) var(--easing-standard);
+  }
+  .hdr__wa:hover { border-color: var(--color-action-primary); color: var(--color-action-primary); }
+
+  /* Drawer (mobile) */
+  .hdr__drawer { margin-inline-start: auto; }
+  .hdr__burger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-sm);
+    list-style: none;
+  }
+  .hdr__burger::-webkit-details-marker { display: none; }
+  .hdr__burger-line {
+    display: block;
+    height: 2px;
+    background: var(--color-text-primary);
+    border-radius: 1px;
+    transition: transform var(--duration-fast) var(--easing-standard), opacity var(--duration-fast) var(--easing-standard);
+  }
+  .hdr__drawer[open] .hdr__burger-line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hdr__drawer[open] .hdr__burger-line:nth-child(2) { opacity: 0; }
+  .hdr__drawer[open] .hdr__burger-line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .hdr__drawer-nav {
+    position: absolute;
+    top: 100%;
+    inset-inline: 0;
+    padding: var(--spacing-5);
+    background: var(--color-bg-page);
+    border-top: 1px solid var(--color-border-subtle);
+    box-shadow: var(--shadow-base);
+  }
+  .hdr__drawer-nav ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--spacing-2); }
+  .hdr__drawer-link {
+    display: block;
+    min-height: 44px;
+    padding: var(--spacing-3) var(--spacing-2);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    font-size: var(--font-size-md);
+  }
+  .hdr__drawer-link--parent { font-weight: var(--font-weight-semibold); }
+  .hdr__drawer-link--child { color: var(--color-text-secondary); padding-inline-start: var(--spacing-4); }
+  .hdr__drawer-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    margin-block-start: var(--spacing-5);
+    padding-block-start: var(--spacing-4);
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
+
+  @media (min-width: 1024px) {
+    .hdr__nav { display: block; }
+    .hdr__actions { display: inline-flex; }
+    .hdr__drawer { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hdr__chevron, .hdr__burger-line { transition: none; }
+    .hdr__logo-star { animation: none; }
+  }
+</style>

@@ -1,0 +1,164 @@
+---
+/**
+ * AdvantagesMatrix — organism.
+ * Grid 7-8 differentiator-cards (Number-badge + Title + Body + опц. CTA-link).
+ *
+ * Не путать с AdvantagesGrid (который используется на главной для 5-6 общих преимуществ
+ * с иконками). AdvantagesMatrix — расширенный вариант для /about/advantages/ —
+ * с number-badge, ссылкой cross-link на products/solutions и поддержкой 7+ карточек.
+ *
+ * Composition: H2 + lead + grid (1-col mobile / 2-col tablet / 3-col desktop).
+ * Состояния: default / hover (border-focus + translateY-2) / focus-within / disabled.
+ *
+ * Источник:
+ * - 04_visuals/18-advantages.spec.md §«Block: 7 differentiator-cards»
+ * - 02_content/page_outlines/18-advantages.md §«H2: 1…8 преимуществ»
+ */
+
+import CardBase from '@components/molecules/CardBase.astro';
+
+export interface AdvantageItem {
+  /** Номер 1-9 (показывается badge'ем). */
+  number: number;
+  /** Заголовок преимущества. */
+  title: string;
+  /** Описание. */
+  description: string;
+  /** Опц. cross-link (label + href). */
+  link?: { label: string; href: string };
+  /** Опц. эмоджи / иконка-хинт (TODO replace with SVG в phase 8). */
+  icon?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  lead?: string;
+  items: ReadonlyArray<AdvantageItem>;
+  id?: string;
+}
+
+const { heading, eyebrow, lead, items, id = 'advantages-matrix' } = Astro.props;
+---
+
+<section class="adv" id={id} aria-labelledby={`${id}-h2`}>
+  <div class="container">
+    {eyebrow && <p class="adv__eyebrow">{eyebrow}</p>}
+    <h2 id={`${id}-h2`} class="adv__h2">{heading}</h2>
+    {lead && <p class="adv__lead">{lead}</p>}
+
+    <ul class="adv__grid" role="list">
+      {items.map((item) => (
+        <li>
+          <CardBase>
+            <div slot="eyebrow" class="adv__head">
+              <span class="adv__num num" aria-hidden="true">{item.number}</span>
+              {item.icon && <span class="adv__icon" aria-hidden="true">{item.icon}</span>}
+            </div>
+            <h3 slot="title" class="adv__title">{item.title}</h3>
+            <p class="adv__desc">{item.description}</p>
+            {item.link && (
+              <a slot="cta" class="adv__link" href={item.link.href}>
+                {item.link.label}
+              </a>
+            )}
+          </CardBase>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .adv {
+    padding-block: var(--spacing-8);
+  }
+  .adv__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .adv__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-4);
+  }
+  .adv__lead {
+    max-width: 60ch;
+    margin-block-end: var(--spacing-6);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: var(--font-line-height-normal);
+  }
+
+  .adv__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+  @media (min-width: 768px) {
+    .adv__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .adv__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .adv__head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin-block-end: var(--spacing-2);
+  }
+  .adv__num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding-inline: var(--spacing-3);
+    border-radius: var(--radius-pill);
+    background: linear-gradient(135deg, var(--color-action-primary), var(--color-brand-primary-end));
+    color: var(--color-text-on-brand);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+  }
+  .adv__icon {
+    font-size: var(--font-size-xl);
+    line-height: 1;
+  }
+  .adv__title {
+    margin: 0;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: 1.35;
+  }
+  .adv__desc {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+  .adv__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-block-start: var(--spacing-3);
+    color: var(--color-action-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--easing-standard);
+  }
+  .adv__link:hover {
+    color: var(--color-action-primary-hover);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+</style>

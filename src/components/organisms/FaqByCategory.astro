@@ -1,0 +1,214 @@
+---
+/**
+ * FaqByCategory — organism.
+ * FAQ сгруппированный по категориям. Каждая категория — H3 + native <details>/<summary>.
+ *
+ * Используется на /faq/ (5-7 категорий по ~5 Q&A).
+ * Wave 1: без JS-фильтра (chip-фильтр в spec — TODO в phase 8).
+ * Schema.org FAQPage генерируется отдельно через @lib/schema из родительской страницы
+ * (передаётся плоский список items в faqPage()).
+ *
+ * Composition: H2 (общий) + section[category] × N (каждая — H3 + список <details>).
+ * Состояния: default / hover / open / focus-visible — наследуются от FaqAccordion-стиля.
+ *
+ * Источник:
+ * - 02_content/page_outlines/31-faq.md §«H2: Заказ и оплата» … §«H2: Особые случаи»
+ *   (spec.md для /faq/ отсутствует в phase 4 — derived from outline; см. escalations).
+ */
+
+export interface FaqQA {
+  question: string;
+  answer: string;
+}
+
+export interface FaqCategory {
+  /** Slug — для anchor + groupName в <details name>. */
+  slug: string;
+  /** Заголовок категории (Заказ и оплата / Сроки / etc.). */
+  title: string;
+  /** Опц. иконка-эмоджи. */
+  icon?: string;
+  /** Опц. описание-абзац. */
+  description?: string;
+  items: ReadonlyArray<FaqQA>;
+}
+
+export interface Props {
+  /** Главный H2 секции (опц., если на странице один общий H1). */
+  heading?: string;
+  eyebrow?: string;
+  lead?: string;
+  categories: ReadonlyArray<FaqCategory>;
+  /** Heading-level для категорий: h2 (если общего H1 нет) или h3 (если H2 = heading). */
+  categoryHeadingLevel?: 'h2' | 'h3';
+  id?: string;
+}
+
+const {
+  heading,
+  eyebrow,
+  lead,
+  categories,
+  categoryHeadingLevel = 'h3',
+  id = 'faq-cat',
+} = Astro.props;
+
+const CatHeading = categoryHeadingLevel;
+---
+
+<section class="fc" id={id} aria-labelledby={heading ? `${id}-h2` : undefined}>
+  <div class="container">
+    {eyebrow && <p class="fc__eyebrow">{eyebrow}</p>}
+    {heading && <h2 id={`${id}-h2`} class="fc__h2">{heading}</h2>}
+    {lead && <p class="fc__lead">{lead}</p>}
+
+    {categories.map((cat) => (
+      <section
+        class="fc__cat"
+        id={`cat-${cat.slug}`}
+        aria-labelledby={`cat-${cat.slug}-h`}
+      >
+        <CatHeading id={`cat-${cat.slug}-h`} class="fc__cat-title">
+          {cat.icon && <span class="fc__cat-icon" aria-hidden="true">{cat.icon}</span>}
+          {cat.title}
+        </CatHeading>
+        {cat.description && <p class="fc__cat-desc">{cat.description}</p>}
+
+        <ul class="fc__list" role="list">
+          {cat.items.map((item) => (
+            <li>
+              <details class="fc__item" name={`fc-${cat.slug}`}>
+                <summary class="fc__summary">
+                  <span class="fc__q">{item.question}</span>
+                  <span class="fc__icon" aria-hidden="true">+</span>
+                </summary>
+                <div class="fc__answer">
+                  <p>{item.answer}</p>
+                </div>
+              </details>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</section>
+
+<style>
+  .fc {
+    padding-block: var(--spacing-8);
+  }
+  .fc__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .fc__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-4);
+  }
+  .fc__lead {
+    max-width: 60ch;
+    margin-block-end: var(--spacing-7);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: var(--font-line-height-normal);
+  }
+
+  .fc__cat {
+    margin-block-end: var(--spacing-7);
+  }
+  .fc__cat:last-child {
+    margin-block-end: 0;
+  }
+  .fc__cat-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin-block-end: var(--spacing-3);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+  .fc__cat-icon {
+    font-size: var(--font-size-xl);
+    line-height: 1;
+  }
+  .fc__cat-desc {
+    margin-block-end: var(--spacing-4);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+
+  .fc__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  /* Стили <details> — синхронизированы с FaqAccordion */
+  .fc__item {
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    overflow: hidden;
+    transition: border-color var(--duration-fast) var(--easing-standard);
+  }
+  .fc__item[open] { border-color: var(--color-border-focus); }
+  .fc__item:hover { background: var(--color-bg-surface); }
+
+  .fc__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4) var(--spacing-5);
+    min-height: 56px;
+    cursor: pointer;
+    list-style: none;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-md);
+    color: var(--color-text-primary);
+  }
+  .fc__summary::-webkit-details-marker { display: none; }
+  .fc__q { flex: 1 1 auto; line-height: 1.4; }
+  .fc__icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-pill);
+    color: var(--color-action-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    transition: transform var(--duration-normal) var(--easing-standard);
+  }
+  .fc__item[open] .fc__icon {
+    transform: rotate(45deg);
+    background: var(--color-action-primary);
+    color: var(--color-text-on-brand);
+    border-color: var(--color-action-primary);
+  }
+
+  .fc__answer {
+    padding: 0 var(--spacing-5) var(--spacing-5);
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+  .fc__answer p { margin: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fc__item, .fc__icon { transition: none; }
+  }
+</style>

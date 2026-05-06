@@ -1,0 +1,56 @@
+---
+/**
+ * /products/bablpak/ — Тонкий wrapper над единым каталогом.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import CatalogPage from '@components/organisms/CatalogPage.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { collectionPage, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const schema = [
+  collectionPage({
+    name: 'БаблПак TERMY',
+    description: 'Воздушно-пузырьковая плёнка с фольгой. 13 SKU: серебро + чёрный мат, 10 размеров.',
+    numberOfItems: 13,
+  }),
+  breadcrumbList([
+    { name: 'Главная', url: siteUrl },
+    { name: 'Каталог', url: `${siteUrl}products/` },
+    { name: 'БаблПак', url: `${siteUrl}products/bablpak/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="БаблПак TERMY"
+  description="БаблПак TERMY: ВПП-плёнка с фольгой, 13 SKU, серебро и чёрный мат, размеры от 130×170 до 370×480 мм."
+  ogType="website"
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'Каталог', href: '/products/' },
+      { name: 'БаблПак' },
+    ]}
+  />
+
+  <CatalogPage initialCategory="bablpak" />
+
+  <FormBlock id="cta" variant="lead" eyebrow="Получить КП"
+    heading="Получить КП по БаблПак"
+    description="Менеджер свяжется в течение 2 часов с прайсом и MOQ."
+    submitLabel="Получить КП →" />
+
+  <PreFooterCta heading="Готовы посчитать?" lead="Напишите в WhatsApp — менеджер ответит сразу."
+    primaryCta={{ label: 'Написать в WhatsApp', href: 'https://wa.me/78001011525' }}
+    secondaryCta={{ label: 'Позвонить +7 (800) 101-15-25', href: 'tel:+78001011525' }} />
+
+  <StickyWhatsApp />
+</BaseLayout>

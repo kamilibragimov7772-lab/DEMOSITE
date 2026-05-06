@@ -1,0 +1,167 @@
+---
+/**
+ * DocumentsList — organism.
+ * Список compliance-документов с PDF-download кнопками.
+ *
+ * Семантически — раздел «Документы и протоколы испытаний» на industry-pages.
+ * Используется TrustStrip для отображения 4 главных сертификатов на главной;
+ * этот компонент — для расширенного списка PDF на industry-страницах.
+ *
+ * Источник:
+ * - 04_visuals/03-07-solutions.spec.md §Block: Trust + Документы
+ * - tone_of_voice.md §Inline CTA «Скачать <док> →»
+ * - components_atomic.md §Organisms (Trust strip + Documents)
+ */
+
+import Button from '@components/atoms/Button.astro';
+
+export interface DocumentItem {
+  /** Имя документа (e.g. «ГОСТ Р 50962-96 (на SHOCK)»). */
+  title: string;
+  /** Краткое описание (опц.). */
+  description?: string;
+  /** Полный CTA-текст из tone-canon (e.g. «Скачать протокол испытаний №012/A-27/02/25 →»). */
+  ctaLabel: string;
+  /** Путь к PDF (или внешняя ссылка). */
+  href: string;
+  /** Размер файла, опц. (e.g. «PDF, 1.2 МБ»). */
+  size?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  /** Lead-абзац (опц., для compliance / disclaimer-строки). */
+  lead?: string;
+  items: ReadonlyArray<DocumentItem>;
+}
+
+const { heading, eyebrow, lead, items } = Astro.props;
+---
+
+<section class="dl" aria-labelledby="dl-h2">
+  <div class="container">
+    {eyebrow && <p class="dl__eyebrow">{eyebrow}</p>}
+    <h2 id="dl-h2" class="dl__h2">{heading}</h2>
+    {lead && <p class="dl__lead">{lead}</p>}
+
+    <ul class="dl__list" role="list">
+      {items.map((doc) => (
+        <li class="dl__item">
+          <div class="dl__icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="9" y1="13" x2="15" y2="13" />
+              <line x1="9" y1="17" x2="15" y2="17" />
+            </svg>
+          </div>
+          <div class="dl__body">
+            <h3 class="dl__title">{doc.title}</h3>
+            {doc.description && <p class="dl__desc">{doc.description}</p>}
+          </div>
+          <div class="dl__cta">
+            <Button variant="link" size="sm" href={doc.href}>{doc.ctaLabel}</Button>
+            {doc.size && <span class="dl__size">{doc.size}</span>}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .dl {
+    padding-block: var(--spacing-7);
+    background: var(--color-bg-page);
+  }
+  .dl__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .dl__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-3);
+  }
+  .dl__lead {
+    max-width: 64ch;
+    color: var(--color-text-secondary);
+    margin-block-end: var(--spacing-5);
+    line-height: var(--font-line-height-normal);
+  }
+  .dl__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .dl__item {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4) var(--spacing-5);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+    transition: border-color var(--duration-fast) var(--easing-standard);
+  }
+  .dl__item:hover {
+    border-color: var(--color-border-focus);
+  }
+  .dl__icon {
+    display: flex;
+    align-items: flex-start;
+    color: var(--color-action-primary);
+    padding-block-start: 2px;
+  }
+  .dl__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+  .dl__title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: var(--font-line-height-snug);
+  }
+  .dl__desc {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+  .dl__cta {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding-block-start: var(--spacing-2);
+    border-block-start: 1px dashed var(--color-border-subtle);
+  }
+  .dl__size {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+  }
+
+  @media (min-width: 768px) {
+    .dl__item {
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+    }
+    .dl__cta {
+      grid-column: auto;
+      padding-block-start: 0;
+      border-block-start: none;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--spacing-1);
+      text-align: end;
+    }
+  }
+</style>

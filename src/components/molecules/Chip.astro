@@ -1,0 +1,130 @@
+---
+/**
+ * Chip / Tag — molecule.
+ * Variants: default / active / placeholder / gated / safe-dot / removable.
+ *
+ * Источник: 03_design_system/components_atomic.md §Atoms (Chip / Tag).
+ */
+
+type Variant = 'default' | 'active' | 'placeholder' | 'gated' | 'safe' | 'removable';
+
+export interface Props {
+  variant?: Variant;
+  /** Анкор-href превращает chip в `<a>` (для filter-сегментов). */
+  href?: string;
+  /** Кликабельность (если не href, то button с onclick через client-script). */
+  clickable?: boolean;
+  /** Отображать точку перед текстом (safe / status-индикатор). */
+  withDot?: boolean;
+  size?: 'sm' | 'base';
+  ariaLabel?: string;
+  class?: string;
+}
+
+const {
+  variant = 'default',
+  href,
+  clickable = false,
+  withDot = false,
+  size = 'base',
+  ariaLabel,
+  class: className,
+} = Astro.props;
+
+const isLink = typeof href !== 'undefined';
+const isInteractive = isLink || clickable;
+
+const classes = [
+  'chip',
+  `chip--${variant}`,
+  `chip--${size}`,
+  isInteractive ? 'chip--interactive' : '',
+  withDot ? 'chip--dot' : '',
+  className ?? '',
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+{
+  isLink ? (
+    <a class={classes} href={href} aria-label={ariaLabel}>
+      {withDot && <span class="chip__dot" aria-hidden="true" />}
+      <span class="chip__label"><slot /></span>
+    </a>
+  ) : clickable ? (
+    <button class={classes} type="button" aria-label={ariaLabel} aria-pressed={variant === 'active' || undefined}>
+      {withDot && <span class="chip__dot" aria-hidden="true" />}
+      <span class="chip__label"><slot /></span>
+    </button>
+  ) : (
+    <span class={classes}>
+      {withDot && <span class="chip__dot" aria-hidden="true" />}
+      <span class="chip__label"><slot /></span>
+    </span>
+  )
+}
+
+<style>
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    height: 32px;
+    padding: 0 var(--spacing-3);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-pill);
+    background: var(--color-bg-page);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      border-color var(--duration-fast) var(--easing-standard),
+      background-color var(--duration-fast) var(--easing-standard),
+      color var(--duration-fast) var(--easing-standard);
+  }
+  .chip--sm { height: 28px; padding: 0 var(--spacing-2); font-size: var(--font-size-xs); }
+
+  .chip--active {
+    background: var(--color-action-primary);
+    color: var(--color-text-on-brand);
+    border-color: var(--color-action-primary);
+  }
+
+  .chip--placeholder {
+    border-style: dashed;
+    color: var(--color-text-tertiary);
+  }
+
+  .chip--gated {
+    background: var(--color-feedback-error-bg);
+    color: var(--color-feedback-error);
+    border-color: var(--color-feedback-error);
+  }
+
+  .chip--safe { color: var(--color-feedback-success); border-color: var(--color-feedback-success); }
+
+  .chip--interactive { cursor: pointer; }
+  .chip--interactive:hover {
+    border-color: var(--color-action-primary);
+    color: var(--color-action-primary);
+  }
+  .chip--active.chip--interactive:hover { color: var(--color-text-on-brand); opacity: 0.92; }
+
+  .chip__dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  /* mobile touch target — обеспечивается global @media min-height: 44px на button[]. */
+  @media (max-width: 767px) {
+    .chip--interactive { min-height: 44px; }
+  }
+</style>

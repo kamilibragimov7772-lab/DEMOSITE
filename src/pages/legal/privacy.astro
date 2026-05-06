@@ -1,0 +1,51 @@
+---
+/**
+ * /legal/privacy/ — Политика обработки персональных данных.
+ *
+ * Реализация по spec'у `04_visuals/20-legal-privacy.spec.md` + outline `02_content/page_outlines/20-legal-privacy.md`.
+ * Template: Legal (1 из 3). Контент — из коллекции `legal` (`src/content/legal/privacy.md`).
+ *
+ * Schema.org: WebPage + BreadcrumbList — генерируется в LegalLayout.
+ *
+ * Юридический документ — текст требует прогона юристом.
+ */
+
+import { getEntry, render } from 'astro:content';
+import LegalLayout from '@layouts/LegalLayout.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+
+const entry = await getEntry('legal', 'privacy');
+if (!entry) throw new Error('Content collection entry "legal/privacy" не найдена.');
+const { Content } = await render(entry);
+
+const toc = [
+  { id: 'обшие-положения',         label: 'Общие положения / Кто оператор' },
+  { id: 'какие-данные-мы-собираем', label: 'Какие данные мы собираем' },
+  { id: 'цели-обработки',          label: 'Цели обработки' },
+  { id: 'правовые-основания',      label: 'Правовые основания' },
+  { id: 'сроки-хранения',          label: 'Сроки хранения' },
+  { id: 'передача-третьим-лицам',  label: 'Передача третьим лицам' },
+  { id: 'ваши-права-статья-14-152-фз', label: 'Ваши права (статья 14 152-ФЗ)' },
+  { id: 'файлы-cookies',           label: 'Файлы cookies' },
+  { id: 'меры-защиты',             label: 'Меры защиты' },
+  { id: 'контакты-для-запросов',   label: 'Контакты для запросов' },
+  { id: 'изменения-политики',      label: 'Изменения политики' },
+  { id: 'принятие-политики',       label: 'Принятие политики' },
+];
+---
+
+<LegalLayout
+  documentTitle={entry.data.title}
+  metaDescription={entry.data.metaDescription}
+  publishedAt={entry.data.publishedAt.toISOString().slice(0, 10)}
+  updatedAt={(entry.data.updatedAt ?? entry.data.publishedAt).toISOString().slice(0, 10)}
+  brief="Как ООО «ТЕРМИ» собирает, использует и защищает ваши персональные данные при использовании сайта termybrand.com."
+  toc={toc}
+  currentSlug="privacy"
+  schemaSpecialty="Privacy Policy"
+  ogImage="/assets/og/og-legal.jpg"
+>
+  <Content />
+</LegalLayout>
+
+<StickyWhatsApp />

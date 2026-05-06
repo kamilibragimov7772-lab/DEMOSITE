@@ -1,0 +1,56 @@
+---
+/**
+ * /products/termoshoppery/ — Тонкий wrapper над единым каталогом.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import CatalogPage from '@components/organisms/CatalogPage.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { collectionPage, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const schema = [
+  collectionPage({
+    name: 'Термошопперы TERMY',
+    description: 'Одноразовые термошопперы с клейкой лентой и липучкой. 5 SKU, 8–53 л.',
+    numberOfItems: 5,
+  }),
+  breadcrumbList([
+    { name: 'Главная', url: siteUrl },
+    { name: 'Каталог', url: `${siteUrl}products/` },
+    { name: 'Термошопперы', url: `${siteUrl}products/termoshoppery/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Термошопперы TERMY"
+  description="Одноразовые термошопперы TERMY: 5 SKU, 8/10/16/53 л, БОПП/спанбонд. Брендирование от 100 шт."
+  ogType="website"
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'Каталог', href: '/products/' },
+      { name: 'Термошопперы' },
+    ]}
+  />
+
+  <CatalogPage initialCategory="termoshoppery" />
+
+  <FormBlock id="cta" variant="lead" eyebrow="Получить КП"
+    heading="Получить КП по термошопперам"
+    description="Менеджер свяжется в течение 2 часов с прайсом и MOQ."
+    submitLabel="Получить КП →" />
+
+  <PreFooterCta heading="Готовы посчитать?" lead="Напишите в WhatsApp — менеджер ответит сразу."
+    primaryCta={{ label: 'Написать в WhatsApp', href: 'https://wa.me/78001011525' }}
+    secondaryCta={{ label: 'Позвонить +7 (800) 101-15-25', href: 'tel:+78001011525' }} />
+
+  <StickyWhatsApp />
+</BaseLayout>

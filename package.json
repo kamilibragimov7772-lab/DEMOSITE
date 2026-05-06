@@ -1,0 +1,37 @@
+{
+  "name": "termy-site",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "B2B-каталог-лидогенератор для производителя термоупаковки. Astro 5 + TypeScript strict + Tailwind v4 + Style Dictionary.",
+  "scripts": {
+    "dev": "astro dev --host 127.0.0.1 --port 4321",
+    "start": "astro dev",
+    "build": "npm run tokens && astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "tokens": "node ./style-dictionary/build.mjs",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.9",
+    "@astrojs/mdx": "^5.0.4",
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/sitemap": "^3.7.2",
+    "@tailwindcss/postcss": "^4.2.4",
+    "astro": "^6.2.1",
+    "astro-icon": "^1.1.5",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^4.2.4",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@iconify-json/lucide": "^1.2.105",
+    "style-dictionary": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20.18.0"
+  }
+}

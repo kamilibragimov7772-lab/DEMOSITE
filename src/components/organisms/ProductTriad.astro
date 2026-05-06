@@ -1,0 +1,179 @@
+---
+/**
+ * ProductTriad — organism.
+ * Блок «Что мы предлагаем» — 3 product-card-style колонки с спеками + CTA.
+ * Используется в industry-pages для «Рекомендованного комплекта».
+ *
+ * Не путать с CatalogShowcase (главная) — этот компактнее, без фильтров и chips.
+ * Использует CardBase + Chip per inventory.
+ *
+ * Источник:
+ * - 04_visuals/03-07-solutions.spec.md §Block: Рекомендованный комплект
+ * - components_atomic.md §Organisms (Product-card) — base
+ * - tone_of_voice.md §Inline CTA «Открыть карточку <SKU> →»
+ */
+
+import CardBase from '@components/molecules/CardBase.astro';
+import Chip from '@components/molecules/Chip.astro';
+import Button from '@components/atoms/Button.astro';
+
+export interface ProductCardData {
+  /** Slug PDP — пока многие slugs ещё не существуют, поэтому рендерим href из вызывающего. */
+  href: string;
+  /** Чип-сегмент / категория (опц.). */
+  category?: string;
+  title: string;
+  /** Bullet-список спецификаций (3-5 строк). */
+  specs: ReadonlyArray<string>;
+  /** Цена «от ...» / «по запросу» (опц.). */
+  priceFrom?: string;
+  ctaLabel: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  /** Краткое описание / lead под H2 (опц.). */
+  lead?: string;
+  /** 2-6 продуктов. По specs обычно 3 в industry-pages, до 6 в distributory. */
+  products: ReadonlyArray<ProductCardData>;
+  /** Опц. кейс-лид-абзац после колонок (используется в dostavka). */
+  closingNote?: string;
+  /** Опц. footer-CTA «Все продукты в каталоге →». */
+  hubCta?: { label: string; href: string };
+}
+
+const { heading, eyebrow, lead, products, closingNote, hubCta } = Astro.props;
+const colsClass = products.length >= 4 ? 'pt__grid--6' : 'pt__grid--3';
+---
+
+<section class="pt" aria-labelledby="pt-h2">
+  <div class="container">
+    {eyebrow && <p class="pt__eyebrow">{eyebrow}</p>}
+    <h2 id="pt-h2" class="pt__h2">{heading}</h2>
+    {lead && <p class="pt__lead">{lead}</p>}
+
+    <ul class={`pt__grid ${colsClass}`} role="list">
+      {products.map((p) => (
+        <li>
+          <CardBase href={p.href}>
+            {p.category && (
+              <div slot="eyebrow">
+                <Chip variant="default" size="sm">{p.category}</Chip>
+              </div>
+            )}
+            <h3 slot="title" class="pt__title">{p.title}</h3>
+
+            <ul class="pt__specs" role="list">
+              {p.specs.map((s) => <li>{s}</li>)}
+            </ul>
+
+            {p.priceFrom && (
+              <p class="pt__price" slot="meta">
+                <strong class="num">{p.priceFrom}</strong>
+              </p>
+            )}
+
+            <span slot="cta" class="pt__cta-label">{p.ctaLabel}</span>
+          </CardBase>
+        </li>
+      ))}
+    </ul>
+
+    {closingNote && (
+      <p class="pt__note">{closingNote}</p>
+    )}
+
+    {hubCta && (
+      <div class="pt__hub-cta">
+        <Button variant="ghost" size="base" href={hubCta.href}>{hubCta.label}</Button>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .pt {
+    padding-block: var(--spacing-8);
+    background: var(--color-bg-page);
+  }
+  .pt__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .pt__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-3);
+  }
+  .pt__lead {
+    max-width: 56ch;
+    color: var(--color-text-secondary);
+    margin-block-end: var(--spacing-6);
+    line-height: var(--font-line-height-normal);
+  }
+  .pt__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+    margin: 0 0 var(--spacing-5);
+    padding: 0;
+    list-style: none;
+  }
+  .pt__title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+  }
+  .pt__specs {
+    margin: 0;
+    padding-inline-start: var(--spacing-4);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+  .pt__specs li { margin-block-end: var(--spacing-1); }
+  .pt__price {
+    margin-block-start: var(--spacing-3);
+    padding-block-start: var(--spacing-3);
+    border-block-start: 1px dashed var(--color-border-subtle);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+  }
+  .pt__price strong {
+    color: var(--color-action-primary);
+    font-weight: var(--font-weight-bold);
+  }
+  .pt__cta-label {
+    margin-block-start: var(--spacing-3);
+    color: var(--color-action-primary);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+  }
+  .pt__note {
+    max-width: 64ch;
+    margin: var(--spacing-5) 0 0;
+    padding: var(--spacing-4) var(--spacing-5);
+    background: var(--color-bg-surface-warm);
+    border-inline-start: 3px solid var(--color-action-primary);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+  .pt__hub-cta {
+    margin-block-start: var(--spacing-6);
+    text-align: center;
+  }
+
+  @media (min-width: 768px) {
+    .pt__grid--3 { grid-template-columns: repeat(2, 1fr); }
+    .pt__grid--6 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .pt__grid--3 { grid-template-columns: repeat(3, 1fr); }
+    .pt__grid--6 { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

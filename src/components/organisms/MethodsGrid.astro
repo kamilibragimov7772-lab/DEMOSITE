@@ -1,0 +1,140 @@
+---
+/**
+ * MethodsGrid — organism.
+ * 4-5 method-cards для брендирования (Шелкография / Флексопечать / Тампопечать / УФ / Наклейка).
+ * Используется на /solutions/retail/ (СТМ-блок) и /branding/* (полный обзор методов).
+ *
+ * Источник:
+ * - 04_visuals/04-solutions-retail.spec.md §Block: СТМ-блок «Брендирование»
+ * - components_atomic.md §Organisms (Methods grid) — line 90
+ * - brandbook v1 .methods
+ */
+
+import CardBase from '@components/molecules/CardBase.astro';
+
+export interface Method {
+  /** Название метода (Шелкография / Флексопечать / Тампопечать / УФ / Наклейка / Выбивка). */
+  name: string;
+  /** МОЗ для метода. */
+  moq: string;
+  /** Сроки. */
+  terms?: string;
+  /** Цвета / характеристики. */
+  colors?: string;
+  /** Краткое описание (опц.). */
+  description?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  /** 3-5 методов. По specs обычно 4 для retail, 5-6 для /branding/. */
+  methods: ReadonlyArray<Method>;
+}
+
+const { heading, eyebrow, methods } = Astro.props;
+---
+
+<section class="mg" aria-labelledby="mg-h2">
+  <div class="container">
+    {eyebrow && <p class="mg__eyebrow">{eyebrow}</p>}
+    <h2 id="mg-h2" class="mg__h2">{heading}</h2>
+
+    <ul class="mg__grid" role="list">
+      {methods.map((m) => (
+        <li>
+          <CardBase>
+            <h3 slot="title" class="mg__name">{m.name}</h3>
+            {m.description && <p class="mg__desc">{m.description}</p>}
+            <dl class="mg__params" slot="meta">
+              <div class="mg__param">
+                <dt>МОЗ</dt>
+                <dd class="num">{m.moq}</dd>
+              </div>
+              {m.colors && (
+                <div class="mg__param">
+                  <dt>Цвета</dt>
+                  <dd>{m.colors}</dd>
+                </div>
+              )}
+              {m.terms && (
+                <div class="mg__param">
+                  <dt>Сроки</dt>
+                  <dd>{m.terms}</dd>
+                </div>
+              )}
+            </dl>
+          </CardBase>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .mg {
+    padding-block: var(--spacing-7);
+    background: var(--color-bg-page);
+  }
+  .mg__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .mg__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-6);
+  }
+  .mg__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .mg__name {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+  .mg__desc {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+  .mg__params {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding-block-start: var(--spacing-3);
+    border-block-start: 1px dashed var(--color-border-subtle);
+  }
+  .mg__param {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: var(--spacing-2);
+    align-items: baseline;
+  }
+  .mg__param dt {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    text-transform: uppercase;
+    letter-spacing: var(--font-letter-spacing-wide);
+    margin: 0;
+  }
+  .mg__param dd {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  @media (min-width: 768px)  { .mg__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .mg__grid { grid-template-columns: repeat(4, 1fr); } }
+</style>

@@ -1,0 +1,205 @@
+---
+/**
+ * PriceFromBlock — organism.
+ * Компактный блок «МОЗ X шт · цена от Y ₽ · полная цена в КП» + 2 CTA.
+ *
+ * Используется в Hero PDP (правая колонка desktop / стек mobile).
+ * Honest disclosure: «полная цена в КП» — B2B-этикет (см. tone_of_voice.md).
+ *
+ * Состояния:
+ *   - default
+ *   - gated (priceInKpOnly=true & нет priceFromRub) → показывает только МОЗ + CTA
+ *
+ * Источник:
+ *   - 04_visuals/15-pdp-template.spec.md §«Block: Hero — PDP» («Price-from + MOQ»)
+ *   - 02_content/page_outlines/15-product-card-template.md §«Блок 4. Hero / Цена-блок»
+ *   - tone_of_voice.md §Hero CTA + «полная цена в КП»
+ */
+
+import Button from '@components/atoms/Button.astro';
+
+export interface CtaSpec {
+  label: string;
+  href: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+}
+
+export interface Props {
+  /** МОЗ без печати (e.g. 1) — целое число. */
+  moqUnits?: number;
+  /** Цена-индикация «от» (e.g. 49). undefined → gated режим. */
+  priceFromRub?: number;
+  /** Единица измерения цены: «шт» (default) / «комплект» / «упаковка». */
+  priceUnit?: string;
+  /** Disclaimer-строка под ценой (default: «Полная цена в КП с учётом тиража, цвета и брендирования»). */
+  priceNote?: string;
+  /** Primary CTA (e.g. «Запросить КП →»). */
+  primaryCta: CtaSpec;
+  /** Secondary CTA (опц., e.g. «Заказать образец»). */
+  secondaryCta?: CtaSpec;
+  /** Опц. WhatsApp deeplink (e.g. https://wa.me/78001011525?text=...). */
+  whatsappHref?: string;
+}
+
+const {
+  moqUnits,
+  priceFromRub,
+  priceUnit = 'шт',
+  priceNote = 'Полная цена в КП с учётом тиража, цвета и брендирования',
+  primaryCta,
+  secondaryCta,
+  whatsappHref,
+} = Astro.props;
+
+const moqText = moqUnits !== undefined
+  ? `от ${moqUnits.toLocaleString('ru-RU')} шт`
+  : null;
+const priceText = priceFromRub !== undefined
+  ? `от ${priceFromRub.toLocaleString('ru-RU')} ₽`
+  : null;
+const isGated = priceFromRub === undefined;
+---
+
+<aside class="pfb" aria-label="Цена и условия заказа">
+  <div class="pfb__row">
+    {moqText && (
+      <div class="pfb__cell">
+        <span class="pfb__label">МОЗ</span>
+        <strong class="pfb__value">{moqText}</strong>
+      </div>
+    )}
+    {priceText && (
+      <div class="pfb__cell pfb__cell--accent">
+        <span class="pfb__label">Цена</span>
+        <strong class="pfb__value pfb__value--lg">{priceText}</strong>
+        <span class="pfb__unit">/ {priceUnit}</span>
+      </div>
+    )}
+    {isGated && (
+      <div class="pfb__cell pfb__cell--accent">
+        <span class="pfb__label">Цена</span>
+        <strong class="pfb__value pfb__value--gated">по запросу</strong>
+      </div>
+    )}
+  </div>
+
+  <p class="pfb__note">{priceNote}</p>
+
+  <div class="pfb__cta">
+    <Button
+      variant={primaryCta.variant ?? 'primary'}
+      size="lg"
+      href={primaryCta.href}
+      fullWidth
+    >{primaryCta.label}</Button>
+    {secondaryCta && (
+      <Button
+        variant={secondaryCta.variant ?? 'secondary'}
+        size="lg"
+        href={secondaryCta.href}
+        fullWidth
+      >{secondaryCta.label}</Button>
+    )}
+    {whatsappHref && (
+      <a class="pfb__wa" href={whatsappHref} rel="noopener noreferrer" aria-label="Написать в WhatsApp">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347zM12.057 0h-.006C5.395 0 .005 5.392.005 12.012c0 2.628.802 5.07 2.193 7.08L.755 24l5.064-1.62c1.953 1.293 4.31 2.046 6.84 2.046 6.658 0 12.046-5.392 12.046-12.013C24.706 5.392 19.318 0 12.057 0z"/>
+        </svg>
+        <span>Написать в WhatsApp</span>
+      </a>
+    )}
+  </div>
+</aside>
+
+<style>
+  .pfb {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding: var(--spacing-5);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+  }
+
+  .pfb__row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+    padding-block-end: var(--spacing-3);
+    border-block-end: 1px dashed var(--color-border-subtle);
+  }
+  .pfb__cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .pfb__label {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+  }
+  .pfb__value {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.2;
+  }
+  .pfb__value--lg { font-size: var(--font-size-xl); }
+  .pfb__value--gated {
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    font-style: italic;
+    font-weight: var(--font-weight-medium);
+  }
+  .pfb__unit {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-sm);
+  }
+  .pfb__cell--accent .pfb__value { color: var(--color-action-primary); }
+
+  .pfb__note {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+    margin: 0;
+  }
+
+  .pfb__cta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .pfb__wa {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    min-height: 44px;
+    padding: var(--spacing-2) var(--spacing-3);
+    color: var(--color-feedback-success, var(--color-action-primary));
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    transition: background-color var(--duration-fast) var(--easing-standard);
+  }
+  .pfb__wa:hover,
+  .pfb__wa:focus-visible {
+    background: var(--color-bg-surface-warm);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  @media (min-width: 768px) {
+    .pfb__cta {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .pfb__cta > :global(.btn) { flex: 1 1 auto; }
+    .pfb__wa { flex-basis: 100%; justify-content: flex-start; }
+  }
+</style>

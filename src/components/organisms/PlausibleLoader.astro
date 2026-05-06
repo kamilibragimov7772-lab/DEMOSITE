@@ -1,0 +1,94 @@
+---
+/**
+ * PlausibleLoader — organism (analytics conditional loader).
+ *
+ * Подключает Plausible Analytics ТОЛЬКО когда CookieBanner выдал согласие
+ * на категорию `analytics`. Слушает CustomEvent `termy:cookies-updated`,
+ * который CookieBanner.astro эмитит после accept-all / save / reject.
+ *
+ * Privacy-friendly:
+ * - Без cookies, без fingerprint, без cross-site tracking — но всё равно
+ *   подключаем по согласию (152-ФЗ требует явного opt-in для любой аналитики).
+ * - Скрипт + endpoint проксированы через первый-party путь /p7e/* (vercel.json
+ *   rewrites), чтобы adblock-фильтры не отрезали телеметрию и чтобы Vercel
+ *   Edge кэшировал статический js рядом с сайтом.
+ *
+ * Domain: production — termy.ru. Если домен поменяется на phase 8 deploy — править
+ * data-domain тут И в Plausible dashboard.
+ *
+ * Источники:
+ *   - phase 7 iter2 critique — closes Security HIGH #1 (cookie consent runtime)
+ *   - 02_content/seo_strategy.md (analytics requirement)
+ *   - https://plausible.io/docs/script-extensions (outbound-links extension)
+ *   - https://plausible.io/docs/proxy (first-party proxying via Vercel rewrites)
+ */
+
+export interface Props {
+  /** Production-домен, на котором установлен Plausible. По умолчанию termy.ru. */
+  domain?: string;
+}
+
+const { domain = 'termy.ru' } = Astro.props;
+---
+
+<script is:inline define:vars={{ domain }}>
+  (function () {
+    'use strict';
+
+    var SCRIPT_ID = 'plausible-script';
+    var STORAGE_KEY = 'termy.cookies.v1';
+
+    function readChoice() {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        var parsed = JSON.parse(raw);
+        if (!parsed || parsed.v !== 1) return null;
+        return parsed;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function injectPlausible() {
+      if (document.getElementById(SCRIPT_ID)) return;
+      var s = document.createElement('script');
+      s.id = SCRIPT_ID;
+      s.defer = true;
+      // first-party proxy через Vercel rewrites — см. vercel.json
+      s.src = '/p7e/script.js';
+      s.setAttribute('data-domain', domain);
+      s.setAttribute('data-api', '/p7e/api/event');
+      document.head.appendChild(s);
+
+      // Buffer-функция для ручных событий до загрузки script.
+      window.plausible = window.plausible || function () {
+        (window.plausible.q = window.plausible.q || []).push(arguments);
+      };
+    }
+
+    function removePlausible() {
+      var existing = document.getElementById(SCRIPT_ID);
+      if (existing && existing.parentNode) existing.parentNode.removeChild(existing);
+      // Сам Plausible в DOM ничего не оставляет (без cookies / localStorage entries),
+      // но если позже подключим расширения с persistent state — здесь же чистить.
+    }
+
+    function applyChoice(choice) {
+      if (choice && choice.analytics === true) {
+        injectPlausible();
+      } else {
+        removePlausible();
+      }
+    }
+
+    // Bootstrap: если согласие уже было дано в прошлой сессии — подключаемся сразу.
+    var existing = readChoice();
+    if (existing) applyChoice(existing);
+
+    // Live-обновление после клика на баннере.
+    window.addEventListener('termy:cookies-updated', function (e) {
+      if (e && e.detail) applyChoice(e.detail);
+    });
+  })();
+</script>

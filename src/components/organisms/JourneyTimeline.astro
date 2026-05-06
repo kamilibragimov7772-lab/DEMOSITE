@@ -1,0 +1,556 @@
+---
+/**
+ * JourneyTimeline — organism.
+ * Composition: H2 + 7 step-cards с тематическими иконками + scroll-progress линия + stagger reveal.
+ *
+ * Источник:
+ * - 04_visuals/01-homepage.spec.md §«Block 7: Journey (7 шагов)»
+ * - 02_content/page_outlines/01-homepage.md §«H2: От заявки до склада клиента»
+ *
+ * Поведение анимаций:
+ *   - Stagger reveal через IntersectionObserver (карточки появляются по очереди).
+ *   - Прогресс-линия (CSS scaleX/scaleY) заполняется по мере reveal.
+ *   - Hover: карточка приподнимается, иконка scale + tilt.
+ *   - prefers-reduced-motion: reduce → анимаций нет, всё показывается сразу.
+ */
+
+export interface JourneyStep {
+  /** Краткое имя шага, напр. «Заявка». */
+  title: string;
+  /** Длительность, напр. «5 мин», «2 ч», «2-5 дн». */
+  duration: string;
+  /** Кратко чем заканчивается шаг (1 предложение). */
+  description?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  steps: ReadonlyArray<JourneyStep>;
+  /** Итог под timeline'ом, напр. «14-21 день полный цикл». */
+  totalNote?: string;
+}
+
+const { heading, eyebrow, steps, totalNote } = Astro.props;
+
+/**
+ * 7 SVG-иконок (Lucide-style, 24×24, stroke=1.6).
+ * Маппинг по индексу: 0=Заявка, 1=Расчёт, 2=Макет, 3=Производство,
+ * 4=Брендирование, 5=Отгрузка, 6=У клиента.
+ * Если шагов меньше/больше 7 — иконки циклятся по модулю.
+ */
+const icons = [
+  // 0 · Заявка — clipboard with check (галочка дорисовывается через stroke-dashoffset)
+  '<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path class="jsvg-check" d="m9 14 2 2 4-4"/>',
+  // 1 · Расчёт & КП — calculator (кнопки мигают по очереди, экран пульсирует)
+  '<rect x="4" y="2" width="16" height="20" rx="2"/><line class="jsvg-display" x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path class="jsvg-key jsvg-key-1" d="M16 10h.01"/><path class="jsvg-key jsvg-key-2" d="M12 10h.01"/><path class="jsvg-key jsvg-key-3" d="M8 10h.01"/><path class="jsvg-key jsvg-key-4" d="M12 14h.01"/><path class="jsvg-key jsvg-key-5" d="M8 14h.01"/><path class="jsvg-key jsvg-key-6" d="M12 18h.01"/><path class="jsvg-key jsvg-key-7" d="M8 18h.01"/>',
+  // 2 · Макет — ruler (деления подсвечиваются по очереди, как на разметке)
+  '<path d="M21.3 15.3 8.7 2.7a2.41 2.41 0 0 0-3.4 0L2.7 5.3a2.41 2.41 0 0 0 0 3.4l12.6 12.6a2.41 2.41 0 0 0 3.4 0l2.6-2.6a2.41 2.41 0 0 0 0-3.4Z"/><path class="jsvg-tick jsvg-tick-1" d="m14.5 12.5 2-2"/><path class="jsvg-tick jsvg-tick-2" d="m11.5 9.5 2-2"/><path class="jsvg-tick jsvg-tick-3" d="m8.5 6.5 2-2"/><path class="jsvg-tick jsvg-tick-4" d="m17.5 15.5 2-2"/>',
+  // 3 · Производство — factory + дым из трубы (3 клуба, поднимаются по очереди)
+  '<path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M17 18h1"/><path d="M12 18h1"/><path d="M7 18h1"/><circle class="jsvg-smoke jsvg-smoke-1" cx="14" cy="6" r="0.7"/><circle class="jsvg-smoke jsvg-smoke-2" cx="14" cy="6" r="0.7"/><circle class="jsvg-smoke jsvg-smoke-3" cx="14" cy="6" r="0.7"/>',
+  // 4 · Брендирование — stamp (штамп ритмично «припечатывает»)
+  '<g class="jsvg-stamp"><path d="M5 22h14"/><path d="M19.27 13.73A2.5 2.5 0 0 0 17.5 13h-11A2.5 2.5 0 0 0 4 15.5V17a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1.5c0-.66-.26-1.3-.73-1.77Z"/><path d="M14 13V8.5C14 7 15 7 15 5a3 3 0 0 0-3-3c-1.66 0-3 1-3 3s1 1.5 1 3.5V13"/></g>',
+  // 5 · Отгрузка — truck (кузов слегка качается, оба колеса крутятся)
+  '<g class="jsvg-truck"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/></g><circle class="jsvg-wheel jsvg-wheel-l" cx="7" cy="18" r="2"/><circle class="jsvg-wheel jsvg-wheel-r" cx="17" cy="18" r="2"/>',
+  // 6 · У клиента — package-check (галочка дорисовывается)
+  '<path class="jsvg-check" d="m16 16 2 2 4-4"/><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/><path d="M16.5 9.4 7.55 4.24"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" x2="12" y1="22" y2="12"/>',
+];
+---
+
+<section class="jrn" aria-labelledby="jrn-h2">
+  <div class="container">
+    {eyebrow && <p class="jrn__eyebrow">{eyebrow}</p>}
+    <h2 id="jrn-h2" class="jrn__h2">{heading}</h2>
+
+    <ol class="jrn__list" data-jrn-list role="list">
+      {steps.map((step, idx) => (
+        <li class="jrn__step" style={`--idx: ${idx}`}>
+          <div class="jrn__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" set:html={icons[idx % icons.length]} />
+          </div>
+          <span class="jrn__num" aria-hidden="true">{String(idx + 1).padStart(2, '0')}</span>
+          <div class="jrn__body">
+            <h3 class="jrn__title">{step.title}</h3>
+            <p class="jrn__duration">{step.duration}</p>
+            {step.description && <p class="jrn__desc">{step.description}</p>}
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    {totalNote && <p class="jrn__total">{totalNote}</p>}
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const list = document.querySelector('[data-jrn-list]');
+    if (!list) return;
+
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const steps = Array.from(list.querySelectorAll('.jrn__step'));
+    const total = steps.length;
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      // Без анимаций: всё видно сразу, все коннекторы заполнены.
+      steps.forEach((s, i) => {
+        s.classList.add('is-revealed');
+        if (i < total - 1) s.classList.add('has-next-revealed');
+      });
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !entry.target.classList.contains('is-revealed')) {
+            entry.target.classList.add('is-revealed');
+            /* Заполняем connector между предыдущей иконкой и текущей, если предыдущая уже видна. */
+            const idx = steps.indexOf(entry.target);
+            if (idx > 0 && steps[idx - 1].classList.contains('is-revealed')) {
+              steps[idx - 1].classList.add('has-next-revealed');
+            }
+            /* Если ранее уже была revealed следующая — теперь её connector от текущей тоже залить. */
+            if (idx < total - 1 && steps[idx + 1].classList.contains('is-revealed')) {
+              entry.target.classList.add('has-next-revealed');
+            }
+            io.unobserve(entry.target);
+          }
+        });
+
+        /* Пульсирующая точка на «текущей» иконке = последняя по индексу из revealed.
+           Гаснет автоматически когда вся цепочка пройдена. */
+        steps.forEach((s) => s.classList.remove('is-current'));
+        let maxIdx = -1;
+        steps.forEach((s, i) => {
+          if (s.classList.contains('is-revealed')) maxIdx = i;
+        });
+        if (maxIdx >= 0 && maxIdx < total - 1) {
+          steps[maxIdx].classList.add('is-current');
+        }
+      },
+      { threshold: 0.35, rootMargin: '0px 0px -8% 0px' }
+    );
+
+    steps.forEach((s) => io.observe(s));
+  })();
+</script>
+
+<style>
+  .jrn {
+    padding-block: var(--spacing-8);
+  }
+  .jrn__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .jrn__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-7, 40px);
+  }
+
+  /* ─── List ────────────────────────────────────────────────── */
+  .jrn__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    position: relative;
+  }
+
+  /* Per-step connectors:
+       ::after — серая базовая полоса между иконкой текущей карточки и иконкой следующей,
+       ::before — фиолетовая залитая полоса (scale 0→1 при .has-next-revealed).
+     В пределах самой иконки коннекторов нет — линия идёт ТОЛЬКО в межиконочном промежутке.
+     На mobile полоса вертикальная (от низа этой иконки до верха следующей),
+     на desktop горизонтальная (от правого края этой иконки до левого края следующей). */
+
+  /* Mobile (vertical) — defaults */
+  .jrn__step::before,
+  .jrn__step::after {
+    content: '';
+    position: absolute;
+    /* верх коннектора = низ иконки этой карточки = padding-top + icon-h = 16 + 56 = 72px */
+    inset-block-start: calc(var(--spacing-4, 16px) + 56px);
+    /* низ коннектора уходит в gap (16px) и в padding-top следующей карточки (16px) =
+       2 × spacing-4 = 32px ниже низа этой карточки */
+    inset-block-end: calc(0px - var(--spacing-4, 16px) * 2);
+    /* по горизонтали — центр колонки иконок: padding-left + icon-half - line-half = 16 + 28 - 1 = 43 */
+    inset-inline-start: calc(var(--spacing-4, 16px) + 28px - 1px);
+    width: 2px;
+    border-radius: 2px;
+  }
+  .jrn__step::after {
+    background: var(--color-border-subtle, rgba(20, 24, 28, 0.12));
+  }
+  .jrn__step::before {
+    background: var(--color-action-primary, #6428A0);
+    transform: scaleY(0);
+    transform-origin: top center;
+    transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1;
+  }
+  .jrn__step.has-next-revealed::before {
+    transform: scaleY(1);
+  }
+  /* Последняя карточка коннектор не получает */
+  .jrn__step:last-child::before,
+  .jrn__step:last-child::after {
+    display: none;
+  }
+
+  /* ─── Card ────────────────────────────────────────────────── */
+  .jrn__step {
+    position: relative;
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    grid-template-areas:
+      'icon body'
+      'icon body';
+    gap: var(--spacing-4);
+    padding: var(--spacing-4);
+    background: var(--color-bg-page, #fff);
+    border: 1px solid var(--color-border-subtle, rgba(20, 24, 28, 0.08));
+    border-radius: var(--radius-md, 12px);
+    transition:
+      transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 280ms cubic-bezier(0.16, 1, 0.3, 1);
+    /* Reveal start state */
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  .jrn__step.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity 600ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--idx, 0) * 70ms),
+      transform 600ms cubic-bezier(0.16, 1, 0.3, 1) calc(var(--idx, 0) * 70ms),
+      box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .jrn__step:hover,
+  .jrn__step:focus-within {
+    transform: translateY(-4px);
+    border-color: var(--color-action-primary, #6428A0);
+    box-shadow: 0 12px 32px -16px rgba(100, 40, 160, 0.35);
+  }
+
+  /* ─── Icon ────────────────────────────────────────────────── */
+  .jrn__icon {
+    grid-area: icon;
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md, 12px);
+    /* Плотный фон, чтобы прогресс-линия таймлайна не просвечивала сквозь иконку. */
+    background: color-mix(in srgb, var(--color-action-primary, #6428A0) 10%, var(--color-bg-page, #fff));
+    color: var(--color-action-primary, #6428A0);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transition:
+      transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+      background 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Пульсирующая обводка вокруг «текущей» иконки = последняя по индексу из revealed.
+     Гаснет когда вся цепочка пройдена (класс is-current снимается). */
+  .jrn__step.is-current .jrn__icon::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    border: 2px solid currentColor;
+    pointer-events: none;
+    animation: jrn-pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  @keyframes jrn-pulse {
+    0%   { transform: scale(0.96); opacity: 0.75; }
+    80%  { transform: scale(1.35); opacity: 0; }
+    100% { transform: scale(1.35); opacity: 0; }
+  }
+  .jrn__icon svg {
+    width: 28px;
+    height: 28px;
+    display: block;
+  }
+  .jrn__step:hover .jrn__icon,
+  .jrn__step:focus-within .jrn__icon {
+    transform: scale(1.06) rotate(-3deg);
+    background: var(--color-action-primary, #6428A0);
+    color: var(--color-text-on-brand, #fff);
+  }
+
+  /* ─── Number chip ────────────────────────────────────────── */
+  .jrn__num {
+    position: absolute;
+    inset-block-start: var(--spacing-3);
+    inset-inline-end: var(--spacing-3);
+    font-family: var(--font-family-monospace, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    font-weight: var(--font-weight-bold, 700);
+    letter-spacing: 0.08em;
+    color: var(--color-text-tertiary, #6E7480);
+    background: var(--color-bg-surface, #F5F4F2);
+    padding: 2px 8px;
+    border-radius: var(--radius-pill, 999px);
+    transition: color 280ms ease, background 280ms ease;
+  }
+  .jrn__step:hover .jrn__num,
+  .jrn__step:focus-within .jrn__num {
+    color: var(--color-action-primary, #6428A0);
+    background: color-mix(in srgb, var(--color-action-primary, #6428A0) 12%, transparent);
+  }
+
+  /* ─── Text ────────────────────────────────────────────────── */
+  .jrn__body {
+    grid-area: body;
+    min-width: 0;
+  }
+  .jrn__title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+  .jrn__duration {
+    margin-block-start: var(--spacing-1);
+    color: var(--color-action-primary);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family-monospace);
+    letter-spacing: 0.02em;
+  }
+  .jrn__desc {
+    margin-block-start: var(--spacing-2);
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+    font-size: var(--font-size-sm);
+  }
+
+  .jrn__total {
+    margin-block-start: var(--spacing-6);
+    padding: var(--spacing-4) var(--spacing-5);
+    background: var(--color-bg-surface);
+    border-inline-start: 3px solid var(--color-action-primary);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-md);
+    border-radius: var(--radius-sm);
+  }
+
+  /* ─── Desktop horizontal grid ─────────────────────────────── */
+  @media (min-width: 1024px) {
+    .jrn__list {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: var(--spacing-3);
+    }
+    /* Desktop horizontal connectors per-step */
+    .jrn__step::before,
+    .jrn__step::after {
+      inset-block: auto;
+      /* y = вертикальный центр иконки минус половина толщины полосы = 16 + 28 - 1 = 43px */
+      inset-block-start: calc(var(--spacing-4, 16px) + 28px - 1px);
+      /* старт = правый край иконки внутри карточки = padding-left + icon-w = 12 + 56 = 68px */
+      inset-inline-start: calc(var(--spacing-3, 12px) + 56px);
+      /* конец = левый край следующей иконки = ушли за padding-right (12) + gap (12) = 24px правее карточки */
+      inset-inline-end: calc(0px - var(--spacing-3, 12px) * 2);
+      width: auto;
+      height: 2px;
+      transform-origin: left center;
+    }
+    .jrn__step::before {
+      transform: scaleX(0);
+    }
+    .jrn__step.has-next-revealed::before {
+      transform: scaleX(1);
+    }
+    .jrn__step {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        'icon'
+        'body';
+      padding: var(--spacing-4) var(--spacing-3);
+    }
+    .jrn__icon {
+      margin-block-end: var(--spacing-1);
+    }
+    .jrn__title { font-size: var(--font-size-md); }
+    .jrn__desc { font-size: var(--font-size-sm); }
+  }
+
+  /* Иконочные тематические анимации (jsvg-*) вынесены в <style is:global>
+     ниже, потому что инлайн SVG, инжектированный через set:html,
+     не получает Astro-scope-атрибут и scoped-CSS его не находит. */
+
+  /* ─── Reduced motion ──────────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .jrn__step {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .jrn__list::after {
+      transition: none !important;
+    }
+    .jrn__icon,
+    .jrn__num {
+      transition: none !important;
+    }
+    .jrn__step.is-current .jrn__icon::after {
+      animation: none !important;
+      opacity: 0 !important;
+    }
+    /* jsvg-* reduced-motion правила в is:global ниже */
+  }
+</style>
+
+<style is:global>
+  /* ─── Иконочные тематические анимации ─────────────────────────
+     Этот блок is:global, потому что SVG-элементы внутри иконок
+     инжектируются через set:html и не получают Astro scope-атрибут.
+     Селекторы используют достаточно специфичные классы (.jrn__step,
+     .jrn__icon, .jsvg-*) чтобы не пересекаться с другими организмами. */
+
+  .jrn__icon svg [class^='jsvg-'] {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  /* 0 + 6 · Галочка дорисовывается (clipboard-check, package-check) */
+  .jrn__icon svg .jsvg-check {
+    stroke-dasharray: 14;
+    stroke-dashoffset: 14;
+  }
+  .jrn__step.is-revealed .jsvg-check {
+    animation: jsvg-check-draw 3.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  @keyframes jsvg-check-draw {
+    0%   { stroke-dashoffset: 14; }
+    25%  { stroke-dashoffset: 0; }
+    75%  { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 14; }
+  }
+
+  /* 1 · Калькулятор — кнопки мигают по очереди, дисплей пульсирует */
+  .jrn__icon svg .jsvg-key { opacity: 0.35; }
+  .jrn__step.is-revealed .jsvg-key {
+    animation: jsvg-key-flash 2.4s ease-in-out infinite;
+  }
+  .jrn__step.is-revealed .jsvg-key-1 { animation-delay: 0s; }
+  .jrn__step.is-revealed .jsvg-key-2 { animation-delay: 0.2s; }
+  .jrn__step.is-revealed .jsvg-key-3 { animation-delay: 0.4s; }
+  .jrn__step.is-revealed .jsvg-key-4 { animation-delay: 0.6s; }
+  .jrn__step.is-revealed .jsvg-key-5 { animation-delay: 0.8s; }
+  .jrn__step.is-revealed .jsvg-key-6 { animation-delay: 1.0s; }
+  .jrn__step.is-revealed .jsvg-key-7 { animation-delay: 1.2s; }
+  @keyframes jsvg-key-flash {
+    0%, 75%, 100% { opacity: 0.35; }
+    10%, 25%      { opacity: 1; }
+  }
+  .jrn__step.is-revealed .jsvg-display {
+    animation: jsvg-display-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes jsvg-display-pulse {
+    0%, 100% { opacity: 1;    }
+    50%      { opacity: 0.55; }
+  }
+
+  /* 2 · Линейка — деления подсвечиваются по очереди */
+  .jrn__icon svg .jsvg-tick { opacity: 0.35; }
+  .jrn__step.is-revealed .jsvg-tick {
+    animation: jsvg-tick-flash 2.4s ease-in-out infinite;
+  }
+  .jrn__step.is-revealed .jsvg-tick-3 { animation-delay: 0s;   }
+  .jrn__step.is-revealed .jsvg-tick-2 { animation-delay: 0.2s; }
+  .jrn__step.is-revealed .jsvg-tick-1 { animation-delay: 0.4s; }
+  .jrn__step.is-revealed .jsvg-tick-4 { animation-delay: 0.6s; }
+  @keyframes jsvg-tick-flash {
+    0%, 70%, 100% { opacity: 0.35; }
+    15%, 30%      { opacity: 1; }
+  }
+
+  /* 3 · Производство — дым из трубы (фабрика «работает») */
+  .jrn__icon svg .jsvg-smoke {
+    fill: currentColor;
+    stroke: none;
+    opacity: 0;
+  }
+  .jrn__step.is-revealed .jsvg-smoke {
+    animation: jsvg-smoke-puff 2.4s ease-out infinite;
+    transform-box: view-box;
+  }
+  .jrn__step.is-revealed .jsvg-smoke-1 { animation-delay: 0s;   }
+  .jrn__step.is-revealed .jsvg-smoke-2 { animation-delay: 0.8s; }
+  .jrn__step.is-revealed .jsvg-smoke-3 { animation-delay: 1.6s; }
+  @keyframes jsvg-smoke-puff {
+    0%   { transform: translate(0, 0) scale(0.5);         opacity: 0; }
+    20%  { opacity: 0.85; }
+    100% { transform: translate(-1.5px, -5px) scale(1.6); opacity: 0; }
+  }
+
+  /* 4 · Штамп — ритмичный «удар» */
+  .jrn__step.is-revealed .jsvg-stamp {
+    animation: jsvg-stamp-press 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transform-origin: center bottom;
+  }
+  @keyframes jsvg-stamp-press {
+    0%, 60%, 100% { transform: translateY(0)   scaleY(1);    }
+    30%           { transform: translateY(2px) scaleY(0.94); }
+  }
+
+  /* 5 · Грузовик — кузов слегка покачивается, колёса крутятся */
+  .jrn__step.is-revealed .jsvg-truck {
+    animation: jsvg-truck-bob 1.6s ease-in-out infinite;
+  }
+  @keyframes jsvg-truck-bob {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-0.8px); }
+  }
+  .jrn__step.is-revealed .jsvg-wheel {
+    animation: jsvg-wheel-spin 1.4s linear infinite;
+  }
+  @keyframes jsvg-wheel-spin {
+    from { transform: rotate(0deg);   }
+    to   { transform: rotate(360deg); }
+  }
+
+  /* hover — анимации ускоряются для отклика */
+  .jrn__step:hover .jsvg-wheel,
+  .jrn__step:focus-within .jsvg-wheel {
+    animation-duration: 0.9s;
+  }
+  .jrn__step:hover .jsvg-stamp,
+  .jrn__step:focus-within .jsvg-stamp {
+    animation-duration: 1.4s;
+  }
+
+  /* Reduced motion — все тематические анимации иконок выключены */
+  @media (prefers-reduced-motion: reduce) {
+    .jrn__icon svg .jsvg-check {
+      stroke-dasharray: none !important;
+      stroke-dashoffset: 0 !important;
+    }
+    .jrn__icon svg .jsvg-key,
+    .jrn__icon svg .jsvg-tick {
+      opacity: 1 !important;
+    }
+    .jrn__icon svg .jsvg-smoke {
+      opacity: 0 !important;
+    }
+    .jrn__icon svg [class^='jsvg-'] {
+      animation: none !important;
+      transform: none !important;
+    }
+  }
+</style>

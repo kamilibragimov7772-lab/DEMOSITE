@@ -1,0 +1,190 @@
+---
+/**
+ * /about/production/ — детали производства в Люберцах.
+ *
+ * Spec: 04_visuals/17-production.spec.md
+ * Outline: 02_content/page_outlines/17-production-details.md
+ *
+ * Schema: AboutPage + BreadcrumbList.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import IndustryHero from '@components/organisms/IndustryHero.astro';
+import ProductionGallery from '@components/organisms/ProductionGallery.astro';
+import TimelineCompany from '@components/organisms/TimelineCompany.astro';
+import MethodsGrid from '@components/organisms/MethodsGrid.astro';
+import DocumentsList from '@components/organisms/DocumentsList.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { webPage, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const hero = {
+  eyebrow: 'Производство',
+  h1: 'Производство термоупаковки в Люберцах',
+  lead: '~2000 м² производственных площадей, ~1 млн единиц в месяц, более 10 млн штук в год. Собственное производство, 3 стадии контроля качества.',
+  primaryCta: { label: 'Запросить экскурсию →', href: '/contacts/#cta' },
+  secondaryCta: { label: 'Скачать пакет сертификатов →', href: '#docs' },
+  stats: [
+    { value: '~2000 м²',     label: 'площадь производства' },
+    { value: '~1 млн ед/мес', label: 'мощность' },
+    { value: '3 стадии',     label: 'контроля качества' },
+    { value: '100%',         label: 'перерабатываемость материала' },
+  ],
+} as const;
+
+const photos = [
+  { src: '/assets/production/line-1.jpg',          alt: 'Линия флексопечати в цехе TERMY',                  caption: 'Линия флексопечати — для тиражей от 10 000 шт.' },
+  { src: '/assets/production/silkscreen.jpg',      alt: 'Шелкография на термопакетах',                       caption: 'Шелкография — от 100 шт, Pantone-точность.' },
+  { src: '/assets/production/shock-assembly.jpg',  alt: 'Сборка аккумуляторов холода SHOCK',                 caption: 'Сборка SHOCK — заполнение, запайка, ручка-защёлка.' },
+  { src: '/assets/production/quality-control.jpg', alt: 'Контроль качества готовой партии',                  caption: 'Выходной контроль — выборочный тест на режим и шов.' },
+  { src: '/assets/production/warehouse.jpg',       alt: 'Складская зона, 100 000 шт в наличии',              caption: 'Склад — 100 000 шт всегда в наличии.' },
+  { src: '/assets/production/sealing.jpg',         alt: 'Запайка термопакета на пакетоделательной машине',   caption: 'Пакетоделательные машины — толщина шва под контролем.' },
+];
+
+const stages = [
+  { year: 'Стадия 1', title: 'Входной контроль материала',         description: 'БОПП-плёнка, спанбонд, фольга, гель для SHOCK — каждый рулон / партия проверяется до запуска.' },
+  { year: 'Стадия 2', title: 'Контроль в процессе производства',   description: 'Толщина шва, качество запайки, цветопередача брендирования — на каждой смене.' },
+  { year: 'Стадия 3', title: 'Выходной контроль готовой партии',   description: 'Выборочный тест на удержание режима, на прочность шва, на качество брендирования. Соответствует ISO 9001.' },
+];
+
+const technologies = [
+  { name: 'Экструзия БОПП', moq: 'от 10 000 шт', terms: '2–4 нед', description: 'Производство 3-слойной плёнки PRO с ВПП 1 см.' },
+  { name: 'Каширование',    moq: 'от 5 000 шт',  terms: '2–3 нед', description: 'Соединение БОПП + спанбонд + фольга в 18-мм стенку.' },
+  { name: 'Шелкография',    moq: 'от 100 шт',    terms: '1–2 нед', colors: 'Pantone-точность', description: 'Малые тиражи + кастомные цвета.' },
+  { name: 'Сборка SHOCK®',  moq: 'от 1 000 шт',  terms: '1–2 нед', description: 'Заполнение геля, запайка, монтаж патент-защёлки.' },
+];
+
+const certs = [
+  {
+    title: 'Сертификат ISO 9001',
+    description: 'Система менеджмента качества — заявлено в JSON-LD Organization.',
+    ctaLabel: 'Скачать выписку ISO 9001 →',
+    href: '/assets/docs/iso-9001.pdf',
+    size: 'PDF, 380 КБ',
+  },
+  {
+    title: 'Декларация ТР ТС 005/2011',
+    description: 'Соответствие техрегламенту Таможенного союза по безопасности упаковки.',
+    ctaLabel: 'Скачать декларацию ТР ТС →',
+    href: '/assets/docs/tr-ts-005-2011.pdf',
+    size: 'PDF, 480 КБ',
+  },
+  {
+    title: 'Сертификат БОПП',
+    description: 'Сертификат на 3-слойную ориентированную полипропиленовую плёнку.',
+    ctaLabel: 'Скачать сертификат БОПП →',
+    href: '/assets/docs/bopp-cert.pdf',
+    size: 'PDF, 360 КБ',
+  },
+];
+
+const schema = [
+  webPage({
+    name: 'Производство в Люберцах — TERMY',
+    description: '~2000 м² производственных площадей, мощность ~10 млн шт/год. 3 стадии контроля качества. Видео и фото с производства.',
+    specialty: 'AboutPage',
+  }),
+  breadcrumbList([
+    { name: 'Главная',    url: siteUrl },
+    { name: 'О компании', url: `${siteUrl}about/` },
+    { name: 'Производство', url: `${siteUrl}about/production/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Производство в Люберцах"
+  description="~2000 м² производственных площадей, мощность ~10 млн шт/год. 3 стадии контроля качества. Видео и фото с производства."
+  ogType="website"
+  ogImage={`${siteUrl}assets/og/og-about-production.jpg`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'О компании', href: '/about/' },
+      { name: 'Производство' },
+    ]}
+  />
+
+  <IndustryHero {...hero} />
+
+  <section class="loc" aria-labelledby="loc-h2">
+    <div class="container">
+      <p class="loc__eyebrow">Расположение</p>
+      <h2 id="loc-h2" class="loc__h2">Где мы находимся</h2>
+      <ul class="loc__list">
+        <li><strong>Адрес:</strong> г. Люберцы, Московская область, Котельнический проезд, 27А</li>
+        <li><strong>От МКАД:</strong> ~10 км</li>
+        <li><strong>Логистика:</strong> бесплатная отгрузка по Москве за 24 ч; ТК до регионов</li>
+      </ul>
+    </div>
+  </section>
+
+  <ProductionGallery
+    eyebrow="Фотогалерея"
+    heading="Производство в кадре"
+    lead="6 фотографий производственной линии: флексопечать, шелкография, сборка SHOCK, контроль качества, склад."
+    items={photos}
+  />
+
+  <TimelineCompany
+    eyebrow="Контроль качества"
+    heading="3 стадии контроля качества"
+    lead="Каждая партия проходит три обязательных этапа — от приёмки сырья до выборочных тестов готовой продукции."
+    items={stages}
+    id="quality"
+  />
+
+  <MethodsGrid
+    eyebrow="Технологии"
+    heading="Технологическая линия"
+    methods={technologies}
+  />
+
+  <div id="docs"></div>
+  <DocumentsList
+    eyebrow="Сертификаты производства"
+    heading="Compliance-пакет производства"
+    lead="Документы для тендеров и аудитов клиентов. Полный пакет (с патентом на SHOCK) — на /about/."
+    items={certs}
+  />
+
+  <PreFooterCta
+    heading="Хотите увидеть производство своими глазами?"
+    lead="Запросите экскурсию или посмотрите фото и видео линии."
+    primaryCta={{ label: 'Запросить экскурсию →', href: '/contacts/#cta' }}
+    secondaryCta={{ label: 'Открыть преимущества TERMY →', href: '/about/advantages/' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>
+
+<style>
+  .loc { padding-block: var(--spacing-7); background: var(--color-bg-surface-warm); }
+  .loc__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .loc__h2 { margin-block-end: var(--spacing-4); }
+  .loc__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    max-width: 70ch;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: var(--font-line-height-normal);
+  }
+  .loc__list strong { color: var(--color-text-primary); margin-inline-end: var(--spacing-1); }
+</style>

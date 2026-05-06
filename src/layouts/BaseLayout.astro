@@ -1,0 +1,139 @@
+---
+/**
+ * BaseLayout — корневой layout всех страниц.
+ * - SEO meta (title / description / canonical / og / twitter)
+ * - schema.org JSON-LD (Organization root + per-page graph)
+ * - skip-to-content (WCAG 2.4.1)
+ * - preload primary font + favicon
+ * - global CSS
+ *
+ * Источники: 02_content/seo_strategy.md, 03_design_system/typography.md.
+ */
+
+import '../styles/global.css';
+import Header from '@components/organisms/Header.astro';
+import Footer from '@components/organisms/Footer.astro';
+import SplashIntro from '@components/organisms/SplashIntro.astro';
+import CookieBanner from '@components/organisms/CookieBanner.astro';
+import PlausibleLoader from '@components/organisms/PlausibleLoader.astro';
+import { makeMeta, type OgType } from '@lib/seo';
+import { organization, graph } from '@lib/schema';
+
+export interface Props {
+  /** ≤60 символов с keyword. Суффикс «— TERMY» добавляется автоматически. */
+  title: string;
+  /** ≤160 символов. */
+  description: string;
+  /** Тип страницы для og:type. */
+  ogType?: OgType;
+  /** Полный URL картинки 1200×630. */
+  ogImage?: string;
+  /** Запретить индексацию (для технических страниц). */
+  noindex?: boolean;
+  /** Per-page schema.org JSON-LD объекты. Organization добавляется автоматически. */
+  schema?: ReadonlyArray<Record<string, unknown>>;
+  /** Скрыть header/footer (для legal-страниц с компактным режимом). */
+  bare?: boolean;
+}
+
+const {
+  title,
+  description,
+  ogType = 'website',
+  ogImage,
+  noindex = false,
+  schema = [],
+  bare = false,
+} = Astro.props;
+
+const pathname = Astro.url.pathname;
+const meta = makeMeta({
+  title,
+  description,
+  pathname,
+  site: Astro.site,
+  ogImage,
+  ogType,
+  noindex,
+});
+
+const siteUrl = Astro.site?.toString() ?? 'https://termy.ru/';
+const orgGraph = organization({ siteUrl });
+const fullGraph = graph([orgGraph, ...schema]);
+---
+
+<!doctype html>
+<html lang="ru" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#6428A0" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <title>{meta.title}</title>
+    <meta name="description" content={meta.description} />
+    <link rel="canonical" href={meta.canonical} />
+
+    {meta.robotsNoindex && <meta name="robots" content="noindex, follow" />}
+
+    {/* Open Graph */}
+    <meta property="og:title" content={meta.ogTitle} />
+    <meta property="og:description" content={meta.ogDescription} />
+    <meta property="og:url" content={meta.canonical} />
+    <meta property="og:type" content={meta.ogType} />
+    <meta property="og:site_name" content="TERMY" />
+    <meta property="og:locale" content="ru_RU" />
+    {meta.ogImage && <meta property="og:image" content={meta.ogImage} />}
+
+    {/* Twitter Card */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={meta.ogTitle} />
+    <meta name="twitter:description" content={meta.ogDescription} />
+    {meta.ogImage && <meta name="twitter:image" content={meta.ogImage} />}
+
+    {/* Иконки */}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    {/* Preload primary font subset (Cyrillic — основной язык сайта). Латинский subset загрузится по unicode-range. */}
+    <link
+      rel="preload"
+      href="/fonts/Inter-cyrillic-wght.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="/fonts/Inter-latin-wght.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+
+    {/* Schema.org @graph: Organization + per-page nodes */}
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(fullGraph)} />
+
+    <slot name="head-extra" />
+  </head>
+  <body>
+    {!bare && <SplashIntro />}
+
+    <a href="#main" class="skip-link">Перейти к содержимому</a>
+
+    {!bare && <Header />}
+
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+
+    {!bare && <Footer />}
+
+    {/* Cookie consent (152-ФЗ + GDPR). Показывается при первом визите; скрывается после выбора. */}
+    {!bare && <CookieBanner />}
+
+    {/* Plausible Analytics — conditional loader. Подключается только при analytics-consent. */}
+    {!bare && <PlausibleLoader />}
+  </body>
+</html>

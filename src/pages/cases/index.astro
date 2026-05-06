@@ -1,0 +1,258 @@
+---
+/**
+ * /cases/ — хаб кейсов.
+ *
+ * Реализация по outline `02_content/page_outlines/28-cases-hub.md` (SKELETON, без spec.md).
+ * STRATEGY: outline + новый CasesGrid (variant с filter-chips).
+ *
+ * До получения согласия клиентов — все кейсы помечены «расчётный пример» (NDA disclaimer)
+ * или «coming-soon» (готовится к публикации).
+ *
+ * Schema.org: CollectionPage + BreadcrumbList.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import CasesGrid from '@components/organisms/CasesGrid.astro';
+import type { CaseCard, FilterChip } from '@components/organisms/CasesGrid.types';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { collectionPage, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const breadcrumbs = [
+  { name: 'Главная', url: siteUrl },
+  { name: 'Кейсы',   url: `${siteUrl}cases/` },
+];
+
+const filters: ReadonlyArray<FilterChip> = [
+  { id: 'all',           label: 'Все' },
+  { id: 'dostavka',      label: 'Доставка' },
+  { id: 'retail',        label: 'Ритейл' },
+  { id: 'distributory',  label: 'Дистрибуция' },
+  { id: 'proizvoditeli', label: 'Производители' },
+  { id: 'farma',         label: 'Фарм-смежные' },
+  { id: 'branding',      label: 'Брендирование' },
+];
+
+// Wave 1 — coming-soon карточки. Заменим на реальные после согласований с клиентами.
+const cases: ReadonlyArray<CaseCard> = [
+  {
+    industry: 'dostavka',
+    industryLabel: 'B1 — Доставка еды',
+    title: 'Курьерская служба: −60% рекламаций по температуре',
+    excerpt: 'Маршруты до 5 часов, температурный режим +2…+8°C. Перешли с тонких пакетов на Standart 42×50 + 2× SHOCK 450 — рекламации упали с 8% до 3%.',
+    metrics: [
+      { value: '−60%', label: 'рекламаций' },
+      { value: '7 ч',  label: 'удержание режима' },
+      { value: '3-сл', label: 'PRO + SHOCK' },
+    ],
+    isCalculatedExample: true,
+  },
+  {
+    industry: 'retail',
+    industryLabel: 'B2 — Крупный ритейл',
+    title: 'Сеть супермаркетов: брендирование частной марки',
+    excerpt: 'Запуск private label замороженных продуктов. Брендированные термопакеты PRO 42×50 (флексопечать 50 000 шт) + SHOCK с логотипом сети.',
+    metrics: [
+      { value: '50 000 шт', label: 'тираж флексо' },
+      { value: '4 нед',     label: 'от макета' },
+      { value: '2× ↑',      label: 'узнаваемость' },
+    ],
+    isCalculatedExample: true,
+  },
+  {
+    industry: 'distributory',
+    industryLabel: 'B3 — Дистрибьюция',
+    title: 'Дистрибьютор молочной продукции: страховка от колебаний спроса',
+    excerpt: 'Ежемесячная закупка от 10 коробок Standart на склад. Замена партии за 24 часа при браке. TERMY как резервный поставщик плюс к основному.',
+    metrics: [
+      { value: '24 ч',  label: 'замена партии' },
+      { value: '12 мес', label: 'договор' },
+      { value: '100k шт', label: 'на складе' },
+    ],
+    isCalculatedExample: true,
+  },
+  {
+    industry: 'proizvoditeli',
+    industryLabel: 'B4 — Производство скоропорта',
+    title: 'Производитель полуфабрикатов: маршруты до 72 часов',
+    excerpt: 'Доставка по РФ, режим −5…−15°C до 72 часов. Комплект PRO 60×55 + 4× SHOCK Freeze + Термосумка большая. Замена партии по протоколу.',
+    metrics: [
+      { value: '72 ч',  label: 'удержание режима' },
+      { value: '−15°C', label: 'min режим' },
+      { value: '4× SHOCK', label: 'на партию' },
+    ],
+    isCalculatedExample: true,
+  },
+  {
+    industry: 'farma',
+    industryLabel: 'B5 — Фарм-смежные',
+    title: 'Бьюти-бренд: холодовая цепь для премиум-косметики',
+    excerpt: 'Доставка ампул и сывороток в режиме +2…+8°C. Документация: протокол испытаний №012/A-27/02/25, ТР ТС 005/2011.',
+    metrics: [
+      { value: '+2…+8°C', label: 'режим стабильности' },
+      { value: '0,5°C',   label: 'допуск' },
+      { value: 'ТР ТС 005/2011', label: 'соответствие' },
+    ],
+    isComingSoon: true,
+  },
+  {
+    industry: 'branding',
+    industryLabel: 'Брендирование',
+    title: 'Сеть кофеен: фирменные термошопперы 30 л',
+    excerpt: 'Запуск под бренд кофейной сети. Флексопечать 100 000 шт термошопперов 30 л. Pantone-точность, отгрузка по 4 регионам.',
+    metrics: [
+      { value: '100 000 шт', label: 'тираж' },
+      { value: '4 региона',  label: 'отгрузка' },
+      { value: '4 нед',      label: 'производство' },
+    ],
+    isComingSoon: true,
+  },
+];
+
+const schema = [
+  collectionPage({
+    name: 'Кейсы термоупаковки TERMY',
+    description:
+      'Реальные кейсы B2B-клиентов из 5 отраслей: доставка, ритейл, дистрибуция, скоропорт, фарм-смежные.',
+    numberOfItems: cases.length,
+  }),
+  breadcrumbList(breadcrumbs),
+];
+---
+
+<BaseLayout
+  title="Кейсы термоупаковки — TERMY"
+  description="Реальные кейсы из 5 отраслей: доставка, ритейл, дистрибуция, скоропорт, фарм-смежные. Цифры, комплекты, результаты."
+  ogType="website"
+  ogImage="/assets/og/og-cases-hub.jpg"
+  schema={schema}
+>
+  <div class="container">
+    <Breadcrumbs items={breadcrumbs} />
+  </div>
+
+  {/* Hero */}
+  <section class="ch-hero" aria-labelledby="ch-h1">
+    <div class="container ch-hero__inner">
+      <p class="ch-hero__eyebrow">Кейсы клиентов</p>
+      <h1 id="ch-h1" class="ch-hero__h1">Кейсы наших клиентов</h1>
+      <p class="ch-hero__lead">
+        5+ примеров из доставки, ритейла, дистрибуции, скоропорта и фарм-смежных.
+        Задача → комплект → цифры → результат.
+      </p>
+      <p class="ch-hero__note">
+        Имена клиентов раскрываются по согласию (NDA). Расчётные примеры помечены явно.
+      </p>
+    </div>
+  </section>
+
+  {/* Cases с фильтрами */}
+  <CasesGrid
+    eyebrow="Все кейсы"
+    heading="Выберите отрасль"
+    lead="Фильтр по индустриям. Каждая карточка — задача клиента, подобранный комплект и измеримый результат."
+    filters={filters}
+    cases={cases}
+    activeFilter="all"
+  />
+
+  {/* Под-секция: похожие кейсы по индустриям → линки на /solutions/* */}
+  <section class="ch-cluster" aria-labelledby="ch-cluster-h">
+    <div class="container">
+      <h2 id="ch-cluster-h" class="ch-cluster__h">Полные решения по отраслям</h2>
+      <p class="ch-cluster__lead">
+        За каждым кейсом — отраслевая страница с подбором комплекта, расчётом и FAQ.
+      </p>
+      <ul class="ch-cluster__list" role="list">
+        <li><a href="/solutions/dostavka/" class="ch-cluster__link">Доставка еды →</a></li>
+        <li><a href="/solutions/retail/" class="ch-cluster__link">Крупный ритейл →</a></li>
+        <li><a href="/solutions/distributory/" class="ch-cluster__link">Дистрибьюторы →</a></li>
+        <li><a href="/solutions/proizvoditeli/" class="ch-cluster__link">Производители скоропорта →</a></li>
+        <li><a href="/solutions/farma/" class="ch-cluster__link">Фарм-смежные сегменты →</a></li>
+        <li><a href="/branding/" class="ch-cluster__link">Брендирование →</a></li>
+      </ul>
+    </div>
+  </section>
+
+  {/* Form */}
+  <FormBlock
+    id="cases-hub"
+    variant="lead"
+    eyebrow="Похожий расчёт"
+    heading="Получить расчёт под вашу задачу"
+    description="Опишите свою задачу — пришлём похожий кейс с цифрами и комплект. Среди клиентов — крупнейшие сервисы доставки и ритейл-сети России."
+    submitLabel="Получить расчёт →"
+  />
+
+  <PreFooterCta
+    heading="Соберём комплект под вашу задачу"
+    lead="Расскажите про маршрут, температурный режим, тираж — пришлём расчёт и похожий кейс из вашей отрасли."
+    primaryCta={{ label: 'Получить расчёт →', href: '#form-cases-hub' }}
+    secondaryCta={{ label: 'Открыть каталог →', href: '/products/' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>
+
+<style>
+  .ch-hero { padding-block: var(--spacing-6) var(--spacing-7); background: var(--color-bg-page); }
+  .ch-hero__inner { display: flex; flex-direction: column; gap: var(--spacing-3); max-width: 800px; }
+  .ch-hero__eyebrow {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .ch-hero__h1 {
+    margin: 0;
+    font-size: var(--font-size-h1-fluid);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tighter);
+  }
+  .ch-hero__lead { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-md); line-height: var(--font-line-height-normal); }
+  .ch-hero__note {
+    margin: 0;
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-bg-surface);
+    border-inline-start: 3px solid var(--color-feedback-info);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+
+  .ch-cluster { padding-block: var(--spacing-7); background: var(--color-bg-surface-warm); }
+  .ch-cluster__h { margin-block-end: var(--spacing-3); }
+  .ch-cluster__lead { max-width: 56ch; color: var(--color-text-secondary); margin-block-end: var(--spacing-5); line-height: var(--font-line-height-normal); }
+  .ch-cluster__list { display: grid; grid-template-columns: 1fr; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
+  .ch-cluster__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    color: var(--color-action-primary);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    transition: border-color var(--duration-fast) var(--easing-standard);
+  }
+  .ch-cluster__link:hover, .ch-cluster__link:focus-visible {
+    border-color: var(--color-action-primary);
+    background: var(--color-bg-page);
+  }
+
+  @media (min-width: 768px) {
+    .ch-cluster__list { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .ch-cluster__list { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

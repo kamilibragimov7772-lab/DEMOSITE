@@ -1,0 +1,110 @@
+---
+/**
+ * Stat — molecule.
+ * Composition: Number (.num tabular) + Label + опц. Delta-indicator.
+ *
+ * Используется в Hero stats-strip, Advantages grid, About-cluster.
+ * Источник: 03_design_system/components_atomic.md §Molecules (Stat / metric).
+ */
+
+export interface Props {
+  /** Главное число / значение, напр. «от 1 коробки», «24 ч», «10+ млн». */
+  value: string;
+  /** Подпись под числом, напр. «минимальный заказ». */
+  label: string;
+  /** Eyebrow / pre-label (опц.). */
+  eyebrow?: string;
+  /** Дельта-индикатор (опц.). */
+  delta?: string;
+  deltaTrend?: 'up' | 'down' | 'flat';
+  /** Размер: компактный для catalog-strip, крупный для hero. */
+  size?: 'sm' | 'base' | 'lg';
+  /** Альтернативный фон (для surface-карточек). */
+  variant?: 'default' | 'surface' | 'on-dark';
+  class?: string;
+}
+
+const {
+  value,
+  label,
+  eyebrow,
+  delta,
+  deltaTrend = 'flat',
+  size = 'base',
+  variant = 'default',
+  class: className,
+} = Astro.props;
+
+const classes = [
+  'stat',
+  `stat--${size}`,
+  `stat--${variant}`,
+  className ?? '',
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<div class={classes}>
+  {eyebrow && <span class="stat__eyebrow">{eyebrow}</span>}
+  <strong class="stat__value num">{value}</strong>
+  <span class="stat__label">{label}</span>
+  {delta && (
+    <span class={`stat__delta stat__delta--${deltaTrend}`} aria-label={`Изменение: ${delta}`}>
+      {deltaTrend === 'up' && <span aria-hidden="true">↑</span>}
+      {deltaTrend === 'down' && <span aria-hidden="true">↓</span>}
+      {deltaTrend === 'flat' && <span aria-hidden="true">·</span>}
+      {' '}{delta}
+    </span>
+  )}
+</div>
+
+<style>
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    padding: var(--spacing-3) var(--spacing-4);
+    border-radius: var(--radius-base);
+    line-height: 1.2;
+  }
+  .stat--surface {
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+  }
+  .stat--on-dark {
+    background: var(--color-overlay-on-dark-low);
+    color: var(--color-text-on-dark);
+  }
+  .stat__eyebrow {
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--font-letter-spacing-widest);
+    color: var(--color-text-tertiary);
+    font-weight: var(--font-weight-medium);
+  }
+  .stat__value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    letter-spacing: var(--font-letter-spacing-tight);
+    line-height: var(--font-line-height-tight);
+  }
+  .stat--lg .stat__value { font-size: var(--font-size-4xl); }
+  .stat--sm .stat__value { font-size: var(--font-size-xl); }
+  .stat--on-dark .stat__value { color: var(--color-text-on-dark); }
+  .stat__label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+  }
+  .stat--on-dark .stat__label { color: var(--color-text-on-dark); opacity: 0.85; }
+  .stat__delta {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    margin-block-start: var(--spacing-1);
+  }
+  .stat__delta--up   { color: var(--color-feedback-success); }
+  .stat__delta--down { color: var(--color-feedback-error); }
+  .stat__delta--flat { color: var(--color-text-tertiary); }
+</style>

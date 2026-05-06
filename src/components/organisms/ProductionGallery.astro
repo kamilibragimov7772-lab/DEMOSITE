@@ -1,0 +1,160 @@
+---
+/**
+ * ProductionGallery — organism.
+ * Photo-grid: 6-9 фото производства (1-col mobile / 2-col tablet / 3-col desktop).
+ * Lightweight: каждое фото — это `<a href={fullSize} target="_blank">` (без JS-lightbox в Wave 1).
+ * Полноразмерный lightbox — phase 8 (deploy / enhancements).
+ *
+ * Composition: H2 + (опц. lead) + figure[]; каждая figure — image + figcaption.
+ * Состояния: default / link hover (zoom 1.04) / focus-visible (на link).
+ * Loading: native lazy-loading + decoding="async". Skeleton — TODO в phase 8.
+ *
+ * Источник:
+ * - 04_visuals/17-production.spec.md §«Block: Photo-grid»
+ * - 02_content/page_outlines/17-production-details.md §«H2: Видео и фотогалерея производства»
+ */
+
+export interface PhotoItem {
+  /** Путь к изображению (preview-размер для grid; для full-size — полный URL). */
+  src: string;
+  /** Alt-текст (обязательно). */
+  alt: string;
+  /** Подпись figcaption (опц.). */
+  caption?: string;
+  /** Ссылка на full-size (опц.; если задана — превью кликабельно, открывается в новой вкладке). */
+  fullSrc?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  lead?: string;
+  items: ReadonlyArray<PhotoItem>;
+  id?: string;
+}
+
+const { heading, eyebrow, lead, items, id = 'gallery' } = Astro.props;
+---
+
+<section class="gal" id={id} aria-labelledby={`${id}-h2`}>
+  <div class="container">
+    {eyebrow && <p class="gal__eyebrow">{eyebrow}</p>}
+    <h2 id={`${id}-h2`} class="gal__h2">{heading}</h2>
+    {lead && <p class="gal__lead">{lead}</p>}
+
+    <ul class="gal__grid" role="list">
+      {items.map((item) => (
+        <li>
+          <figure class="gal__figure">
+            {item.fullSrc ? (
+              <a
+                class="gal__link"
+                href={item.fullSrc}
+                target="_blank"
+                rel="noopener"
+                aria-label={`${item.alt} — открыть в полном размере (новая вкладка)`}
+              >
+                <img
+                  class="gal__img"
+                  src={item.src}
+                  alt={item.alt}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+            ) : (
+              <img
+                class="gal__img"
+                src={item.src}
+                alt={item.alt}
+                loading="lazy"
+                decoding="async"
+              />
+            )}
+            {item.caption && <figcaption class="gal__caption">{item.caption}</figcaption>}
+          </figure>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .gal {
+    padding-block: var(--spacing-8);
+  }
+  .gal__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .gal__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-4);
+  }
+  .gal__lead {
+    max-width: 60ch;
+    margin-block-end: var(--spacing-6);
+    color: var(--color-text-secondary);
+  }
+
+  .gal__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+  @media (min-width: 768px) {
+    .gal__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .gal__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .gal__figure {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+  .gal__link {
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-base);
+    border: 1px solid var(--color-border-default);
+    background: var(--color-bg-surface);
+    text-decoration: none;
+    transition: border-color var(--duration-fast) var(--easing-standard);
+  }
+  .gal__link:hover {
+    border-color: var(--color-border-focus);
+    text-decoration: none;
+  }
+
+  .gal__img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    transition: transform var(--duration-normal) var(--easing-standard);
+  }
+  .gal__link:hover .gal__img {
+    transform: scale(1.04);
+  }
+
+  .gal__caption {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.45;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gal__img { transition: none; }
+    .gal__link:hover .gal__img { transform: none; }
+  }
+</style>

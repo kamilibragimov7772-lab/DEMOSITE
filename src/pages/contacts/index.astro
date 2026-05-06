@@ -1,0 +1,275 @@
+---
+/**
+ * /contacts/ — Service-page. Точка финального контакта для всех B1-B5 flows.
+ *
+ * Spec: 04_visuals/19-contacts.spec.md
+ * Outline: 02_content/page_outlines/19-contacts.md
+ *
+ * Schema: ContactPage + LocalBusiness (geo, openingHours, address) + BreadcrumbList.
+ *
+ * Map placeholder: статический image-block + ссылка на Яндекс.Карты (НЕ external iframe).
+ * Live Yandex Maps integration — phase 8.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import IndustryHero from '@components/organisms/IndustryHero.astro';
+import ContactsBlock from '@components/organisms/ContactsBlock.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import DocumentsList from '@components/organisms/DocumentsList.astro';
+import FaqAccordion from '@components/organisms/FaqAccordion.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import {
+  contactPage,
+  localBusiness,
+  breadcrumbList,
+  faqPage,
+} from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const hero = {
+  eyebrow: 'Сервисная страница',
+  h1: 'Контакты TERMY',
+  lead: 'Менеджер на связи пн–пт, 9:00–18:00 (МСК). Email и WhatsApp — круглосуточно. Звонок по 8-800 — бесплатно по всей России.',
+  primaryCta: { label: 'Написать в WhatsApp', href: 'https://wa.me/78001011525' },
+  secondaryCta: { label: 'Позвонить +7 (800) 101-15-25', href: 'tel:+78001011525' },
+} as const;
+
+const channels = [
+  {
+    type: 'phone' as const,
+    title: 'Телефон',
+    value: '+7 (800) 101-15-25',
+    description: 'пн–пт 9:00–18:00 (МСК), бесплатно по РФ',
+    href: 'tel:+78001011525',
+    ctaLabel: 'Позвонить',
+    icon: '📞',
+  },
+  {
+    type: 'email' as const,
+    title: 'Email',
+    value: 'info@termybrand.com',
+    description: 'отвечаем в течение 1 рабочего часа',
+    href: 'mailto:info@termybrand.com',
+    ctaLabel: 'Написать письмо',
+    icon: '✉',
+  },
+  {
+    type: 'whatsapp' as const,
+    title: 'WhatsApp',
+    value: '+7 (800) 101-15-25',
+    description: 'круглосуточно, отвечаем в рабочие часы',
+    href: 'https://wa.me/78001011525',
+    ctaLabel: 'Написать в WhatsApp',
+    icon: '💬',
+    external: true,
+  },
+  {
+    type: 'address' as const,
+    title: 'Адрес офиса',
+    value: 'г. Москва, п. Коммунарка, ул. Потаповская Роща, д. 4, к. 1',
+    description: '10 минут от метро «Коммунарка»',
+    href: 'https://yandex.ru/maps/?ll=37.493955%2C55.546812&z=17&pt=37.493955,55.546812',
+    ctaLabel: 'Открыть на Яндекс.Картах',
+    icon: '📍',
+    external: true,
+  },
+];
+
+const map = {
+  imageSrc: '/assets/contacts/map-placeholder.jpg',
+  alt: 'Карта расположения офиса TERMY в Коммунарке',
+  caption: '10 минут от станции метро «Коммунарка». Бесплатная парковка во дворе по предварительному звонку.',
+  yandexUrl: 'https://yandex.ru/maps/?ll=37.493955%2C55.546812&z=17&pt=37.493955,55.546812',
+  coords: '55.546812, 37.493955',
+};
+
+const docs = [
+  {
+    title: 'Карточка предприятия',
+    description: 'Реквизиты ООО «ТЕРМИ» для бухгалтерии клиента (ИНН, КПП, ОГРН, банк).',
+    ctaLabel: 'Скачать карточку предприятия PDF →',
+    href: '/assets/docs/termy-card.pdf',
+    size: 'PDF, 240 КБ',
+  },
+  {
+    title: 'Реквизиты в DOCX',
+    description: 'Тот же набор реквизитов в редактируемом формате — для договоров и спецификаций.',
+    ctaLabel: 'Скачать реквизиты DOCX →',
+    href: '/assets/docs/termy-requisites.docx',
+    size: 'DOCX, 180 КБ',
+  },
+  {
+    title: 'Презентация TERMY',
+    description: '25 слайдов — продукция, производство, кейсы, документы. Для рассылки в отделе закупок клиента.',
+    ctaLabel: 'Скачать презентацию TERMY PDF →',
+    href: '/assets/docs/termy-presentation.pdf',
+    size: 'PDF, 12.4 МБ',
+  },
+];
+
+const contactsFaq = [
+  { question: 'Как быстро менеджер ответит?',
+    answer: 'По email и WhatsApp — в течение 1 рабочего часа в часы работы. По форме на сайте — в течение 2 часов. Заявки в выходные обрабатываются в первый рабочий час понедельника.' },
+  { question: 'Можно ли приехать в офис без записи?',
+    answer: 'Лучше с предварительной договорённостью — нужен пропуск. Запишитесь по +7 (800) 101-15-25 или через форму ниже.' },
+  { question: 'Как организовать самовывоз?',
+    answer: 'Самовывоз со склада — пн–пт 9:00–18:00 по доверенности на представителя. Адрес склада уточняется в момент подтверждения заказа.' },
+  { question: 'Можно ли получить образцы?',
+    answer: 'Да. По Москве — собственным транспортом ТермиМобиль. По регионам — через ТК (компенсируется при заказе от МОЗ).' },
+  { question: 'Поддерживаете ли ЭДО?',
+    answer: 'Да, через Контур.Диадок и СБИС. Безналичный расчёт по счёту. ИП без НДС — отдельное юр.лицо для гибкости.' },
+  { question: 'Работаете ли в выходные?',
+    answer: 'Заявки принимаем 24/7 по email и WhatsApp. Менеджеры отвечают в первый рабочий час понедельника.' },
+];
+
+const schema = [
+  contactPage({ url: `${siteUrl}contacts/`, orgId: `${siteUrl}#org` }),
+  localBusiness({
+    siteUrl,
+    geo: { latitude: 55.546812, longitude: 37.493955 },
+    hours: [
+      { dayOfWeek: ['Mo', 'Tu', 'We', 'Th', 'Fr'], opens: '09:00', closes: '18:00' },
+    ],
+    priceRange: 'B2B',
+  }),
+  faqPage(contactsFaq),
+  breadcrumbList([
+    { name: 'Главная',  url: siteUrl },
+    { name: 'Контакты', url: `${siteUrl}contacts/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Контакты — ООО «ТЕРМИ»"
+  description="+7 (800) 101-15-25, info@termybrand.com, WhatsApp, офис в Коммунарке. Реквизиты ООО «ТЕРМИ» и карточка предприятия."
+  ogType="website"
+  ogImage={`${siteUrl}assets/og/og-contacts.jpg`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'Контакты' },
+    ]}
+  />
+
+  <IndustryHero {...hero} />
+
+  <ContactsBlock
+    eyebrow="Каналы связи"
+    heading="Выберите удобный канал"
+    channels={channels}
+    map={map}
+  />
+
+  <section class="rec" aria-labelledby="rec-h2">
+    <div class="container">
+      <p class="rec__eyebrow">Реквизиты</p>
+      <h2 id="rec-h2" class="rec__h2">Реквизиты ООО «ТЕРМИ»</h2>
+      <dl class="rec__list num">
+        <div><dt>Полное наименование</dt><dd>ООО «ТЕРМИ»</dd></div>
+        <div><dt>Юридический адрес</dt><dd>108826, г. Москва, п. Коммунарка, ул. Потаповская Роща, д. 4, к. 1, помещ. 91, офис 42</dd></div>
+        <div><dt>ИНН</dt><dd>9709082000</dd></div>
+        <div><dt>КПП</dt><dd>775101001</dd></div>
+        <div><dt>ОГРН</dt><dd>1227700339976</dd></div>
+        <div><dt>Дата регистрации</dt><dd>10.06.2022</dd></div>
+        <div><dt>Сертификация</dt><dd>ГОСТ Р 50962-96, ТУ 22.22.11-001-47645032-2022, ISO 9001</dd></div>
+      </dl>
+      <p class="rec__note">
+        ⚠ ИНН/КПП и банковские реквизиты — статус подтверждается бухгалтерией перед запуском.
+        Полные банковские реквизиты — в карточке предприятия PDF.
+      </p>
+    </div>
+  </section>
+
+  <div id="docs"></div>
+  <DocumentsList
+    eyebrow="Документы"
+    heading="Скачать корпоративные документы"
+    lead="Карточка предприятия для бухгалтерии клиента, реквизиты в DOCX для договоров, презентация TERMY (25 слайдов)."
+    items={docs}
+  />
+
+  <FormBlock
+    id="cta"
+    variant="lead"
+    eyebrow="Форма заявки"
+    heading="Напишите нам — менеджер свяжется в течение 2 часов"
+    description="9 полей: Имя, компания, email, телефон, тип запроса, отрасль, канал ответа, сообщение, согласие 152-ФЗ."
+    submitLabel="Отправить запрос →"
+    successText="Спасибо! Менеджер свяжется в течение 2 часов."
+  />
+
+  <FaqAccordion
+    eyebrow="Как мы работаем"
+    heading="Как работаем с клиентами"
+    items={contactsFaq}
+    id="contacts-faq"
+  />
+
+  <PreFooterCta
+    heading="Готовы помочь — выбирайте канал"
+    lead="Звонок 8-800 — бесплатно. WhatsApp — быстрее всего. Email — для документов."
+    primaryCta={{ label: 'Написать в WhatsApp', href: 'https://wa.me/78001011525' }}
+    secondaryCta={{ label: 'Позвонить +7 (800) 101-15-25', href: 'tel:+78001011525' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>
+
+<style>
+  .rec { padding-block: var(--spacing-8); background: var(--color-bg-surface-warm); }
+  .rec__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .rec__h2 { margin-block-end: var(--spacing-5); }
+  .rec__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-3);
+    margin: 0 0 var(--spacing-5);
+    padding: 0;
+  }
+  .rec__list > div {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-1);
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-sm);
+  }
+  @media (min-width: 768px) {
+    .rec__list { grid-template-columns: repeat(2, 1fr); }
+  }
+  .rec__list dt {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: var(--font-letter-spacing-widest);
+  }
+  .rec__list dd {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    line-height: 1.4;
+    word-break: break-word;
+  }
+  .rec__note {
+    max-width: 60ch;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+</style>

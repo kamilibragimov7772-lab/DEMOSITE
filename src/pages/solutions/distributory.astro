@@ -1,0 +1,234 @@
+---
+/**
+ * /solutions/distributory/ — Industry-page для B3 (дистрибьюторы упаковки).
+ *
+ * Spec: 04_visuals/05-solutions-distributory.spec.md
+ * Outline: 02_content/page_outlines/05-solutions-distributory.md
+ *
+ * Особенность: широкая линейка (6 product-cards), SLA-блок, спеццены первым 3 заказам.
+ * Schema: Service + BreadcrumbList.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import IndustryHero from '@components/organisms/IndustryHero.astro';
+import PainPointsList from '@components/organisms/PainPointsList.astro';
+import ProductTriad from '@components/organisms/ProductTriad.astro';
+import CaseHighlight from '@components/organisms/CaseHighlight.astro';
+import DocumentsList from '@components/organisms/DocumentsList.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { service, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const hero = {
+  eyebrow: 'B3 · Коммерческий директор / закупщик',
+  h1: 'Дистрибьюторы — надёжная поставка',
+  lead: '100 000 шт на складе, поставка за 24 часа, собственное производство, от 1 коробки. Резервный поставщик в любой сезон.',
+  primaryCta: { label: 'Получить прайс дистрибьютора →', href: '#cta' },
+  secondaryCta: { label: 'Скачать карточку поставщика PDF', href: '/assets/docs/company-card.pdf' },
+  stats: [
+    { value: '100 000 шт', label: 'на складе в МСК' },
+    { value: '24 ч',       label: 'отгрузка по Москве' },
+    { value: 'от 1 коробки', label: 'минимальный заказ' },
+    { value: 'спеццена',   label: 'первым 3 заказам' },
+  ],
+  mascot: '📦',
+};
+
+const painPoints = [
+  {
+    title: 'Сезон: товара нет, клиенты уходят',
+    description: 'Производитель не успевает — дистрибьютор теряет клиентов и репутацию.',
+  },
+  {
+    value: '5–15%',
+    title: 'Маржинальность под давлением',
+    description: 'Дистрибуцию выдавливают крупные игроки с прямыми контрактами в сети.',
+  },
+  {
+    title: 'Срыв поставки от производителя',
+    description: 'Один пропущенный поток = потеря репутации у нескольких клиентов.',
+  },
+  {
+    title: 'МОЗ большинства производителей не подходит',
+    description: 'От 5+ коробов на серию — не для маленьких клиентов дистрибьютора.',
+  },
+];
+
+const products = [
+  {
+    href: '/products/termopakety/standart-42x50/',
+    category: 'Бестселлер',
+    title: 'Термопакет Standart 42×50',
+    specs: ['Бестселлер дистрибуции', 'От 1 коробки', '+2…+8°C до 7 ч', 'Шелкография от 100 шт'],
+    priceFrom: 'от 49 ₽/шт',
+    ctaLabel: 'Открыть карточку Standart 42×50 →',
+  },
+  {
+    href: '/products/akkumulyatory-holoda/cool-450ml/',
+    category: 'SHOCK®',
+    title: 'SHOCK 300/450 мл Cool',
+    specs: ['3 режима охлаждения', 'ГОСТ Р 50962-96', '30+ циклов', 'Наклейки от 1 000 шт'],
+    priceFrom: 'от 39 ₽/шт',
+    ctaLabel: 'Открыть карточку SHOCK 450 →',
+  },
+  {
+    href: '/products/termoshoppery/',
+    category: 'Термошоппер',
+    title: 'Термошопперы одноразовые',
+    specs: ['Низкий порог входа', 'Фольгированный пакет', 'Брендирование от 100 шт', 'Розничная упаковка'],
+    priceFrom: 'по запросу',
+    ctaLabel: 'Открыть карточки термошопперов →',
+  },
+  {
+    href: '/products/zhidkie-hladoelementy/',
+    category: 'Хладоэлементы',
+    title: 'Жидкие хладоэлементы',
+    specs: ['Тонкий профиль для коробок', 'Лёгкие, мягкие', 'Применение для диагностики', 'От 500 шт'],
+    priceFrom: 'по запросу',
+    ctaLabel: 'Открыть карточку жидких хладоэлементов →',
+  },
+  {
+    href: '/products/bablpak/',
+    category: 'БаблПак',
+    title: 'БаблПак (воздушно-пузырьковая плёнка)',
+    specs: ['Низкая цена', 'Низкий порог входа', '13 SKU в линейке', 'Розница и опт'],
+    priceFrom: 'от 18 ₽/п.м',
+    ctaLabel: 'Открыть карточку БаблПак →',
+  },
+  {
+    href: '/products/termosumki-bolshie/',
+    category: 'Premium-ниша',
+    title: 'Термосумки большие',
+    specs: ['30/50/80/120 л — линейка', 'Premium-маржа', 'Брендирование наклейкой', 'Под скоропорт'],
+    priceFrom: 'по запросу',
+    ctaLabel: 'Открыть карточки термосумок →',
+  },
+];
+
+const caseStory = {
+  task: 'Региональный дистрибьютор упаковки в среднем регионе РФ. Сезонная просадка летом — производители-партнёры не успевают, клиенты уходят к конкурентам.',
+  solution: 'Подключение к складу TERMY (100 000 шт постоянно) как резервному источнику. ЭДО за 1 неделю. Спеццена на первые 3 заказа. Прямой контакт с РОПом дистрибуции.',
+  result: 'Рост оборота на 30% за сезон за счёт стабильности поставки. Удержали 5 ключевых клиентов, привлекли 8 новых на резерве TERMY.',
+};
+
+const caseMetrics = [
+  { label: 'Рост оборота',     value: '+30%' },
+  { label: 'Удержание клиентов', value: '5/5' },
+  { label: 'Новые клиенты',    value: '+8' },
+];
+
+const documents = [
+  {
+    title: 'Карточка дистрибьютора TERMY',
+    description: 'Полная карточка для подключения к ЭДО и согласования условий.',
+    ctaLabel: 'Скачать карточку поставщика →',
+    href: '/assets/docs/company-card.pdf',
+    size: 'PDF, 380 КБ',
+  },
+  {
+    title: 'Прайс-лист дистрибьюторов',
+    description: 'Полный прайс с спеццентрами для первых 3 заказов. Email-gate.',
+    ctaLabel: 'Получить прайс на email →',
+    href: '#cta',
+    size: 'PDF, по запросу',
+  },
+  {
+    title: 'Публичная оферта',
+    description: 'Условия работы: ЭДО, отгрузка, оплата, постфактум 30 дней для проверенных партнёров.',
+    ctaLabel: 'Открыть публичную оферту →',
+    href: '/legal/oferta/',
+    size: 'HTML',
+  },
+  {
+    title: 'Условия отгрузки',
+    description: 'Бесплатно по Москве. Прямая ТК до склада дистрибьютора в регионах.',
+    ctaLabel: 'Открыть условия доставки →',
+    href: '/delivery/',
+    size: 'HTML',
+  },
+];
+
+const schema = [
+  service({
+    name: 'Термоупаковка дистрибьюторам',
+    description: '100 000 шт на складе, отгрузка за 24 ч, от 1 коробки. Спеццены первым 3 заказам. Резервный поставщик термоупаковки в РФ.',
+    audience: 'Дистрибьюторы упаковки (B3)',
+  }),
+  breadcrumbList([
+    { name: 'Главная',  url: siteUrl },
+    { name: 'Решения',  url: `${siteUrl}solutions/` },
+    { name: 'Дистрибьюторы', url: `${siteUrl}solutions/distributory/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Термоупаковка дистрибьюторам"
+  description="100 000 шт на складе, отгрузка за 24 ч, от 1 коробки. Спеццены первым 3 заказам. Резервный поставщик термоупаковки в РФ."
+  ogType="website"
+  ogImage={`${siteUrl}assets/og/og-solutions-distributory.jpg`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'Решения', href: '/solutions/' },
+      { name: 'Дистрибьюторы' },
+    ]}
+  />
+
+  <IndustryHero {...hero} />
+
+  <PainPointsList
+    eyebrow="Боли коммерческого директора"
+    heading="Что мешает дистрибуции расти"
+    items={painPoints}
+  />
+
+  <ProductTriad
+    eyebrow="Рекомендованная линейка"
+    heading="6 категорий, которые работают для дистрибуции"
+    lead="Полная линейка под перепродажу: бестселлеры + premium-ниша + низкий порог входа. Резерв 100 000 шт постоянно на складе."
+    products={products}
+    hubCta={{ label: 'Все 6 категорий каталога →', href: '/products/' }}
+  />
+
+  <CaseHighlight
+    eyebrow="Кейс — расчётный пример"
+    heading="Региональный дистрибьютор: рост оборота +30% за сезон"
+    segmentLabel="Дистрибьюция"
+    title="Резерв TERMY как страховка от сезонной просадки"
+    story={caseStory}
+    metrics={caseMetrics}
+    isCalculatedExample={true}
+  />
+
+  <DocumentsList
+    eyebrow="Документы и условия"
+    heading="Документы для подключения дистрибьютора"
+    lead="ЭДО — за 1 неделю. Условия оплаты — постфактум 30 дней для проверенных партнёров. Полный прайс — на email через форму."
+    items={documents}
+  />
+
+  <FormBlock
+    id="cta"
+    variant="lead"
+    eyebrow="Расчёт оптовой цены"
+    heading="Получить прайс дистрибьютора"
+    description="РОП дистрибьюторов свяжется в течение 1 часа, оценит ваш регион и согласует спеццены. Укажите регион / город в комментарии."
+    submitLabel="Получить расчёт →"
+  />
+
+  <PreFooterCta
+    heading="Готовы подключиться?"
+    lead="Напишите в WhatsApp — РОП ответит сразу и пришлёт прайс."
+    primaryCta={{ label: 'Получить прайс в WhatsApp', href: 'https://wa.me/78001011525' }}
+    secondaryCta={{ label: 'Позвонить +7 (800) 101-15-25', href: 'tel:+78001011525' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>

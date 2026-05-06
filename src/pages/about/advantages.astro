@@ -1,0 +1,158 @@
+---
+/**
+ * /about/advantages/ — 8 differentiators TERMY.
+ *
+ * Spec: 04_visuals/18-advantages.spec.md
+ * Outline: 02_content/page_outlines/18-advantages.md
+ *
+ * Schema: AboutPage + BreadcrumbList.
+ *
+ * Замечание: outline даёт 8 differentiators (не 7 как в spec). Используем 8 — outline
+ * приоритетнее, т.к. spec формулирует «семь преимуществ» как заголовок, но outline §H1
+ * говорит «8 преимуществ TERMY» с конкретным списком. Берём 8.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import IndustryHero from '@components/organisms/IndustryHero.astro';
+import AdvantagesMatrix from '@components/organisms/AdvantagesMatrix.astro';
+import InfoCallout from '@components/organisms/InfoCallout.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { webPage, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const hero = {
+  eyebrow: 'Преимущества',
+  h1: '8 преимуществ TERMY',
+  lead: 'Что отличает TERMY от других производителей термоупаковки в РФ — 8 конкретных differentiators по совокупности.',
+  primaryCta: { label: 'Получить расчёт под мой кейс →', href: '/contacts/#cta' },
+  secondaryCta: { label: 'Скачать карточку предприятия PDF →', href: '/contacts/#docs' },
+} as const;
+
+const items = [
+  {
+    number: 1,
+    title: 'Формат 42×50 PRO — единственный в России',
+    description: 'ВПП 1 см (в 10× толще обычных термопакетов). Популярен в Европе и ОАЭ — для экспорта.',
+    link: { label: 'Открыть PRO 42×50 →', href: '/products/termopakety/' },
+    icon: '📐',
+  },
+  {
+    number: 2,
+    title: 'МОЗ от 1 коробки серийки + от 100 шт термошопперы',
+    description: 'Рекордный минимум для B2B. Спеццены первым 3 заказам для дистрибьюторов.',
+    link: { label: 'Открыть решения для дистрибьюторов →', href: '/solutions/distributory/' },
+    icon: '📦',
+  },
+  {
+    number: 3,
+    title: 'ТермиМобиль — собственный транспорт по Москве за 24 ч',
+    description: 'Бесплатная доставка по Москве для крупных партий. Сроки и условия — на странице доставки.',
+    link: { label: 'Открыть условия доставки →', href: '/delivery/' },
+    icon: '🛵',
+  },
+  {
+    number: 4,
+    title: 'Бесплатный макет при любом заказе включая 100 шт',
+    description: 'Шелкография от 100 шт; макет дизайнером бесплатно. Pantone-точность, 2–4 недели до партии.',
+    link: { label: 'Открыть брендирование →', href: '/branding/' },
+    icon: '🎨',
+  },
+  {
+    number: 5,
+    title: 'PRO-серия с ВПП 1 см — в 10× толще обычных',
+    description: 'Удержание +2…+8°C до 7 ч в комплекте с 2× SHOCK Cool. Для крупных доставок.',
+    link: { label: 'Открыть термопакеты PRO →', href: '/products/termopakety/' },
+    icon: '🧊',
+  },
+  {
+    number: 6,
+    title: 'Patent-protected ручка-защёлка SHOCK®',
+    description: 'Прочность; удобство обмена в логоцентре. Свидетельство Роспатента — TERMY.',
+    link: { label: 'Открыть аккумуляторы SHOCK →', href: '/products/akkumulyatory-holoda/' },
+    icon: '🔒',
+  },
+  {
+    number: 7,
+    title: 'Атмосферный бренд «внимательного друга»',
+    description: '6 маскотов: Курьер, Шеф-ресторан, Кейтеринг, Мясник, Онлайн-магазины, Фермер. Используются в use-cases внутри 5 канонических направлений.',
+    link: { label: 'Открыть отраслевые решения →', href: '/solutions/' },
+    icon: '🐸',
+  },
+  {
+    number: 8,
+    title: 'Compliance-набор для тендеров',
+    description: 'ISO 9001 + ТР ТС 005/2011 + ГОСТ Р 50962-96 + ТУ + протоколы. 3 стадии контроля качества.',
+    link: { label: 'Открыть страницу производства →', href: '/about/production/' },
+    icon: '📋',
+  },
+];
+
+const schema = [
+  webPage({
+    name: 'Преимущества TERMY — производитель термоупаковки',
+    description: 'Формат 42×50 PRO впервые в РФ, МОЗ от 1 коробки, отгрузка 24 ч, бесплатный макет, патент-защищённый SHOCK®, ISO 9001.',
+    specialty: 'AboutPage',
+  }),
+  breadcrumbList([
+    { name: 'Главная',    url: siteUrl },
+    { name: 'О компании', url: `${siteUrl}about/` },
+    { name: 'Преимущества', url: `${siteUrl}about/advantages/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Преимущества TERMY"
+  description="Формат 42×50 PRO впервые в РФ, МОЗ от 1 коробки, отгрузка 24 ч, бесплатный макет, патент-защищённый SHOCK®, ISO 9001."
+  ogType="website"
+  ogImage={`${siteUrl}assets/og/og-about-advantages.jpg`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'О компании', href: '/about/' },
+      { name: 'Преимущества' },
+    ]}
+  />
+
+  <IndustryHero {...hero} />
+
+  <AdvantagesMatrix
+    eyebrow="8 differentiators"
+    heading="Что отличает TERMY от других производителей"
+    lead="Каждое преимущество подтверждено конкретной цифрой и ссылкой на страницу с детализацией."
+    items={items}
+  />
+
+  <div class="container">
+    <InfoCallout tone="warning" title="Чего у нас НЕТ — честный disclaimer" icon="⚠">
+      <p>
+        <strong>РУ Росздравнадзора</strong> — нет. Для лекарств с обязательным РУ
+        рекомендуем профильных поставщиков.
+      </p>
+      <p>
+        <strong>Полная валидация холодовой цепи фарм-стандарта (ICH/GxP)</strong> —
+        обращайтесь индивидуально.
+      </p>
+      <p>
+        <strong>E-commerce-каталог с корзиной</strong> — нет (B2B-каталог-лидогенератор).
+      </p>
+      <p>
+        <strong>Мультиязычность</strong> — нет в Wave 1 (планируется в Wave 2).
+      </p>
+    </InfoCallout>
+  </div>
+
+  <PreFooterCta
+    heading="Эти 8 преимуществ работают для вашей задачи?"
+    lead="Получите расчёт под ваш кейс или выберите своё отраслевое решение."
+    primaryCta={{ label: 'Получить расчёт →', href: '/contacts/#cta' }}
+    secondaryCta={{ label: 'Открыть решения →', href: '/solutions/' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>

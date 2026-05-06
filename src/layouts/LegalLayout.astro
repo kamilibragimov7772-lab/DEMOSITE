@@ -1,0 +1,462 @@
+---
+/**
+ * LegalLayout — макет для юридических страниц (/legal/*).
+ * Composition: BaseLayout + Breadcrumbs + Hero (минимальный) + TOC (sticky desktop / accordion mobile)
+ * + Long-form text (slot) + Contact-callout + PreFooterCta-инверс + Footer.
+ *
+ * Источники:
+ * - 04_visuals/20-legal-privacy.spec.md (template Legal)
+ * - 04_visuals/21-legal-oferta.spec.md
+ * - 04_visuals/22-legal-cookies.spec.md
+ *
+ * Юридический документ, нейтральный регистр (tone_of_voice §Edge cases).
+ *
+ * Schema.org: WebPage + BreadcrumbList (через `schema` prop).
+ */
+
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import InfoCallout from '@components/organisms/InfoCallout.astro';
+import { ORG_PHONE, ORG_EMAIL, webPage, breadcrumbList } from '@lib/schema';
+
+export interface TocEntry {
+  id: string;
+  label: string;
+}
+
+export interface Props {
+  /** Заголовок документа (используется в meta.title и H1). */
+  documentTitle: string;
+  /** Meta-description (≤170). */
+  metaDescription: string;
+  /** Дата последнего обновления (ISO YYYY-MM-DD). */
+  updatedAt: string;
+  /** Дата вступления в силу. */
+  publishedAt: string;
+  /** Версия документа. */
+  version?: string;
+  /** Brief summary (2-3 строки) под H1. */
+  brief: string;
+  /** TOC — список якорей. */
+  toc: ReadonlyArray<TocEntry>;
+  /** Eyebrow (по умолчанию «Юридическая информация»). */
+  eyebrow?: string;
+  /** OG image URL. */
+  ogImage?: string;
+  /** Slug для cross-legal-links и breadcrumb. */
+  currentSlug: 'privacy' | 'oferta' | 'cookies';
+  /** Тип документа в schema.org (по умолчанию «Privacy Policy» / «Terms» / «Cookie Policy»). */
+  schemaSpecialty?: string;
+}
+
+const {
+  documentTitle,
+  metaDescription,
+  updatedAt,
+  publishedAt,
+  version = '1.0',
+  brief,
+  toc,
+  eyebrow = 'Юридическая информация',
+  ogImage,
+  currentSlug,
+  schemaSpecialty,
+} = Astro.props;
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+const pageUrl = `${siteUrl.replace(/\/$/, '')}${Astro.url.pathname}`;
+
+const breadcrumbs = [
+  { name: 'Главная', url: siteUrl },
+  { name: documentTitle, url: pageUrl },
+];
+
+const schema = [
+  webPage({
+    name: documentTitle,
+    description: metaDescription,
+    datePublished: publishedAt,
+    dateModified: updatedAt,
+    ...(schemaSpecialty ? { specialty: schemaSpecialty } : {}),
+  }),
+  breadcrumbList(breadcrumbs),
+];
+
+// Cross-legal links для footer-блока внутри документа
+const crossLegal = (
+  [
+    { slug: 'privacy', label: 'Политика конфиденциальности', href: '/legal/privacy/' },
+    { slug: 'oferta',  label: 'Публичная оферта',            href: '/legal/oferta/' },
+    { slug: 'cookies', label: 'Использование cookies',       href: '/legal/cookies/' },
+  ] as const
+).filter((l) => l.slug !== currentSlug);
+
+// Форматирование даты
+function formatDateRu(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(d);
+}
+
+const updatedAtFmt = formatDateRu(updatedAt);
+const publishedAtFmt = formatDateRu(publishedAt);
+---
+
+<BaseLayout
+  title={documentTitle}
+  description={metaDescription}
+  ogType="article"
+  ogImage={ogImage}
+  schema={schema}
+>
+  <article class="legal" itemscope itemtype="https://schema.org/WebPage">
+    <div class="container legal__inner">
+      <Breadcrumbs items={breadcrumbs} />
+
+      <header class="legal__hero">
+        <p class="legal__eyebrow">{eyebrow}</p>
+        <h1 class="legal__h1" itemprop="name">{documentTitle}</h1>
+        <p class="legal__brief">{brief}</p>
+        <dl class="legal__meta">
+          <div>
+            <dt>Дата вступления:</dt>
+            <dd><time datetime={publishedAt}>{publishedAtFmt}</time></dd>
+          </div>
+          <div>
+            <dt>Последнее обновление:</dt>
+            <dd><time datetime={updatedAt} itemprop="dateModified">{updatedAtFmt}</time></dd>
+          </div>
+          <div>
+            <dt>Действующая редакция:</dt>
+            <dd>{version}</dd>
+          </div>
+        </dl>
+      </header>
+
+      <div class="legal__layout">
+        {toc.length > 0 && (
+          <aside class="legal__toc" aria-labelledby="toc-h">
+            <details class="legal__toc-details" open>
+              <summary class="legal__toc-summary">
+                <h2 id="toc-h" class="legal__toc-h">Содержание</h2>
+                <span class="legal__toc-icon" aria-hidden="true">▾</span>
+              </summary>
+              <nav aria-label="Содержание документа">
+                <ol class="legal__toc-list">
+                  {toc.map((entry, idx) => (
+                    <li>
+                      <a href={`#${entry.id}`} class="legal__toc-link">
+                        <span class="legal__toc-num">{String(idx + 1).padStart(2, '0')}</span>
+                        <span>{entry.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            </details>
+          </aside>
+        )}
+
+        <div class="legal__body" itemprop="text">
+          <slot />
+
+          <InfoCallout tone="info" title="Если что-то непонятно — напишите нам">
+            <p>
+              По любым вопросам о документе — на почту
+              {' '}<a href={`mailto:${ORG_EMAIL}`}>{ORG_EMAIL}</a>
+              {' '}или по телефону{' '}
+              <a href={`tel:${ORG_PHONE.replace(/[^+\d]/g, '')}`}>{ORG_PHONE}</a>.
+              Ответим в течение рабочего дня.
+            </p>
+          </InfoCallout>
+
+          <nav class="legal__cross" aria-label="Другие юридические документы">
+            <h2 class="legal__cross-h">Смежные документы</h2>
+            <ul class="legal__cross-list" role="list">
+              {crossLegal.map((l) => (
+                <li><a href={l.href} class="legal__cross-link">{l.label} →</a></li>
+              ))}
+              <li><a href="/contacts/" class="legal__cross-link">Контакты →</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .legal {
+    padding-block: var(--spacing-6) var(--spacing-9);
+    background: var(--color-bg-page);
+  }
+
+  .legal__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-7);
+  }
+
+  /* Hero — минимальный */
+  .legal__hero {
+    max-width: 60ch;
+  }
+  .legal__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin: 0 0 var(--spacing-3);
+  }
+  .legal__h1 {
+    margin: 0 0 var(--spacing-4);
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tight);
+    color: var(--color-text-primary);
+  }
+  .legal__brief {
+    margin: 0 0 var(--spacing-5);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: var(--font-line-height-normal);
+  }
+  .legal__meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding: var(--spacing-4);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+    font-size: var(--font-size-sm);
+  }
+  .legal__meta > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+  }
+  .legal__meta dt {
+    color: var(--color-text-tertiary);
+    font-weight: var(--font-weight-medium);
+  }
+  .legal__meta dd {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* Layout: TOC + body */
+  .legal__layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  /* TOC */
+  .legal__toc-details {
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+  }
+  .legal__toc-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
+    min-height: 48px;
+    cursor: pointer;
+    list-style: none;
+  }
+  .legal__toc-summary::-webkit-details-marker { display: none; }
+  .legal__toc-h {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    color: var(--color-text-primary);
+  }
+  .legal__toc-icon {
+    transition: transform var(--duration-fast) var(--easing-standard);
+    color: var(--color-text-tertiary);
+  }
+  .legal__toc-details[open] .legal__toc-icon { transform: rotate(180deg); }
+  .legal__toc-list {
+    margin: 0;
+    padding: 0 var(--spacing-4) var(--spacing-4);
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    counter-reset: toc;
+  }
+  .legal__toc-link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-3);
+    padding: var(--spacing-2) 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--easing-standard);
+    min-height: 36px;
+  }
+  .legal__toc-link:hover,
+  .legal__toc-link:focus-visible {
+    color: var(--color-action-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .legal__toc-num {
+    flex-shrink: 0;
+    color: var(--color-text-tertiary);
+    font-variant-numeric: tabular-nums;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xs);
+  }
+
+  /* Body — long-form */
+  .legal__body :global(h2) {
+    margin-block: var(--spacing-7) var(--spacing-3);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--font-line-height-snug);
+    color: var(--color-text-primary);
+    scroll-margin-block-start: var(--spacing-6);
+  }
+  .legal__body :global(h2:first-child) { margin-block-start: 0; }
+  .legal__body :global(h3) {
+    margin-block: var(--spacing-5) var(--spacing-2);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+  .legal__body :global(p),
+  .legal__body :global(ul),
+  .legal__body :global(ol) {
+    margin-block: var(--spacing-3);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+    line-height: var(--font-line-height-loose);
+    max-width: 72ch;
+  }
+  .legal__body :global(ul),
+  .legal__body :global(ol) {
+    padding-inline-start: var(--spacing-5);
+  }
+  .legal__body :global(li) {
+    margin-block: var(--spacing-2);
+    line-height: var(--font-line-height-normal);
+  }
+  .legal__body :global(a) {
+    color: var(--color-action-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+    transition: text-decoration-thickness var(--duration-fast) var(--easing-standard);
+  }
+  .legal__body :global(a:hover),
+  .legal__body :global(a:focus-visible) {
+    text-decoration-thickness: 2px;
+  }
+  .legal__body :global(strong) {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+  .legal__body :global(table) {
+    width: 100%;
+    margin-block: var(--spacing-5);
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+  }
+  .legal__body :global(thead th) {
+    padding: var(--spacing-3);
+    background: var(--color-bg-surface);
+    text-align: left;
+    font-weight: var(--font-weight-bold);
+    border-block-end: 2px solid var(--color-border-default);
+    color: var(--color-text-primary);
+  }
+  .legal__body :global(tbody td) {
+    padding: var(--spacing-3);
+    border-block-end: 1px solid var(--color-border-subtle);
+    vertical-align: top;
+    color: var(--color-text-secondary);
+  }
+  .legal__body :global(blockquote) {
+    margin: var(--spacing-5) 0;
+    padding: var(--spacing-4) var(--spacing-5);
+    border-inline-start: 3px solid var(--color-action-primary);
+    background: var(--color-bg-surface);
+    color: var(--color-text-secondary);
+  }
+  .legal__body :global(blockquote p) { margin: 0; }
+
+  /* Cross-legal */
+  .legal__cross {
+    margin-block-start: var(--spacing-7);
+    padding-block-start: var(--spacing-6);
+    border-block-start: 1px solid var(--color-border-subtle);
+  }
+  .legal__cross-h {
+    margin: 0 0 var(--spacing-4);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+  .legal__cross-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+  .legal__cross-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--spacing-2) 0;
+    color: var(--color-action-primary);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold);
+  }
+  .legal__cross-link:hover,
+  .legal__cross-link:focus-visible {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  /* Mobile-first → desktop */
+  @media (min-width: 1024px) {
+    .legal__layout {
+      grid-template-columns: 240px minmax(0, 1fr);
+      gap: var(--spacing-8);
+      align-items: start;
+    }
+    .legal__toc {
+      position: sticky;
+      top: var(--spacing-6);
+      max-height: calc(100vh - var(--spacing-7));
+      overflow: auto;
+    }
+    .legal__toc-details[open] .legal__toc-icon { display: none; }
+    .legal__cross-list {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: var(--spacing-5);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .legal__toc-icon,
+    .legal__body :global(a) { transition: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>

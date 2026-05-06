@@ -1,0 +1,131 @@
+---
+/**
+ * CardBase — molecule.
+ * Composition: optional Image + optional Eyebrow + Title + optional Body + optional CTA.
+ * 4 состояния: default / hover / focus-within / disabled.
+ *
+ * Используется как основа для:
+ *   - product-card (atoms/molecules + Compare-checkbox + Badges + Swatches-mini)
+ *   - industry-card (mascot)
+ *   - case-card (client-logo + metrics)
+ *   - article-card (cover + meta)
+ *   - about-card / category-card
+ *
+ * Если href передан — карточка превращается в clickable link (через aria-label или
+ * через явный link inside slot="cta"). Default — div, slots для гибкости.
+ */
+
+export interface Props {
+  /** Превращает CardBase в <a>. Альтернативно — пустой и вкладывайте Button через slot="cta". */
+  href?: string;
+  ariaLabel?: string;
+  /** disabled — для preview / sold-out. */
+  disabled?: boolean;
+  /** Padded — внутренние отступы. По умолчанию true. */
+  padded?: boolean;
+  /** Вариант с подсвеченной верхней рамкой при hover. */
+  variant?: 'default' | 'compact' | 'feature';
+  class?: string;
+}
+
+const {
+  href,
+  ariaLabel,
+  disabled = false,
+  padded = true,
+  variant = 'default',
+  class: className,
+} = Astro.props;
+
+const Tag = href ? 'a' : 'div';
+const classes = [
+  'card',
+  `card--${variant}`,
+  padded ? 'card--padded' : '',
+  href ? 'card--linked' : '',
+  disabled ? 'card--disabled' : '',
+  className ?? '',
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<Tag
+  class={classes}
+  href={href}
+  aria-label={href ? ariaLabel : undefined}
+  aria-disabled={disabled || undefined}
+>
+  <slot name="media" />
+
+  <div class="card__body">
+    <slot name="eyebrow" />
+    <slot name="title" />
+    <slot />
+    <slot name="meta" />
+  </div>
+
+  <slot name="cta" />
+</Tag>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    box-shadow: var(--shadow-sm);
+    transition:
+      border-color var(--duration-fast) var(--easing-standard),
+      box-shadow var(--duration-fast) var(--easing-standard),
+      transform var(--duration-fast) var(--easing-standard);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .card--padded {
+    padding: var(--spacing-5);
+  }
+
+  .card--feature {
+    background: var(--color-bg-surface-warm);
+    border-color: var(--color-border-subtle);
+  }
+
+  .card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    flex: 1 1 auto;
+  }
+
+  /* Hover/focus only for linked cards */
+  .card--linked:hover,
+  .card--linked:focus-within {
+    border-color: var(--color-border-focus);
+    box-shadow: var(--shadow-base);
+    transform: translateY(-2px);
+  }
+
+  /* Внутри ссылки заголовки наследуют цвет */
+  .card--linked :global(h2),
+  .card--linked :global(h3),
+  .card--linked :global(h4) {
+    color: var(--color-text-primary);
+  }
+
+  .card--disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    filter: grayscale(0.4);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card--linked:hover,
+    .card--linked:focus-within {
+      transform: none;
+    }
+  }
+</style>

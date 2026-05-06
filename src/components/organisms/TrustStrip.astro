@@ -1,0 +1,101 @@
+---
+/**
+ * TrustStrip — organism.
+ * Composition: H2 + 4 trust-cards (ГОСТ / ТУ / Протокол / Миграция ПВХ) + опц. PDF download links.
+ *
+ * Источник:
+ * - 04_visuals/01-homepage.spec.md §«Block 3: Trust strip»
+ * - 02_content/page_outlines/01-homepage.md §«H2: Сертификаты и документы»
+ * - tone_of_voice.md §Inline CTA п.12 («Скачать протокол испытаний...»)
+ */
+
+import Button from '@components/atoms/Button.astro';
+
+export interface TrustItem {
+  /** Краткое имя факта (h3-уровень). */
+  title: string;
+  /** Один абзац с расшифровкой. */
+  description: string;
+  /** Опционально — линк на PDF. Конкретный текст CTA берётся из tone-canon. */
+  pdfHref?: string;
+  /** Точный текст PDF-CTA (например, «Скачать протокол испытаний №012/A-27/02/25»). */
+  pdfLabel?: string;
+}
+
+export interface Props {
+  /** H2-заголовок секции. */
+  heading: string;
+  items: ReadonlyArray<TrustItem>;
+  /** Опц. eyebrow над H2. */
+  eyebrow?: string;
+}
+
+const { heading, items, eyebrow } = Astro.props;
+---
+
+<section class="trust" aria-labelledby="trust-h2">
+  <div class="container">
+    {eyebrow && <p class="trust__eyebrow">{eyebrow}</p>}
+    <h2 id="trust-h2" class="trust__h2">{heading}</h2>
+    <ul class="trust__grid" role="list">
+      {items.map((item) => (
+        <li class="trust__item">
+          <h3 class="trust__title">{item.title}</h3>
+          <p class="trust__desc">{item.description}</p>
+          {item.pdfHref && item.pdfLabel && (
+            <Button variant="link" size="sm" href={item.pdfHref}>{item.pdfLabel}</Button>
+          )}
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .trust {
+    padding-block: var(--spacing-7);
+    background: var(--color-bg-surface-warm);
+    border-block: 1px solid var(--color-border-subtle);
+  }
+  .trust__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .trust__h2 {
+    margin-block-end: var(--spacing-6);
+    max-width: 48ch;
+  }
+  .trust__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .trust__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-5);
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+  }
+  .trust__title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+  .trust__desc {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    line-height: var(--font-line-height-normal);
+  }
+  @media (min-width: 768px)  { .trust__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .trust__grid { grid-template-columns: repeat(4, 1fr); } }
+</style>

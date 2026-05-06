@@ -1,0 +1,88 @@
+---
+/**
+ * Breadcrumbs — molecule.
+ * Семантический <nav aria-label="Breadcrumb"> + <ol> со списком крошек.
+ * Последний item — current (без ссылки, aria-current="page").
+ *
+ * Источник:
+ * - components_atomic.md §Molecules (Breadcrumbs) — line 57
+ * - 04_visuals/02-07-spec.md (солюшнс-страницы и industry-pages используют crumbs «Главная › Решения › <отрасль>»)
+ *
+ * Schema.org BreadcrumbList генерируется отдельно через `breadcrumbList()` в @lib/schema
+ * и подключается через BaseLayout `schema` prop — это для парсеров поисковиков.
+ */
+
+export interface Crumb {
+  /** Видимое имя пункта. */
+  name: string;
+  /** Полный URL (с trailing slash); если последний — можно опустить (отображается как current). */
+  href?: string;
+}
+
+export interface Props {
+  items: ReadonlyArray<Crumb>;
+  /** Доп. CSS-класс. */
+  class?: string;
+}
+
+const { items, class: className } = Astro.props;
+---
+
+<nav class={['breadcrumbs', className].filter(Boolean).join(' ')} aria-label="Breadcrumb">
+  <ol class="breadcrumbs__list" role="list">
+    {items.map((crumb, idx) => {
+      const isLast = idx === items.length - 1;
+      return (
+        <li class="breadcrumbs__item">
+          {!isLast && crumb.href ? (
+            <a class="breadcrumbs__link" href={crumb.href}>{crumb.name}</a>
+          ) : (
+            <span class="breadcrumbs__current" aria-current="page">{crumb.name}</span>
+          )}
+          {!isLast && (
+            <span class="breadcrumbs__sep" aria-hidden="true">/</span>
+          )}
+        </li>
+      );
+    })}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs {
+    padding-block: var(--spacing-3);
+    font-size: var(--font-size-sm);
+  }
+  .breadcrumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .breadcrumbs__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--color-text-tertiary);
+  }
+  .breadcrumbs__link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--easing-standard);
+  }
+  .breadcrumbs__link:hover {
+    color: var(--color-action-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .breadcrumbs__current {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+  }
+  .breadcrumbs__sep {
+    color: var(--color-text-tertiary);
+    user-select: none;
+  }
+</style>

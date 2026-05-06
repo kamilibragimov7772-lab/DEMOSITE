@@ -1,0 +1,263 @@
+---
+/**
+ * /solutions/retail/ — Industry-page для B2 (крупный ритейл).
+ *
+ * Spec: 04_visuals/04-solutions-retail.spec.md
+ * Outline: 02_content/page_outlines/04-solutions-retail.md
+ *
+ * Schema: Service + BreadcrumbList.
+ * Особенность: СТМ-блок Брендирование (MethodsGrid) — ключ для B2.
+ * Копирайт — placeholder из page outline. Финальный — ghostwriter.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import IndustryHero from '@components/organisms/IndustryHero.astro';
+import PainPointsList from '@components/organisms/PainPointsList.astro';
+import MethodsGrid from '@components/organisms/MethodsGrid.astro';
+import ProductTriad from '@components/organisms/ProductTriad.astro';
+import CaseHighlight from '@components/organisms/CaseHighlight.astro';
+import DocumentsList from '@components/organisms/DocumentsList.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { service, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const hero = {
+  eyebrow: 'B2 · Категорийные закупщики',
+  h1: 'Крупный ритейл — видимость и маржа',
+  lead: 'Упаковка с вашим логотипом + узнаваемый SHOCK в витрине = потребитель видит, берёт, рассказывает. Брендирование от 100 шт, 2–4 недели до партии.',
+  primaryCta: { label: 'Запросить макет с вашим логотипом →', href: '#cta' },
+  secondaryCta: { label: 'Смотреть кейс ритейла →', href: '#case-highlight' },
+  stats: [
+    { value: 'от 100 шт',    label: 'шелкография под СТМ' },
+    { value: 'от 10 000 шт', label: 'флексография в массовый ритейл' },
+    { value: 'Pantone',      label: 'фирменные цвета сети' },
+    { value: '2–4 нед',      label: 'до отгрузки партии' },
+  ],
+  mascot: '🛒',
+};
+
+const painPoints = [
+  {
+    title: 'Категория лежит без оборота',
+    description: 'Узнаваемость нулевая, нет различия с no-name SKU на полке.',
+  },
+  {
+    title: 'Тендеры выигрывает no-name',
+    description: 'Качество подводит — штрафы сетей, упущенный сезон.',
+  },
+  {
+    title: 'СТМ дороже у крупных типографий',
+    description: 'Маркировка «свой бренд» через крупных подрядчиков съедает маржу.',
+  },
+  {
+    title: 'Нет страховки от срыва поставки',
+    description: 'В сезон один поставщик — высокий риск выпадения партии.',
+  },
+];
+
+const methods = [
+  {
+    name: 'Шелкография',
+    moq: 'от 100 шт',
+    colors: '1–4 цвета, Pantone',
+    terms: '2–4 недели',
+    description: 'Премиальная плотная печать, идеально для логотипов и бренд-зоны.',
+  },
+  {
+    name: 'Флексопечать',
+    moq: 'от 10 000 шт',
+    colors: 'до 6 цветов',
+    terms: '2–3 недели',
+    description: 'Массовая ритейл-печать. Низкая стоимость единицы при больших тиражах.',
+  },
+  {
+    name: 'Тампопечать',
+    moq: 'от 1 000 шт',
+    colors: '1–2 цвета',
+    terms: '1–2 недели',
+    description: 'Печать на оболочке SHOCK — лого как часть холодного аккумулятора.',
+  },
+  {
+    name: 'УФ-печать',
+    moq: 'от 500 шт',
+    colors: 'полноцвет',
+    terms: '2 недели',
+    description: 'Спецэффекты: глянец, выпуклость. Premium-сегмент FMCG.',
+  },
+];
+
+const products = [
+  {
+    href: '/products/termopakety/standart-42x50/',
+    category: 'Термопакет',
+    title: 'Термопакет Standart 42×50',
+    specs: [
+      'Готов к шелкографии под СТМ',
+      '+2…+8°C до 7 часов в комплекте',
+      'Pantone — 1-4 цвета',
+      'Бесплатный макет с дизайнером',
+    ],
+    priceFrom: 'от 49 ₽/шт',
+    ctaLabel: 'Открыть карточку Standart 42×50 →',
+  },
+  {
+    href: '/products/akkumulyatory-holoda/cool-300ml/',
+    category: 'SHOCK®',
+    title: 'SHOCK® 300 мл с наклейкой логотипа',
+    specs: [
+      'Наклейка от 1 000 шт, выбивка от 3 000',
+      '3 режима: Cool / Gel / Freeze',
+      '30+ циклов многоразового использования',
+      'Узнаваемая голубая оболочка в витрине',
+    ],
+    priceFrom: 'от 39 ₽/шт',
+    ctaLabel: 'Открыть карточку SHOCK 300 →',
+  },
+  {
+    href: '/products/termoshoppery/zip/',
+    category: 'Термошоппер',
+    title: 'Термошоппер 10 л с брендированием',
+    specs: [
+      'Одноразовый формат для FMCG-ритейла',
+      'Фольгированный пакет с клейкой полосой',
+      'Шелкография от 100 шт',
+      'Брендирование 1-4 цвета',
+    ],
+    priceFrom: 'по запросу',
+    ctaLabel: 'Открыть карточку Термошоппер 10 л →',
+  },
+];
+
+const caseStory = {
+  task: 'Премиум FMCG-категория ищет упаковку под СТМ для ассортимента. Требования: 4 цвета, Pantone-точность, премиальная отделка, срок до 3 недель.',
+  solution: 'Термопакет PRO 42×50 с 4-цветной шелкографией. Бесплатный макет с дизайнером, согласование 1-2 дня, печать 2 недели, отгрузка по ТК.',
+  result: 'Партия 500 шт за 3 недели от заявки до выгрузки на склад сети. Pantone-точность подтверждена визуально и приборно. СТМ запущена в категорийную ротацию.',
+};
+
+const caseMetrics = [
+  { label: 'Тираж',  value: '500 шт' },
+  { label: 'Срок',   value: '3 нед' },
+  { label: 'Цветов', value: '4 + Pantone' },
+];
+
+const documents = [
+  {
+    title: 'ТР ТС 005/2011',
+    description: 'Декларация соответствия на упаковку для тендерных требований сетей.',
+    ctaLabel: 'Скачать декларацию ТР ТС →',
+    href: '/assets/docs/declaration-tr-ts.pdf',
+    size: 'PDF, 720 КБ',
+  },
+  {
+    title: 'ISO 9001',
+    description: 'Сертификат системы менеджмента качества — обязательное условие federal-сетей.',
+    ctaLabel: 'Скачать сертификат ISO 9001 →',
+    href: '/assets/docs/iso-9001.pdf',
+    size: 'PDF, 540 КБ',
+  },
+  {
+    title: 'ТУ 22.22.11-001-47645032-2022',
+    description: 'Технические условия на термопакеты собственного производства.',
+    ctaLabel: 'Скачать ТУ →',
+    href: '/assets/docs/tu.pdf',
+    size: 'PDF, 620 КБ',
+  },
+  {
+    title: 'Карточка предприятия',
+    description: 'Полная карточка для бухгалтерии и службы безопасности сети.',
+    ctaLabel: 'Скачать карточку поставщика →',
+    href: '/assets/docs/company-card.pdf',
+    size: 'PDF, 380 КБ',
+  },
+];
+
+const schema = [
+  service({
+    name: 'Термоупаковка под СТМ для крупного ритейла',
+    description: 'Брендированные термопакеты и SHOCK для ритейл-сетей. Шелкография от 100 шт, флексопечать от 10 000. Бесплатный макет, 2–4 недели.',
+    audience: 'Крупный ритейл (B2)',
+  }),
+  breadcrumbList([
+    { name: 'Главная',  url: siteUrl },
+    { name: 'Решения',  url: `${siteUrl}solutions/` },
+    { name: 'Крупный ритейл', url: `${siteUrl}solutions/retail/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Термопакеты с логотипом для ритейла"
+  description="Брендированные термопакеты и SHOCK для ритейл-сетей. Шелкография от 100 шт, флексопечать от 10 000. Бесплатный макет, 2–4 недели."
+  ogType="website"
+  ogImage={`${siteUrl}assets/og/og-solutions-retail.jpg`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'Решения', href: '/solutions/' },
+      { name: 'Крупный ритейл' },
+    ]}
+  />
+
+  <IndustryHero {...hero} />
+
+  <PainPointsList
+    eyebrow="Боли категорийного закупщика"
+    heading="Что блокирует категорийную ротацию"
+    items={painPoints}
+  />
+
+  <MethodsGrid
+    eyebrow="СТМ — методы брендирования"
+    heading="4 метода печати под закупочные требования сетей"
+    methods={methods}
+  />
+
+  <ProductTriad
+    eyebrow="Рекомендованный комплект"
+    heading="Что мы предлагаем ритейлу"
+    lead="Брендирование под СТМ + узнаваемый SHOCK в витрине = категория работает на оборот, а не лежит."
+    products={products}
+    hubCta={{ label: 'Все продукты в каталоге →', href: '/products/' }}
+  />
+
+  <CaseHighlight
+    eyebrow="Кейс — расчётный пример"
+    heading="Премиум FMCG: 4-цветная шелкография 500 шт за 3 недели"
+    segmentLabel="Крупный ритейл"
+    title="СТМ запущена в категорийную ротацию"
+    story={caseStory}
+    metrics={caseMetrics}
+    isCalculatedExample={true}
+  />
+
+  <DocumentsList
+    eyebrow="Тендерные документы"
+    heading="Документы для службы безопасности и бухгалтерии"
+    lead="Compliance-пакет для тендеров federal-сетей: ТР ТС, ISO 9001, ТУ, карточка предприятия."
+    items={documents}
+  />
+
+  <FormBlock
+    id="cta"
+    variant="lead"
+    eyebrow="Расчёт под ассортимент"
+    heading="Получить расчёт для вашего ритейла"
+    description="Менеджер по ритейлу свяжется в течение 2 часов, оценит ассортимент и подберёт упаковку с брендированием. Опишите тираж и метод печати в комментарии."
+    submitLabel="Получить расчёт →"
+  />
+
+  <PreFooterCta
+    heading="Хотите быстрее?"
+    lead="Напишите в WhatsApp — пришлите бриф по СТМ, ответим за 30 минут."
+    primaryCta={{ label: 'Запросить макет в WhatsApp', href: 'https://wa.me/78001011525' }}
+    secondaryCta={{ label: 'Позвонить +7 (800) 101-15-25', href: 'tel:+78001011525' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>

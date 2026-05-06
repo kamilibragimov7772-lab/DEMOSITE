@@ -1,0 +1,836 @@
+---
+/**
+ * CatalogPage — единая страница каталога TERMY (заменяет 6 категорийных хабов).
+ * Композиция: Hero «Каталог» + chip-row 6 категорий + 2-колонка (sidebar filters / SKU grid).
+ * Логика: фильтрация client-side через `<script>`, URL-sync (?cat / ?series / ...).
+ *
+ * Источник: src/data/catalog.ts (SKU-массив + лейблы).
+ * Фильтр-фасеты: категория, серия, размер, цвет, режим, печать, отрасль, характеристики, наличие.
+ */
+
+import { SKUS, CATEGORIES, LABELS, type Category } from '@data/catalog';
+
+export interface Props {
+  /** Активная категория при загрузке (например для /products/termopakety/). undefined → все. */
+  initialCategory?: Category;
+}
+
+const { initialCategory } = Astro.props;
+
+/* Уникальные значения для построения фильтр-чекбоксов. */
+const sizes = Array.from(new Set(SKUS.map((s) => s.size))).sort();
+const seriesSet = Array.from(new Set(SKUS.map((s) => s.series)));
+const tempModes = Array.from(new Set(SKUS.map((s) => s.tempMode))).filter((t) => t !== 'na');
+
+/* Цветовая кодировка температурных режимов (KB §3.1.2):
+   голубой=+2…+8 (cool), зелёный=0…−15 (freeze), фиолетовый=гель. */
+const TEMP_COLOR: Record<string, string> = {
+  'cool-2-8': 'blue',
+  'freeze-0-15': 'green',
+  'gel-0': 'purple',
+  hot: 'red',
+};
+const printSet = Array.from(new Set(SKUS.flatMap((s) => s.printMethods)));
+const industrySet = Array.from(new Set(SKUS.flatMap((s) => s.industries)));
+const colorSet = Array.from(new Set(SKUS.map((s) => s.color)));
+const featureSet = Array.from(new Set(SKUS.flatMap((s) => s.features)));
+
+const totalSku = SKUS.length;
+---
+
+<section class="catalog" aria-labelledby="catalog-h1">
+  <div class="catalog__hero container">
+    <p class="catalog__eyebrow">Полный каталог продукции</p>
+    <h1 id="catalog-h1" class="catalog__h1">Каталог</h1>
+    <p class="catalog__lead">
+      Всего <strong data-total-sku>{totalSku}</strong>+ SKU · от 1 коробки · отгрузка от 24 часов с собственного склада в Подмосковье.
+    </p>
+
+    <nav class="cat-tabs" aria-label="Категории каталога">
+      <button class="cat-tabs__btn" type="button" data-cat-btn="all" data-active={initialCategory ? 'false' : 'true'}>
+        Все категории
+        <span class="cat-tabs__count">{totalSku}</span>
+      </button>
+      {CATEGORIES.map((c) => (
+        <button class="cat-tabs__btn" type="button" data-cat-btn={c.slug} data-active={initialCategory === c.slug ? 'true' : 'false'}>
+          {c.label}
+          <span class="cat-tabs__count">{c.total}</span>
+        </button>
+      ))}
+    </nav>
+  </div>
+
+  <div class="catalog__layout container" data-layout>
+    {/* ───────────────── SIDEBAR ───────────────── */}
+    <aside class="cat-side" aria-label="Фильтры каталога" data-sidebar>
+      <button class="cat-side__mobile-toggle" type="button" data-mobile-filters-toggle aria-expanded="false">
+        Фильтры
+        <span class="cat-side__chevron" aria-hidden="true">▾</span>
+      </button>
+
+      <div class="cat-side__panels" data-mobile-filters>
+        <div class="f-block" data-fblock>
+          <h3 class="f-block__title">Серия / линейка</h3>
+          {seriesSet.map((s) => (
+            <label class="f-check">
+              <input type="checkbox" data-filter="series" value={s} />
+              <span class="f-check__label">{LABELS.series[s]}</span>
+            </label>
+          ))}
+        </div>
+
+        <details class="f-block f-block--dropdown" data-fblock>
+          <summary class="f-block__summary">
+            <h3 class="f-block__title">Размер</h3>
+            <span class="f-block__chevron" aria-hidden="true">▾</span>
+          </summary>
+          <div class="f-block__content">
+            {sizes.map((v) => (
+              <label class="f-check">
+                <input type="checkbox" data-filter="size" value={v} />
+                <span class="f-check__label">{v}</span>
+              </label>
+            ))}
+          </div>
+        </details>
+
+        <div class="f-block" data-fblock data-fblock-key="color">
+          <h3 class="f-block__title">Цвет</h3>
+          <div class="f-colors">
+            {colorSet.map((c) => (
+              <label class="f-color" title={LABELS.color[c]}>
+                <input type="checkbox" data-filter="color" value={c} />
+                <span class="f-color__swatch" style={`background:${LABELS.colorSwatch[c]}`}></span>
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div class="f-block" data-fblock>
+          <h3 class="f-block__title">Температурный режим</h3>
+          {tempModes.map((m) => (
+            <label class="f-check">
+              <input type="checkbox" data-filter="tempMode" value={m} />
+              <span
+                class="f-check__dot"
+                aria-hidden="true"
+                style={`background:${LABELS.colorSwatch[TEMP_COLOR[m] as keyof typeof LABELS.colorSwatch] ?? 'transparent'}`}
+              ></span>
+              <span class="f-check__label">{LABELS.tempMode[m]}</span>
+            </label>
+          ))}
+        </div>
+
+        <div class="f-block" data-fblock>
+          <h3 class="f-block__title">Метод печати</h3>
+          {printSet.map((p) => (
+            <label class="f-check">
+              <input type="checkbox" data-filter="printMethod" value={p} />
+              <span class="f-check__label">{LABELS.printMethod[p]}</span>
+            </label>
+          ))}
+        </div>
+
+        <div class="f-block" data-fblock>
+          <h3 class="f-block__title">Характеристики</h3>
+          {featureSet.map((f) => (
+            <label class="f-check">
+              <input type="checkbox" data-filter="feature" value={f} />
+              <span class="f-check__label">{LABELS.feature[f]}</span>
+            </label>
+          ))}
+        </div>
+
+        <div class="f-block" data-fblock>
+          <h3 class="f-block__title">Наличие</h3>
+          <label class="f-check">
+            <input type="checkbox" data-filter="inStock" value="true" />
+            <span class="f-check__label">На складе сейчас</span>
+          </label>
+          <label class="f-check">
+            <input type="checkbox" data-filter="inStock" value="false" />
+            <span class="f-check__label">Под заказ</span>
+          </label>
+        </div>
+
+        <button type="button" class="cat-side__reset" data-reset-filters>Сбросить все фильтры</button>
+      </div>
+    </aside>
+
+    {/* ───────────────── GRID ───────────────── */}
+    <div class="cat-main">
+      <header class="cat-main__head">
+        <p class="cat-main__count">
+          Показано <strong data-shown-count>{totalSku}</strong> из <strong data-total-sku>{totalSku}</strong> SKU
+        </p>
+
+        <div class="cat-main__active-filters" data-active-filters></div>
+
+        <label class="cat-main__sort">
+          <span class="sr-only">Сортировка</span>
+          <select data-sort>
+            <option value="default">Сортировка: по умолчанию</option>
+            <option value="price-asc">По цене (возрастание)</option>
+            <option value="price-desc">По цене (убывание)</option>
+            <option value="size-asc">По размеру (возрастание)</option>
+            <option value="size-desc">По размеру (убывание)</option>
+          </select>
+        </label>
+      </header>
+
+      <ul class="cat-grid" role="list" data-grid>
+        {SKUS.map((s) => (
+          <li
+            class="sku-card"
+            data-sku-id={s.slug}
+            data-category={s.category}
+            data-series={s.series}
+            data-size={s.size}
+            data-color={s.color}
+            data-temp-mode={s.tempMode}
+            data-print-methods={s.printMethods.join(',')}
+            data-industries={s.industries.join(',')}
+            data-features={s.features.join(',')}
+            data-in-stock={s.inStock ? 'true' : 'false'}
+            data-price={s.priceFrom}
+            data-volume={s.volumeL ?? ''}
+          >
+            <a
+              class="sku-card__link"
+              href={`/products/${s.category}/${s.slug}/`}
+            >
+              <div class="sku-card__media">
+                {s.badge && (
+                  <span
+                    class="sku-card__badge"
+                    style={`background:${LABELS.badge[s.badge].bg};color:${LABELS.badge[s.badge].fg}`}
+                  >{LABELS.badge[s.badge].label}</span>
+                )}
+                {s.inStock ? (
+                  <span class="sku-card__stock sku-card__stock--in">В НАЛИЧИИ</span>
+                ) : (
+                  <span class="sku-card__stock sku-card__stock--out">ПОД ЗАКАЗ</span>
+                )}
+                <img
+                  src={s.image ?? `/products/_catalog/${s.slug}.webp`}
+                  alt={s.title}
+                  loading="lazy"
+                  decoding="async"
+                  onerror="this.style.display='none'; this.nextElementSibling.hidden = false;"
+                />
+                <span class="sku-card__placeholder" hidden>PACKSHOT · {s.size} · {LABELS.color[s.color]}</span>
+              </div>
+              <div class="sku-card__body">
+                <h3 class="sku-card__title">{s.title}</h3>
+                <p class="sku-card__meta">Артикул: {s.artikul}</p>
+                <p class="sku-card__spec">{s.size} · {LABELS.color[s.color]}{s.volumeL !== null ? ` · ${s.volumeL} л` : ''}</p>
+                <ul class="sku-card__industries" role="list">
+                  {s.industries.slice(0, 2).map((i) => (
+                    <li>{LABELS.industry[i].split(' / ')[0]}</li>
+                  ))}
+                </ul>
+                <p class="sku-card__price">
+                  {s.priceFrom > 0 ? <>от <strong>{s.priceFrom} ₽</strong></> : 'под запрос'}
+                  <span class="sku-card__moz">{s.mozLabel}</span>
+                </p>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <p class="cat-main__empty" data-empty hidden>
+        По этим фильтрам ничего не нашлось. Попробуйте сбросить часть условий или
+        <a href="#cta">оставьте заявку</a> — менеджер подберёт под задачу.
+      </p>
+    </div>
+  </div>
+</section>
+
+{/* ───────────────────────────────────────────────────────────────
+   CLIENT-SIDE: фильтрация + сортировка + URL-sync.
+   Vanilla JS — статически собираем в Astro, не нужен framework.
+   ─────────────────────────────────────────────────────────────── */}
+<script is:inline define:vars={{ initialCategory }}>
+(() => {
+  const root = document.querySelector('.catalog');
+  if (!root) return;
+
+  const grid = root.querySelector('[data-grid]');
+  const cards = Array.from(grid.querySelectorAll('.sku-card'));
+  const shownCountEl = root.querySelector('[data-shown-count]');
+  const activeFiltersEl = root.querySelector('[data-active-filters]');
+  const emptyEl = root.querySelector('[data-empty]');
+  const resetBtn = root.querySelector('[data-reset-filters]');
+  const sortSelect = root.querySelector('[data-sort]');
+  const catBtns = Array.from(root.querySelectorAll('[data-cat-btn]'));
+  const filterInputs = Array.from(root.querySelectorAll('[data-filter]'));
+
+  /** Текущее состояние: { category: 'all'|'<slug>', filters: { size: Set, color: Set, ... }, sort: '...' } */
+  const state = {
+    category: initialCategory || 'all',
+    filters: {
+      size: new Set(),
+      color: new Set(),
+      tempMode: new Set(),
+      printMethod: new Set(),
+      series: new Set(),
+      feature: new Set(),
+      industry: new Set(),
+      inStock: new Set(),
+    },
+    sort: 'default',
+  };
+
+  const layout = root.querySelector('[data-layout]');
+  const sidebar = root.querySelector('[data-sidebar]');
+  const fblocks = Array.from(root.querySelectorAll('[data-fblock]'));
+
+  /* Все SKU из текущей категории (или все, если 'all'). */
+  function skusInCategory() {
+    return cards.filter((c) => state.category === 'all' || c.dataset.category === state.category);
+  }
+
+  /* Релевантные значения для каждого фильтра в текущей категории. */
+  function relevantValues() {
+    const skus = skusInCategory();
+    const vals = {
+      size: new Set(skus.map((c) => c.dataset.size)),
+      color: new Set(skus.map((c) => c.dataset.color)),
+      tempMode: new Set(skus.map((c) => c.dataset.tempMode).filter((v) => v && v !== 'na')),
+      series: new Set(skus.map((c) => c.dataset.series)),
+      printMethod: new Set(skus.flatMap((c) => (c.dataset.printMethods || '').split(',').filter(Boolean))),
+      industry: new Set(skus.flatMap((c) => (c.dataset.industries || '').split(',').filter(Boolean))),
+      feature: new Set(skus.flatMap((c) => (c.dataset.features || '').split(',').filter(Boolean))),
+      inStock: new Set(skus.map((c) => c.dataset.inStock)),
+    };
+    return vals;
+  }
+
+  /* Скрыть/показать sidebar и filter-inputs в зависимости от категории. */
+  function updateFilterVisibility() {
+    /* Sidebar — скрыт когда не выбрана категория. */
+    const showSidebar = state.category !== 'all';
+    sidebar.hidden = !showSidebar;
+    layout.classList.toggle('catalog__layout--no-sidebar', !showSidebar);
+
+    if (!showSidebar) return; /* В режиме «Все» — sidebar не виден, пересчёт не нужен. */
+
+    const skus = skusInCategory();
+    const total = skus.length;
+
+    /* Считает, у скольких SKU в категории есть значение `value` для фильтра `k`. */
+    function countWith(k, value) {
+      let n = 0;
+      for (const c of skus) {
+        let m = false;
+        if (k === 'inStock') m = c.dataset.inStock === value;
+        else if (k === 'size') m = c.dataset.size === value;
+        else if (k === 'color') m = c.dataset.color === value;
+        else if (k === 'tempMode') m = c.dataset.tempMode === value;
+        else if (k === 'series') m = c.dataset.series === value;
+        else if (k === 'printMethod') m = (c.dataset.printMethods || '').split(',').includes(value);
+        else if (k === 'feature') m = (c.dataset.features || '').split(',').includes(value);
+        if (m) n++;
+      }
+      return n;
+    }
+
+    /* Input «полезен» если он различает SKU: 0 < countWith < total.
+       Если значение есть у всех SKU — оно ничего не исключает, скрываем. */
+    filterInputs.forEach((inp) => {
+      const k = inp.dataset.filter;
+      const n = countWith(k, inp.value);
+      const useful = n > 0 && n < total;
+      const label = inp.closest('label');
+      if (label) label.hidden = !useful;
+      if (!useful && inp.checked) {
+        inp.checked = false;
+        state.filters[k]?.delete(inp.value);
+      }
+    });
+    /* Скрыть filter-block, если все его inputs скрыты. */
+    fblocks.forEach((blk) => {
+      const visibleLabels = Array.from(blk.querySelectorAll('label')).filter((l) => !l.hidden);
+      blk.hidden = visibleLabels.length === 0;
+    });
+
+    /* Спец-правило: в хладоэлементах цвет = код температурного режима (голубой=+2…+8, зелёный=0…−15,
+       фиолетовый=гель). Оба фильтра дублируют друг друга — оставляем только «Температурный режим». */
+    if (state.category === 'akkumulyatory-holoda') {
+      const colorBlock = root.querySelector('[data-fblock-key="color"]');
+      if (colorBlock) {
+        colorBlock.hidden = true;
+        /* Снять выбранные цвета из state, иначе фильтрация останется применённой при невидимом блоке. */
+        const colorInputs = colorBlock.querySelectorAll('input[data-filter="color"]');
+        colorInputs.forEach((inp) => {
+          if (inp.checked) inp.checked = false;
+        });
+        state.filters.color.clear();
+      }
+    }
+  }
+
+  /* ─── URL sync (читаем при загрузке) ─── */
+  const params = new URL(location.href).searchParams;
+  const urlCat = params.get('cat');
+  if (urlCat && catBtns.find((b) => b.dataset.catBtn === urlCat)) {
+    state.category = urlCat;
+  }
+  for (const key of Object.keys(state.filters)) {
+    const v = params.get(key);
+    if (v) v.split(',').forEach((val) => state.filters[key].add(val));
+  }
+  const urlSort = params.get('sort');
+  if (urlSort) state.sort = urlSort;
+
+  /* Применить state к UI (чекбоксы / chip-row / sort). */
+  function syncUiToState() {
+    catBtns.forEach((b) => {
+      b.dataset.active = b.dataset.catBtn === state.category ? 'true' : 'false';
+    });
+    filterInputs.forEach((inp) => {
+      const k = inp.dataset.filter;
+      inp.checked = state.filters[k]?.has(inp.value) ?? false;
+    });
+    sortSelect.value = state.sort;
+  }
+
+  /* Применить state к URL. */
+  function syncStateToUrl() {
+    const url = new URL(location.href);
+    url.search = '';
+    if (state.category !== 'all') url.searchParams.set('cat', state.category);
+    for (const [k, set] of Object.entries(state.filters)) {
+      if (set.size > 0) url.searchParams.set(k, Array.from(set).join(','));
+    }
+    if (state.sort !== 'default') url.searchParams.set('sort', state.sort);
+    history.replaceState(null, '', url.toString());
+  }
+
+  /* Сравнить размеры как «32×35» / «42×50» — берём первое число. */
+  function sizeNum(s) { const m = String(s).match(/(\d+)/); return m ? Number(m[1]) : 0; }
+
+  /* Применить фильтры — спрятать/показать карточки + сортировка. */
+  function apply() {
+    const visible = [];
+    for (const card of cards) {
+      const d = card.dataset;
+      let ok = true;
+
+      if (state.category !== 'all' && d.category !== state.category) ok = false;
+
+      if (ok && state.filters.size.size && !state.filters.size.has(d.size)) ok = false;
+      if (ok && state.filters.color.size && !state.filters.color.has(d.color)) ok = false;
+      if (ok && state.filters.tempMode.size && !state.filters.tempMode.has(d.tempMode)) ok = false;
+      if (ok && state.filters.series.size && !state.filters.series.has(d.series)) ok = false;
+      if (ok && state.filters.inStock.size && !state.filters.inStock.has(d.inStock)) ok = false;
+
+      if (ok && state.filters.printMethod.size) {
+        const ms = (d.printMethods || '').split(',');
+        if (!Array.from(state.filters.printMethod).some((v) => ms.includes(v))) ok = false;
+      }
+      if (ok && state.filters.industry.size) {
+        const is = (d.industries || '').split(',');
+        if (!Array.from(state.filters.industry).some((v) => is.includes(v))) ok = false;
+      }
+      if (ok && state.filters.feature.size) {
+        const fs = (d.features || '').split(',');
+        if (!Array.from(state.filters.feature).every((v) => fs.includes(v))) ok = false;
+      }
+
+      card.hidden = !ok;
+      if (ok) visible.push(card);
+    }
+
+    /* Сортировка. */
+    let sorted = visible.slice();
+    switch (state.sort) {
+      case 'price-asc':  sorted.sort((a, b) => Number(a.dataset.price) - Number(b.dataset.price)); break;
+      case 'price-desc': sorted.sort((a, b) => Number(b.dataset.price) - Number(a.dataset.price)); break;
+      case 'size-asc':   sorted.sort((a, b) => sizeNum(a.dataset.size) - sizeNum(b.dataset.size)); break;
+      case 'size-desc':  sorted.sort((a, b) => sizeNum(b.dataset.size) - sizeNum(a.dataset.size)); break;
+    }
+    if (state.sort !== 'default') {
+      sorted.forEach((c) => grid.appendChild(c));
+    }
+
+    shownCountEl.textContent = String(visible.length);
+    emptyEl.hidden = visible.length > 0;
+    renderActiveFilters();
+    updateFilterVisibility();
+    syncStateToUrl();
+  }
+
+  /* Отрисовать чипы активных фильтров (с × для удаления). */
+  function renderActiveFilters() {
+    const chips = [];
+    if (state.category !== 'all') {
+      chips.push({ key: 'cat', value: state.category, label: catBtns.find((b) => b.dataset.catBtn === state.category)?.firstChild?.textContent?.trim() || state.category });
+    }
+    for (const [k, set] of Object.entries(state.filters)) {
+      for (const v of set) {
+        chips.push({ key: k, value: v, label: v });
+      }
+    }
+    activeFiltersEl.innerHTML = '';
+    for (const c of chips) {
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'active-chip';
+      el.innerHTML = `<span>${c.label}</span><span class="active-chip__x" aria-hidden="true">×</span>`;
+      el.setAttribute('aria-label', `Убрать фильтр: ${c.label}`);
+      el.addEventListener('click', () => {
+        if (c.key === 'cat') state.category = 'all';
+        else state.filters[c.key].delete(c.value);
+        syncUiToState();
+        apply();
+      });
+      activeFiltersEl.appendChild(el);
+    }
+  }
+
+  /* ─── События ─── */
+  catBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.category = btn.dataset.catBtn;
+      syncUiToState();
+      apply();
+    });
+  });
+  filterInputs.forEach((inp) => {
+    inp.addEventListener('change', () => {
+      const k = inp.dataset.filter;
+      if (inp.checked) state.filters[k].add(inp.value);
+      else state.filters[k].delete(inp.value);
+      apply();
+    });
+  });
+  resetBtn.addEventListener('click', () => {
+    state.category = 'all';
+    for (const set of Object.values(state.filters)) set.clear();
+    state.sort = 'default';
+    syncUiToState();
+    apply();
+  });
+  sortSelect.addEventListener('change', () => {
+    state.sort = sortSelect.value;
+    apply();
+  });
+
+  /* Mobile toggle. */
+  const mobileBtn = root.querySelector('[data-mobile-filters-toggle]');
+  const panels = root.querySelector('[data-mobile-filters]');
+  mobileBtn.addEventListener('click', () => {
+    const open = panels.classList.toggle('cat-side__panels--open');
+    mobileBtn.setAttribute('aria-expanded', String(open));
+  });
+
+  /* Init. */
+  syncUiToState();
+  apply();
+})();
+</script>
+
+<style>
+  .catalog { padding-block: var(--spacing-7) var(--spacing-8); background: var(--color-bg-page); }
+
+  /* ───────────────── HERO ───────────────── */
+  .catalog__hero { margin-block-end: var(--spacing-6); }
+  .catalog__eyebrow {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .catalog__h1 {
+    font-size: var(--font-size-h1-fluid);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tighter);
+    margin-block-end: var(--spacing-3);
+  }
+  .catalog__lead {
+    max-width: 56ch;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    margin-block-end: var(--spacing-5);
+  }
+
+  /* ───────────────── CATEGORY TABS ───────────────── */
+  .cat-tabs { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+  .cat-tabs__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-4);
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-default);
+    border-radius: 999px;
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: background var(--duration-fast) var(--easing-standard), border-color var(--duration-fast) var(--easing-standard), color var(--duration-fast) var(--easing-standard);
+  }
+  .cat-tabs__btn:hover { border-color: var(--color-action-primary); }
+  .cat-tabs__btn[data-active="true"] {
+    background: var(--color-action-primary);
+    border-color: var(--color-action-primary);
+    color: #fff;
+  }
+  .cat-tabs__count {
+    font-size: var(--font-size-xs);
+    opacity: 0.7;
+    font-family: var(--font-family-monospace);
+  }
+
+  /* ───────────────── LAYOUT ───────────────── */
+  .catalog__layout { display: grid; grid-template-columns: 1fr; gap: var(--spacing-5); }
+
+  @media (min-width: 1024px) {
+    .catalog__layout { grid-template-columns: 260px minmax(0, 1fr); gap: var(--spacing-6); }
+    .catalog__layout--no-sidebar { grid-template-columns: minmax(0, 1fr); }
+  }
+  .catalog__layout--no-sidebar [data-sidebar] { display: none; }
+
+  /* ───────────────── SIDEBAR ───────────────── */
+  .cat-side { position: relative; }
+  .cat-side__mobile-toggle {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-bg-surface-warm);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    cursor: pointer;
+    font-weight: var(--font-weight-semibold);
+  }
+  @media (min-width: 1024px) { .cat-side__mobile-toggle { display: none; } }
+
+  .cat-side__panels {
+    display: none;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    background: var(--color-bg-surface-warm);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    padding: var(--spacing-4);
+    margin-block-start: var(--spacing-2);
+  }
+  .cat-side__panels--open { display: flex; }
+  @media (min-width: 1024px) {
+    .cat-side__panels { display: flex; position: sticky; top: var(--spacing-4); margin-block-start: 0; max-height: calc(100vh - var(--spacing-6)); overflow-y: auto; }
+  }
+
+  .cat-side__reset {
+    margin-block-start: var(--spacing-3);
+    padding: var(--spacing-2) var(--spacing-4);
+    background: transparent;
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+  .cat-side__reset:hover { border-color: var(--color-action-primary); color: var(--color-action-primary); }
+
+  .f-block { display: flex; flex-direction: column; gap: var(--spacing-2); }
+  .f-block__title {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    margin: 0 0 var(--spacing-1);
+  }
+
+  /* Dropdown-блок (для «Размер»). */
+  .f-block--dropdown {
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    padding: var(--spacing-2) var(--spacing-3);
+    background: var(--color-bg-page);
+  }
+  .f-block--dropdown[open] { padding-block-end: var(--spacing-3); }
+  .f-block__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    list-style: none;
+    gap: var(--spacing-2);
+  }
+  .f-block__summary::-webkit-details-marker { display: none; }
+  .f-block__summary .f-block__title { margin: 0; }
+  .f-block__chevron {
+    color: var(--color-text-tertiary);
+    transition: transform var(--duration-fast) var(--easing-standard);
+  }
+  .f-block--dropdown[open] .f-block__chevron { transform: rotate(180deg); }
+  .f-block__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    margin-block-start: var(--spacing-2);
+    padding-block-start: var(--spacing-2);
+    border-top: 1px solid var(--color-border-subtle);
+  }
+
+  .f-check {
+    display: flex; align-items: center; gap: var(--spacing-2);
+    cursor: pointer; font-size: var(--font-size-sm);
+  }
+  .f-check input { width: 16px; height: 16px; accent-color: var(--color-action-primary); }
+  .f-check__label { flex: 1; }
+  .f-check__dot {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+  }
+
+  .f-colors { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+  .f-color { cursor: pointer; }
+  .f-color input { display: none; }
+  .f-color__swatch {
+    display: block;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,.15);
+    box-shadow: inset 0 0 0 2px var(--color-bg-surface-warm);
+    transition: box-shadow var(--duration-fast) var(--easing-standard);
+  }
+  .f-color input:checked + .f-color__swatch { box-shadow: inset 0 0 0 2px var(--color-bg-surface-warm), 0 0 0 2px var(--color-action-primary); }
+
+  /* ───────────────── MAIN GRID ───────────────── */
+  .cat-main { min-width: 0; }
+  .cat-main__head {
+    display: flex; flex-wrap: wrap; gap: var(--spacing-3); align-items: center;
+    margin-block-end: var(--spacing-4);
+  }
+  .cat-main__count { color: var(--color-text-secondary); font-size: var(--font-size-sm); margin: 0; }
+  .cat-main__active-filters { display: flex; flex-wrap: wrap; gap: var(--spacing-1); flex: 1; }
+  .active-chip {
+    display: inline-flex; align-items: center; gap: var(--spacing-1);
+    padding: 4px 10px;
+    background: var(--color-overlay-brand-tint-low);
+    border: 1px solid var(--color-action-primary);
+    border-radius: 999px;
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+  }
+  .active-chip__x { font-weight: var(--font-weight-bold); }
+  .active-chip:hover { background: var(--color-action-primary); color: #fff; }
+
+  .cat-main__sort select {
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    background: var(--color-bg-page);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+  }
+
+  .cat-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-3);
+    margin: 0; padding: 0; list-style: none;
+  }
+  @media (min-width: 600px)  { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .cat-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 1440px) { .cat-grid { grid-template-columns: repeat(3, 1fr); } }
+
+  /* ───────────────── SKU CARD ───────────────── */
+  .sku-card {
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: border-color var(--duration-fast), box-shadow var(--duration-fast), transform var(--duration-fast);
+    list-style: none;
+  }
+  .sku-card[hidden] { display: none; }
+  .sku-card:hover { border-color: var(--color-action-primary); box-shadow: var(--shadow-base); transform: translateY(-2px); }
+  .sku-card__link { display: flex; flex-direction: column; height: 100%; color: inherit; text-decoration: none; }
+
+  .sku-card__media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--color-bg-surface-warm);
+    padding: var(--spacing-4);
+  }
+  .sku-card__media img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .sku-card__placeholder {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-family: var(--font-family-monospace);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: center;
+  }
+  .sku-card__badge {
+    position: absolute; top: 8px; right: 8px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .sku-card__stock {
+    position: absolute; top: 8px; left: 8px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .sku-card__stock--in { background: #d1fae5; color: #065f46; }
+  .sku-card__stock--out { background: #fee2e2; color: #991b1b; }
+
+  .sku-card__body { padding: var(--spacing-4); display: flex; flex-direction: column; gap: var(--spacing-1); flex: 1; }
+  .sku-card__title { font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); margin: 0; line-height: 1.3; }
+  .sku-card__meta { color: var(--color-text-tertiary); font-size: var(--font-size-xs); font-family: var(--font-family-monospace); margin: 0; }
+  .sku-card__spec { color: var(--color-text-secondary); font-size: var(--font-size-sm); margin: 0; }
+  .sku-card__industries {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    margin: var(--spacing-1) 0 0; padding: 0; list-style: none;
+  }
+  .sku-card__industries li {
+    background: var(--color-bg-surface-warm);
+    color: var(--color-text-secondary);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: var(--font-size-xs);
+  }
+  .sku-card__price {
+    margin-block-start: auto;
+    padding-block-start: var(--spacing-2);
+    display: flex; flex-direction: column;
+    font-size: var(--font-size-md);
+    color: var(--color-text-primary);
+  }
+  .sku-card__price strong { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
+  .sku-card__moz { color: var(--color-text-tertiary); font-size: var(--font-size-xs); }
+
+  .cat-main__empty {
+    text-align: center;
+    padding: var(--spacing-7);
+    color: var(--color-text-secondary);
+  }
+  .cat-main__empty a { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+</style>
+

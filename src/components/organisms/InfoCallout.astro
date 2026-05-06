@@ -1,0 +1,112 @@
+---
+/**
+ * InfoCallout — organism.
+ * Honest disclaimer / info-блок (info-bg + icon + текст + опц. ссылки).
+ *
+ * Используется для:
+ *   - /solutions/farma/ — disclaimer о РУ Росздравнадзора (CRITICAL для tone-canon §7)
+ *   - других страниц где нужен честный disclaimer
+ *
+ * Источник:
+ * - 04_visuals/07-solutions-farma.spec.md §Block: Disclaimer (РУ) — line 51-54
+ * - tone_of_voice.md §Edge cases — Запрос РУ Росздравнадзора
+ * - components_atomic.md §Atoms (Badge — info)
+ */
+
+type Tone = 'info' | 'warning' | 'success';
+
+export interface Props {
+  /** Тон callout: info (default, синий) / warning (жёлтый) / success (зелёный). */
+  tone?: Tone;
+  /** Заголовок (h3-уровень внутри блока). */
+  title?: string;
+  /** Дополнительный CSS-класс. */
+  class?: string;
+  /** Иконка (emoji или Lucide-имя). По умолчанию — info-glyph. */
+  icon?: string;
+}
+
+const { tone = 'info', title, class: className, icon = 'i' } = Astro.props;
+const classes = ['callout', `callout--${tone}`, className].filter(Boolean).join(' ');
+const role = tone === 'warning' ? 'alert' : 'note';
+---
+
+<aside class={classes} role={role}>
+  <span class="callout__icon" aria-hidden="true">{icon}</span>
+  <div class="callout__body">
+    {title && <h3 class="callout__title">{title}</h3>}
+    <div class="callout__text">
+      <slot />
+    </div>
+  </div>
+</aside>
+
+<style>
+  .callout {
+    display: flex;
+    gap: var(--spacing-3);
+    padding: var(--spacing-4) var(--spacing-5);
+    border-radius: var(--radius-base);
+    border-inline-start: 4px solid;
+    margin-block: var(--spacing-5);
+  }
+  .callout--info {
+    background: var(--color-bg-surface);
+    border-color: var(--color-feedback-info);
+    color: var(--color-text-primary);
+  }
+  .callout--warning {
+    background: var(--color-feedback-error-bg);
+    border-color: var(--color-feedback-error);
+    color: var(--color-text-primary);
+  }
+  .callout--success {
+    background: var(--color-bg-surface-warm);
+    border-color: var(--color-feedback-success);
+    color: var(--color-text-primary);
+  }
+  .callout__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-pill);
+    background: var(--color-bg-page);
+    border: 1px solid currentColor;
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-md);
+    line-height: 1;
+  }
+  .callout--info .callout__icon { color: var(--color-feedback-info); }
+  .callout--warning .callout__icon { color: var(--color-feedback-error); }
+  .callout--success .callout__icon { color: var(--color-feedback-success); }
+
+  .callout__body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+  .callout__title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: var(--font-line-height-snug);
+  }
+  .callout__text {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+  .callout__text :global(p) { margin: 0; }
+  .callout__text :global(p + p) { margin-block-start: var(--spacing-3); }
+  .callout__text :global(a) {
+    color: var(--color-action-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .callout__text :global(a:hover) { text-decoration-thickness: 2px; }
+</style>

@@ -1,0 +1,334 @@
+---
+/**
+ * 404 — «Страница куда-то уехала».
+ *
+ * Реализация по spec'у `04_visuals/23-page-404.spec.md` + outline `02_content/page_outlines/23-page-404.md`.
+ * Template: 404 (1 шт).
+ *
+ * Tone: единственная страница с лёгким брендовым юмором (tone_of_voice §Edge cases).
+ * SEO: noindex, follow + HTTP 404 (хост сам отдаёт правильный статус-код для статической сборки Astro).
+ *
+ * Composition по outline:
+ *   1. Hero 404 (большая цифра + маскот-метафора + lead)
+ *   2. Action-кнопки (3 штуки)
+ *   3. Популярные разделы (6 cards)
+ *   4. Контакты помощи (mailto / tel / WhatsApp)
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import CardBase from '@components/molecules/CardBase.astro';
+import Button from '@components/atoms/Button.astro';
+import { ORG_PHONE, ORG_EMAIL } from '@lib/schema';
+
+const whatsappHref = `https://wa.me/${ORG_PHONE.replace(/[^\d]/g, '')}`;
+
+const popularSections = [
+  {
+    href: '/products/termopakety/',
+    icon: '📦',
+    title: 'Термопакеты',
+    description: '28 SKU, серии Light / Standart / PRO — для коротких и длинных маршрутов.',
+  },
+  {
+    href: '/products/akkumulyatory-holoda/',
+    icon: '❄️',
+    title: 'Аккумуляторы холода SHOCK®',
+    description: '12 SKU, три режима: Cool, Gel, Freeze. От 30 циклов заморозки.',
+  },
+  {
+    href: '/products/termosumki-bolshie/',
+    icon: '🚚',
+    title: 'Термосумки большие',
+    description: 'Многоразовые термосумки от 30 л — для оптовых перевозок и маршрутов до 24 часов.',
+  },
+  {
+    href: '/solutions/',
+    icon: '🎯',
+    title: 'Решения по отраслям',
+    description: 'Доставка, ритейл, дистрибуция, скоропорт, фарм-смежные — пять направлений с готовыми комплектами.',
+  },
+  {
+    href: '/branding/',
+    icon: '🎨',
+    title: 'Брендирование',
+    description: 'Шелкография от 100 шт, флексопечать от 10 000 шт. Бесплатный макет, Pantone, 2–4 недели.',
+  },
+  {
+    href: '/about/production/',
+    icon: '🏭',
+    title: 'О производстве',
+    description: 'Собственная линия в Подмосковье, три стадии контроля качества, мощность 100 000 шт на складе.',
+  },
+];
+---
+
+<BaseLayout
+  title="Страница не найдена"
+  description="Эта страница куда-то уехала. Вернитесь на главную, в каталог продукции или напишите менеджеру."
+  noindex
+  ogImage="/assets/og/og-default.jpg"
+>
+  {/* Hero 404 */}
+  <section class="nf-hero" aria-labelledby="nf-h1">
+    <div class="container nf-hero__inner">
+      <div class="nf-hero__visual" aria-hidden="true">
+        <span class="nf-hero__digits">404</span>
+        <span class="nf-hero__mascot" aria-hidden="true">
+          {/* Простой mascot-glyph — финальный SVG в asset-pipeline (TODO дизайнеру) */}
+          <svg viewBox="0 0 120 120" width="120" height="120" focusable="false">
+            <circle cx="60" cy="60" r="56" fill="var(--color-bg-surface-warm)" stroke="var(--color-action-primary)" stroke-width="2"/>
+            <circle cx="46" cy="52" r="4" fill="var(--color-text-primary)"/>
+            <circle cx="74" cy="52" r="4" fill="var(--color-text-primary)"/>
+            <path d="M 42 78 Q 60 68 78 78" stroke="var(--color-text-primary)" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <rect x="48" y="32" width="24" height="8" rx="2" fill="var(--color-action-primary)"/>
+          </svg>
+        </span>
+      </div>
+
+      <h1 id="nf-h1" class="nf-hero__h1">Страница куда-то уехала</h1>
+
+      <p class="nf-hero__lead">
+        Возможно, по этому адресу её никогда не было. Или наш курьер увёз её
+        на доставку — он ещё не вернулся. А пока — давайте найдём то, что вам нужно.
+      </p>
+
+      <div class="nf-hero__cta">
+        <Button variant="primary" size="lg" href="/">← На главную</Button>
+        <Button variant="secondary" size="lg" href="/products/">В каталог продукции</Button>
+        <Button variant="ghost" size="lg" href="/contacts/">Связаться с нами</Button>
+      </div>
+    </div>
+  </section>
+
+  {/* Популярные разделы */}
+  <section class="nf-pop" aria-labelledby="nf-pop-h">
+    <div class="container">
+      <h2 id="nf-pop-h" class="nf-pop__h">Популярные разделы</h2>
+      <ul class="nf-pop__grid" role="list">
+        {popularSections.map((sec) => (
+          <li>
+            <CardBase href={sec.href}>
+              <div slot="eyebrow" class="nf-pop__icon" aria-hidden="true">{sec.icon}</div>
+              <h3 slot="title" class="nf-pop__card-h">{sec.title}</h3>
+              <p class="nf-pop__desc">{sec.description}</p>
+              <span slot="cta" class="nf-pop__arrow">Перейти →</span>
+            </CardBase>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {/* Не нашли что искали? */}
+  <section class="nf-help" aria-labelledby="nf-help-h">
+    <div class="container">
+      <div class="nf-help__inner">
+        <h2 id="nf-help-h" class="nf-help__h">Не нашли что искали?</h2>
+        <p class="nf-help__lead">
+          Напишите или позвоните — поможем найти нужный продукт, раздел или специалиста.
+        </p>
+        <ul class="nf-help__list" role="list">
+          <li>
+            <a class="nf-help__link" href={`mailto:${ORG_EMAIL}`}>
+              <span class="nf-help__link-icon" aria-hidden="true">✉</span>
+              <span class="nf-help__link-text">{ORG_EMAIL}</span>
+            </a>
+          </li>
+          <li>
+            <a class="nf-help__link" href={`tel:${ORG_PHONE.replace(/[^+\d]/g, '')}`}>
+              <span class="nf-help__link-icon" aria-hidden="true">☎</span>
+              <span class="nf-help__link-text">{ORG_PHONE}</span>
+            </a>
+          </li>
+          <li>
+            <a class="nf-help__link" href={whatsappHref} target="_blank" rel="noopener noreferrer">
+              <span class="nf-help__link-icon" aria-hidden="true">💬</span>
+              <span class="nf-help__link-text">WhatsApp</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Hero 404 */
+  .nf-hero {
+    display: flex;
+    align-items: center;
+    min-height: 70vh;
+    padding-block: var(--spacing-8);
+    background: var(--color-bg-surface-warm);
+  }
+  .nf-hero__inner {
+    max-width: 56ch;
+    text-align: center;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-5);
+    animation: nf-fade-up var(--duration-hero) var(--easing-decelerate) both;
+  }
+
+  .nf-hero__visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-3);
+  }
+  .nf-hero__digits {
+    font-size: clamp(7rem, 22vw, 14rem);
+    font-weight: var(--font-weight-extrabold);
+    line-height: 1;
+    letter-spacing: var(--font-letter-spacing-tighter);
+    background: linear-gradient(135deg, var(--color-action-primary), var(--color-brand-primary-end));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .nf-hero__mascot {
+    display: inline-block;
+    transform-origin: center;
+    animation: nf-mascot var(--duration-hero) var(--easing-standard) 200ms both;
+  }
+
+  .nf-hero__h1 {
+    margin: 0;
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tight);
+    color: var(--color-text-primary);
+  }
+  .nf-hero__lead {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: var(--font-line-height-normal);
+  }
+  .nf-hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-3);
+  }
+
+  /* Популярные разделы */
+  .nf-pop {
+    padding-block: var(--spacing-8);
+    background: var(--color-bg-page);
+  }
+  .nf-pop__h {
+    text-align: center;
+    margin-block-end: var(--spacing-6);
+  }
+  .nf-pop__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .nf-pop__icon {
+    font-size: var(--font-size-xl);
+    line-height: 1;
+  }
+  .nf-pop__card-h {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+  }
+  .nf-pop__desc {
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+  .nf-pop__arrow {
+    margin-block-start: var(--spacing-3);
+    color: var(--color-action-primary);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Help */
+  .nf-help {
+    padding-block: var(--spacing-7) var(--spacing-9);
+    background: var(--color-bg-surface);
+  }
+  .nf-help__inner {
+    max-width: 56ch;
+    margin-inline: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+  .nf-help__h {
+    margin: 0;
+    font-size: var(--font-size-lg);
+  }
+  .nf-help__lead {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+  .nf-help__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .nf-help__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    min-height: 48px;
+    padding: var(--spacing-3) var(--spacing-5);
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    transition:
+      border-color var(--duration-fast) var(--easing-standard),
+      color var(--duration-fast) var(--easing-standard),
+      transform var(--duration-fast) var(--easing-standard);
+  }
+  .nf-help__link:hover,
+  .nf-help__link:focus-visible {
+    border-color: var(--color-action-primary);
+    color: var(--color-action-primary);
+    transform: translateY(-1px);
+  }
+  .nf-help__link-icon { font-size: 1.2em; }
+
+  /* Animations */
+  @keyframes nf-fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes nf-mascot {
+    0%   { opacity: 0; transform: scale(0.7) rotate(-8deg); }
+    60%  { opacity: 1; transform: scale(1.05) rotate(2deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
+
+  @media (min-width: 768px) {
+    .nf-pop__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .nf-pop__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf-hero__inner,
+    .nf-hero__mascot { animation: none; opacity: 1; transform: none; }
+    .nf-help__link { transition: none; }
+    .nf-help__link:hover { transform: none; }
+  }
+</style>

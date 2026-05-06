@@ -1,0 +1,333 @@
+---
+/**
+ * EmailGateForm — organism.
+ * Email-gate форма для скачивания PDF (протоколы / прайс).
+ * Минимальная: Email + 152-ФЗ-checkbox + Submit «Скачать PDF →».
+ *
+ * Используется на:
+ *   - /solutions/farma/ — для протоколов испытаний
+ *   - footer email-gate (Wave 2 — прайсы дистрибьюторам)
+ *
+ * Состояния: idle / submitting / success / error (через client-script + ARIA-live).
+ *
+ * Источник:
+ * - 04_visuals/07-solutions-farma.spec.md §Block: Documents email-gate (CRITICAL)
+ * - components_atomic.md §Organisms (Email-gate form) — line 85
+ * - tone_of_voice.md §Form-submit «Получить протоколы →» / «Скачать PDF →»
+ *
+ * 152-ФЗ compliance: обязательный consent + ссылка на /legal/privacy/.
+ */
+
+import FormField from '@components/molecules/FormField.astro';
+import Button from '@components/atoms/Button.astro';
+
+export interface Props {
+  /** Идентификатор формы — для уникальности input id. */
+  id: string;
+  /** H2 секции (default — h3 если внутри карточки). */
+  heading: string;
+  description?: string;
+  eyebrow?: string;
+  /** Доп. поле «Сегмент» (radio: бьюти / БАДы / диагностика / другое) — для farma-варианта. */
+  withSegment?: boolean;
+  /** Текст submit-кнопки. Default — «Скачать PDF →». */
+  submitLabel?: string;
+  /** Action endpoint. */
+  action?: string;
+  /** Текст success / error. */
+  successText?: string;
+  errorText?: string;
+  /** Heading-level. */
+  headingLevel?: 'h2' | 'h3';
+  /** Опц. label для name-поля если нужно (default: вкл.). */
+  withName?: boolean;
+  /** Опц. label для company-поля. */
+  withCompany?: boolean;
+}
+
+const {
+  id,
+  heading,
+  description,
+  eyebrow,
+  withSegment = false,
+  withName = true,
+  withCompany = true,
+  submitLabel = 'Получить протоколы →',
+  action = `/api/leads/${id}/`,
+  successText = 'Протоколы отправлены на email. Проверьте почту через 2 минуты.',
+  errorText = 'Что-то пошло не так. Параллельный канал — WhatsApp +7 (800) 101-15-25.',
+  headingLevel = 'h2',
+} = Astro.props;
+
+const Heading = headingLevel;
+const HEADING_ID = `${id}-h`;
+const STATUS_ID = `${id}-status`;
+---
+
+<section class="egf" aria-labelledby={HEADING_ID}>
+  <div class="container">
+    <div class="egf__head">
+      {eyebrow && <p class="egf__eyebrow">{eyebrow}</p>}
+      <Heading id={HEADING_ID} class="egf__h">{heading}</Heading>
+      {description && <p class="egf__desc">{description}</p>}
+    </div>
+
+    <form
+      class="egf__form"
+      id={`form-${id}`}
+      action={action}
+      method="post"
+      novalidate
+      data-form="email-gate"
+      data-form-id={id}
+      aria-describedby={STATUS_ID}
+    >
+      {withName && (
+        <FormField
+          id={`${id}-name`}
+          name="name"
+          type="text"
+          label="Имя"
+          placeholder="Иван"
+          autocomplete="given-name"
+        />
+      )}
+
+      <FormField
+        id={`${id}-email`}
+        name="email"
+        type="email"
+        label="Email"
+        placeholder="ivan@company.ru"
+        required
+        autocomplete="email"
+        helper="На этот адрес отправим PDF в течение 2 минут"
+      />
+
+      {withCompany && (
+        <FormField
+          id={`${id}-company`}
+          name="company"
+          type="text"
+          label="Компания"
+          placeholder="ООО «...»"
+          autocomplete="organization"
+        />
+      )}
+
+      {withSegment && (
+        <fieldset class="egf__fieldset">
+          <legend class="egf__legend">Сегмент</legend>
+          <div class="egf__radios">
+            <label class="egf__radio">
+              <input type="radio" name="segment" value="beauty" />
+              <span>Бьюти</span>
+            </label>
+            <label class="egf__radio">
+              <input type="radio" name="segment" value="bad" />
+              <span>БАДы</span>
+            </label>
+            <label class="egf__radio">
+              <input type="radio" name="segment" value="diagnostics" />
+              <span>Диагностика</span>
+            </label>
+            <label class="egf__radio">
+              <input type="radio" name="segment" value="other" />
+              <span>Другое</span>
+            </label>
+          </div>
+        </fieldset>
+      )}
+
+      <label class="egf__consent">
+        <input
+          id={`${id}-consent`}
+          name="consent"
+          type="checkbox"
+          required
+          class="egf__consent-input"
+        />
+        <span class="egf__consent-text">
+          Соглашаюсь с обработкой персональных данных согласно
+          {' '}<a href="/legal/privacy/">политике конфиденциальности</a>{' '}
+          (152-ФЗ)
+        </span>
+      </label>
+
+      <Button type="submit" variant="primary" size="lg" fullWidth>{submitLabel}</Button>
+
+      <p
+        id={STATUS_ID}
+        class="egf__status"
+        role="status"
+        aria-live="polite"
+        data-success-text={successText}
+        data-error-text={errorText}
+      ></p>
+    </form>
+  </div>
+</section>
+
+<script>
+  /**
+   * Прогрессивный enhancement — те же паттерны, что и FormBlock.
+   */
+  function init(form: HTMLFormElement): void {
+    const status = document.getElementById(`${form.dataset.formId ?? ''}-status`) as HTMLElement | null;
+    const submitBtn = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+
+    form.addEventListener('submit', async (e) => {
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        form.classList.add('is-validated');
+        const firstInvalid = form.querySelector<HTMLInputElement>(':invalid');
+        firstInvalid?.focus();
+        if (status) {
+          status.classList.add('egf__status--error');
+          status.textContent = 'Заполните обязательные поля.';
+        }
+        return;
+      }
+      e.preventDefault();
+      form.setAttribute('aria-busy', 'true');
+      submitBtn?.setAttribute('aria-busy', 'true');
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const data = new FormData(form);
+        const res = await fetch(form.action, { method: 'POST', body: data });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (status) {
+          status.classList.remove('egf__status--error');
+          status.classList.add('egf__status--success');
+          status.textContent = status.dataset.successText ?? 'Готово.';
+        }
+        form.reset();
+      } catch (_err) {
+        if (status) {
+          status.classList.remove('egf__status--success');
+          status.classList.add('egf__status--error');
+          status.textContent = status.dataset.errorText ?? 'Ошибка.';
+        }
+      } finally {
+        form.removeAttribute('aria-busy');
+        submitBtn?.removeAttribute('aria-busy');
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    });
+  }
+
+  document.querySelectorAll<HTMLFormElement>('[data-form="email-gate"]').forEach(init);
+</script>
+
+<style>
+  .egf {
+    padding-block: var(--spacing-8);
+    background: var(--color-bg-surface);
+  }
+  .egf__head { margin-block-end: var(--spacing-5); }
+  .egf__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .egf__h {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-3);
+  }
+  .egf__desc {
+    max-width: 56ch;
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+  .egf__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    max-width: 560px;
+    padding: var(--spacing-6);
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+  }
+  .egf__fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+  .egf__legend {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-block-end: var(--spacing-2);
+  }
+  .egf__radios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-3);
+  }
+  .egf__radio {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    min-height: 44px;
+  }
+  .egf__radio input[type='radio'] {
+    accent-color: var(--color-action-primary);
+    width: 18px;
+    height: 18px;
+  }
+  .egf__consent {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .egf__consent-input {
+    width: 18px;
+    height: 18px;
+    margin-block-start: 2px;
+    accent-color: var(--color-action-primary);
+    flex-shrink: 0;
+  }
+  .egf__consent a {
+    color: var(--color-action-primary);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .egf__status {
+    margin: 0;
+    min-height: 1.5em;
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+  .egf__status--success {
+    padding: var(--spacing-3) var(--spacing-4);
+    color: var(--color-feedback-success);
+    background: var(--color-bg-surface-warm);
+    border-inline-start: 3px solid var(--color-feedback-success);
+    border-radius: var(--radius-sm);
+  }
+  .egf__status--error {
+    padding: var(--spacing-3) var(--spacing-4);
+    color: var(--color-feedback-error);
+    background: var(--color-feedback-error-bg);
+    border-inline-start: 3px solid var(--color-feedback-error);
+    border-radius: var(--radius-sm);
+  }
+  .egf__form.is-validated :global(input:invalid),
+  .egf__form.is-validated :global(textarea:invalid) {
+    border-color: var(--color-feedback-error);
+    background: var(--color-feedback-error-bg);
+  }
+</style>

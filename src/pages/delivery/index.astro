@@ -1,0 +1,200 @@
+---
+/**
+ * /delivery/ — Доставка по России и СНГ.
+ *
+ * Spec: spec.md ОТСУТСТВУЕТ в phase 4 (см. escalations[type=data_gap]).
+ * Композиция выведена из outline (он содержит структуру H-иерархии и табличные данные).
+ *
+ * Outline: 02_content/page_outlines/30-delivery.md
+ *
+ * Schema: Service (тип «доставка») + FAQPage + BreadcrumbList.
+ * Honest tone: конкретные сроки по зонам (24 ч / 1-3 / 5-10 / 10-15 дней) — без «доставим за один день».
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import IndustryHero from '@components/organisms/IndustryHero.astro';
+import DeliveryMap from '@components/organisms/DeliveryMap.astro';
+import DocumentsList from '@components/organisms/DocumentsList.astro';
+import InfoCallout from '@components/organisms/InfoCallout.astro';
+import FaqAccordion from '@components/organisms/FaqAccordion.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { service, faqPage, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const hero = {
+  eyebrow: 'Доставка',
+  h1: 'Доставка термоупаковки по России и СНГ',
+  lead: 'По Москве — за 24 часа. По РФ — транспортными компаниями за 2–5 дней. Самовывоз со склада в Коммунарке. Заказ от 1 коробки.',
+  primaryCta: { label: 'Получить расчёт доставки →', href: '#cta' },
+  secondaryCta: { label: 'Уточнить сроки до моего города →', href: 'https://wa.me/78001011525' },
+  stats: [
+    { value: '24 ч',          label: 'по Москве курьером' },
+    { value: '2–5 дней',       label: 'по РФ через ТК' },
+    { value: '100 000 шт',     label: 'на складе всегда' },
+    { value: 'от 1 коробки',   label: 'минимальный заказ' },
+  ],
+} as const;
+
+const deliveryRows = [
+  {
+    zone: 'Самовывоз — Коммунарка',
+    term: 'в день оплаты',
+    price: 'бесплатно',
+    moq: 'от 1 коробки',
+    note: 'пн–пт 9:00–18:00 по доверенности на представителя',
+  },
+  {
+    zone: 'Курьер по Москве',
+    term: '24 ч',
+    price: 'бесплатно от партии',
+    moq: 'от 1 коробки',
+    note: 'собственным транспортом ТермиМобиль; при заявке до 12:00 — в день оплаты',
+  },
+  {
+    zone: 'Курьер по МО',
+    term: '1–3 дня',
+    price: 'по тарифу',
+    moq: 'от 1 коробки',
+    note: 'до 100 км от МКАД — собственный транспорт; дальше — ТК',
+  },
+  {
+    zone: 'РФ — регионы (ТК)',
+    term: '2–10 дней',
+    price: 'по тарифу ТК',
+    moq: 'от 1 коробки',
+    note: 'партнёры — ПЭК, СДЭК, Деловые Линии (TODO уточнить полный список с логистикой)',
+  },
+  {
+    zone: 'СНГ — Беларусь',
+    term: '5–7 дней',
+    price: 'договорная',
+    moq: 'от 5 коробок',
+    note: 'таможенное оформление через брокера-партнёра',
+  },
+  {
+    zone: 'СНГ — Казахстан',
+    term: '7–10 дней',
+    price: 'договорная',
+    moq: 'от 5 коробок',
+    note: 'экспорт-направление 2026, валютный контроль через банк',
+  },
+  {
+    zone: 'СНГ — Армения / Кыргызстан',
+    term: '10–15 дней',
+    price: 'договорная',
+    moq: 'от 10 коробок',
+    note: 'индивидуальный расчёт под партию',
+  },
+];
+
+const deliveryFaq = [
+  { question: 'Какой минимальный заказ для бесплатной доставки по Москве?',
+    answer: 'Бесплатно по Москве — от партии (точный минимум зависит от SKU и обсуждается с менеджером). Для образцов — отдельная логика, обычно курьером собственным транспортом за 24 ч.' },
+  { question: 'Доставляете ли в день оплаты?',
+    answer: 'По Москве — да, при заявке до 12:00 и подтверждённой оплате. Самовывоз — в день оплаты пн–пт. Региональная доставка — со следующего рабочего дня после поступления оплаты.' },
+  { question: 'Можно ли заказать доставку в субботу?',
+    answer: 'Курьерская служба работает пн–пт. Для срочных доставок в субботу — обращайтесь индивидуально через WhatsApp; менеджер согласует через диспетчерскую ТермиМобиль.' },
+  { question: 'Какие сроки по регионам?',
+    answer: 'Через ТК (ПЭК, СДЭК, Деловые Линии): Центральный округ — 2–3 дня; Урал, Сибирь — 5–7 дней; Дальний Восток — 7–10 дней. Точный срок указывается в момент оформления заказа.' },
+  { question: 'Что делать, если упаковка повреждена при приёмке?',
+    answer: 'При приёмке составляется акт о повреждении (стандартный для ТК). TERMY заменяет повреждённую партию в течение 24 часов после получения акта — это часть наших обязательств.' },
+  { question: 'Какие документы вы предоставляете при отгрузке?',
+    answer: 'УПД, счёт-фактура, ТТН, спецификация. По запросу — сертификат соответствия и ТУ. ЭДО через Контур.Диадок и СБИС.' },
+];
+
+const docs = [
+  {
+    title: 'Условия отгрузки в оферте',
+    description: 'Полные условия доставки и приёмки — в публичной оферте.',
+    ctaLabel: 'Открыть оферту →',
+    href: '/legal/oferta/',
+    size: 'веб-страница',
+  },
+];
+
+const schema = [
+  service({
+    name: 'Доставка термоупаковки по России и СНГ',
+    description: 'Отгрузка по Москве за 24 ч, по РФ — ТК. Самовывоз со склада в Коммунарке. Условия для крупных партий.',
+    audience: 'B2B (службы доставки, ритейл, дистрибьюторы, производители, фарм-смежные)',
+    areaServed: 'Россия, СНГ',
+    termsOfServiceUrl: `${siteUrl}legal/oferta/`,
+  }),
+  faqPage(deliveryFaq),
+  breadcrumbList([
+    { name: 'Главная',  url: siteUrl },
+    { name: 'Доставка', url: `${siteUrl}delivery/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Доставка по России и СНГ"
+  description="Отгрузка по Москве за 24 ч, по РФ — ТК. Самовывоз со склада в Коммунарке. Условия для крупных партий."
+  ogType="website"
+  ogImage={`${siteUrl}assets/og/og-delivery.jpg`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'Доставка' },
+    ]}
+  />
+
+  <IndustryHero {...hero} />
+
+  <DeliveryMap
+    eyebrow="Зоны и сроки"
+    heading="Способы и сроки доставки"
+    lead="Конкретные зоны с конкретными сроками. Для срочных и нестандартных кейсов — расчёт менеджером по WhatsApp за 1 рабочий час."
+    rows={deliveryRows}
+    caption="Условия доставки и отгрузки термоупаковки TERMY"
+  />
+
+  <InfoCallout tone="info" title="Для дистрибьюторов — крупные партии">
+    <p>
+      B3-дистрибьюторам — спеццены доставки от объёма, резервирование транспорта на сезонный пик
+      (декабрь, лето), условия совместной логистики.
+    </p>
+    <p>
+      <a href="/solutions/distributory/">Запросить условия для дистрибьютора →</a>
+    </p>
+  </InfoCallout>
+
+  <DocumentsList
+    eyebrow="Документы"
+    heading="Документы при отгрузке"
+    lead="Стандартный комплект — УПД, счёт-фактура, ТТН, спецификация. По запросу — сертификат соответствия и ТУ. ЭДО через Контур.Диадок и СБИС."
+    items={docs}
+  />
+
+  <FaqAccordion
+    eyebrow="Частые вопросы"
+    heading="FAQ доставки"
+    items={deliveryFaq}
+    id="delivery-faq"
+  />
+
+  <FormBlock
+    id="cta"
+    variant="lead"
+    eyebrow="Расчёт доставки"
+    heading="Получить расчёт доставки до моего города"
+    description="Менеджер свяжется в течение 1 рабочего часа, рассчитает срок и стоимость по конкретной партии и направлению."
+    submitLabel="Получить расчёт доставки →"
+  />
+
+  <PreFooterCta
+    heading="Срочно? — пишите в WhatsApp"
+    lead="Менеджер по логистике ответит в течение 1 рабочего часа и согласует доставку под ваш график."
+    primaryCta={{ label: 'Написать в WhatsApp', href: 'https://wa.me/78001011525' }}
+    secondaryCta={{ label: 'Позвонить +7 (800) 101-15-25', href: 'tel:+78001011525' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>

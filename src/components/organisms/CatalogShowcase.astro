@@ -1,0 +1,152 @@
+---
+/**
+ * CatalogShowcase — organism.
+ * Composition: H2 + Chips-row (filter-категории, decorative на главной — линкуют в catalog) +
+ *              6 product-cards (1 на категорию) + footer-CTA «Весь каталог →».
+ *
+ * На главной chips — ссылки на категории, не интерактивный filter (это работа /products/).
+ * Реальный JS-filter с loading / empty состояниями — в /products/<cat>/ (другой organism phase 6).
+ *
+ * Источник:
+ * - 04_visuals/01-homepage.spec.md §«Block 6: Каталог продукции»
+ * - 02_content/page_outlines/01-homepage.md §«H2: Каталог продукции»
+ * - tone_of_voice.md §Inline CTA п.9 («Открыть карточку TERMY 42×50 →»), п.13 («Весь каталог →»)
+ */
+
+import CardBase from '@components/molecules/CardBase.astro';
+import Chip from '@components/molecules/Chip.astro';
+import Button from '@components/atoms/Button.astro';
+
+export interface CatalogCategory {
+  slug: string;
+  label: string;
+  active?: boolean;
+}
+
+export interface CatalogProductPreview {
+  slug: string;
+  category: string;
+  title: string;
+  /** Кратко: SKU count + ценовой диапазон. */
+  meta: string;
+  description: string;
+  /** Текст CTA-карточки. */
+  ctaLabel: string;
+  /** Путь к webp-фото продукта (вёрстка карточки — square с object-fit contain). */
+  image?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  /** 7 категорий (Все + 6 product-categories). */
+  categories: ReadonlyArray<CatalogCategory>;
+  products: ReadonlyArray<CatalogProductPreview>;
+  hubCta: { label: string; href: string };
+}
+
+const { heading, eyebrow, categories, products, hubCta } = Astro.props;
+---
+
+<section class="cat" aria-labelledby="cat-h2">
+  <div class="container">
+    {eyebrow && <p class="cat__eyebrow">{eyebrow}</p>}
+    <h2 id="cat-h2" class="cat__h2">{heading}</h2>
+
+    <nav class="cat__chips" aria-label="Категории каталога">
+      <ul class="cat__chips-list" role="list">
+        {categories.map((cat) => (
+          <li>
+            <Chip variant={cat.active ? 'active' : 'default'} size="base" href={cat.slug === 'all' ? '/products/' : `/products/${cat.slug}/`}>
+              {cat.label}
+            </Chip>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <ul class="cat__grid" role="list">
+      {products.map((p) => (
+        <li>
+          <CardBase href={`/products/${p.category}/${p.slug}/`}>
+            <h3 slot="title" class="cat__card-title">{p.title}</h3>
+            <p slot="meta" class="cat__card-meta">{p.meta}</p>
+            <p class="cat__card-desc">{p.description}</p>
+            <span slot="cta" class="cat__cta-label">{p.ctaLabel}</span>
+          </CardBase>
+        </li>
+      ))}
+    </ul>
+
+    <div class="cat__hub-cta">
+      <Button variant="primary" size="base" href={hubCta.href}>{hubCta.label}</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cat {
+    padding-block: var(--spacing-8);
+    background: var(--color-bg-surface-warm);
+  }
+  .cat__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .cat__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-5);
+  }
+
+  /* Chips — горизонтальный scroll на mobile. */
+  .cat__chips {
+    margin-block-end: var(--spacing-5);
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .cat__chips-list {
+    display: flex;
+    gap: var(--spacing-2);
+    padding: var(--spacing-1) 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .cat__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+    margin: 0 0 var(--spacing-6);
+    padding: 0;
+    list-style: none;
+  }
+  .cat__card-title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+  }
+  .cat__card-meta {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-sm);
+    font-family: var(--font-family-monospace);
+  }
+  .cat__card-desc {
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+  .cat__cta-label {
+    margin-block-start: var(--spacing-3);
+    color: var(--color-action-primary);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+  }
+  .cat__hub-cta {
+    text-align: center;
+  }
+
+  @media (min-width: 768px)  { .cat__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .cat__grid { grid-template-columns: repeat(3, 1fr); } }
+</style>

@@ -1,0 +1,211 @@
+---
+/**
+ * /about/ — Хаб About-кластера. Trust-builder для всех B1-B5 (особенно тендеры B2-B4).
+ *
+ * Spec: 04_visuals/16-about-company.spec.md
+ * Outline: 02_content/page_outlines/16-about-company.md
+ *
+ * Schema: AboutPage + BreadcrumbList.
+ * Копирайт — placeholder из page outline. Финальный — ghostwriter.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import IndustryHero from '@components/organisms/IndustryHero.astro';
+import Stat from '@components/molecules/Stat.astro';
+import TimelineCompany from '@components/organisms/TimelineCompany.astro';
+import CardBase from '@components/molecules/CardBase.astro';
+import Button from '@components/atoms/Button.astro';
+import DocumentsList from '@components/organisms/DocumentsList.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { webPage, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+/* ========================================================================
+   КОНТЕНТ — placeholder из page_outlines/16-about-company.md.
+   Финальный копирайт — ghostwriter.
+   ======================================================================== */
+
+const hero = {
+  eyebrow: 'О производителе',
+  h1: 'Производитель термоупаковки TERMY',
+  lead: 'ООО «ТЕРМИ» — собственное производство в Люберцах с 2020 года. Мощность ~1 млн единиц в месяц. Среди клиентов — крупнейшие сервисы доставки и ритейл-сети России.',
+  primaryCta: { label: 'Скачать карточку предприятия PDF →', href: '/contacts/#docs' },
+  secondaryCta: { label: 'Открыть производство →', href: '/about/production/' },
+  stats: [
+    { value: '~1 млн ед/мес', label: 'мощность производства' },
+    { value: '~2000 м²',      label: 'производственных площадей' },
+    { value: '30–70 чел.',    label: 'сотрудников' },
+    { value: '5+ лет',        label: 'на рынке B2B' },
+  ],
+} as const;
+
+
+const milestones = [
+  { year: '2020', title: 'День рождения бренда TERMY', description: '28 сентября 2020 — точка отсчёта.' },
+  { year: '2022', title: 'Регистрация ООО «ТЕРМИ»',     description: 'ОГРН 1227700339976, дата регистрации 10.06.2022.' },
+  { year: '2022', title: 'Товарный знак TERMY',          description: 'Регистрация 03.11.2022 — защита бренда.' },
+  { year: '2024', title: 'Расширение производства',      description: 'Ввод PRO-серии и формата 42×50 — впервые в РФ.' },
+  { year: '2025', title: 'Рост 7–8% год к году',         description: 'Новый бизнес — 78,5 млн ₽.' },
+  { year: '2026', title: 'Приоритеты — экспорт и NPS',   description: 'Новая китайская линия, экспорт в Казахстан, программа NPS.' },
+];
+
+const certificates = [
+  {
+    title: 'ТР ТС 005/2011 — безопасность упаковки',
+    description: 'Декларация о соответствии техрегламенту Таможенного союза для пищевой упаковки.',
+    ctaLabel: 'Скачать декларацию ТР ТС →',
+    href: '/assets/docs/tr-ts-005-2011.pdf',
+    size: 'PDF, 480 КБ',
+  },
+  {
+    title: 'ГОСТ Р 50962-96 — на SHOCK®',
+    description: 'Действующий ГОСТ на аккумуляторы холода. Выписка для тендеров.',
+    ctaLabel: 'Скачать выписку ГОСТ →',
+    href: '/assets/docs/gost.pdf',
+    size: 'PDF, 480 КБ',
+  },
+  {
+    title: 'ТУ 22.22.11-001-47645032-2022',
+    description: 'Технические условия на термопакеты собственного производства.',
+    ctaLabel: 'Скачать ТУ →',
+    href: '/assets/docs/tu.pdf',
+    size: 'PDF, 620 КБ',
+  },
+  {
+    title: 'Патент TERMY на ручку-защёлку SHOCK',
+    description: 'Свидетельство Роспатента — защита уникальной конструкции.',
+    ctaLabel: 'Скачать патент TERMY →',
+    href: '/assets/docs/patent-shock.pdf',
+    size: 'PDF, 720 КБ',
+  },
+];
+
+const schema = [
+  webPage({
+    name: 'О компании TERMY — производитель термоупаковки в РФ',
+    description: 'ООО «ТЕРМИ» — производство в Люберцах с 2020 года. ~1 млн ед/мес, 30–70 чел., более 5 лет на рынке. ISO 9001, ТР ТС 005/2011.',
+    specialty: 'AboutPage',
+  }),
+  breadcrumbList([
+    { name: 'Главная',    url: siteUrl },
+    { name: 'О компании', url: `${siteUrl}about/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="О компании — производитель термоупаковки"
+  description="ООО «ТЕРМИ» — производство в Люберцах, ~1 млн ед/мес, 30–70 чел., более 5 лет на рынке. ISO 9001, ТР ТС 005/2011."
+  ogType="website"
+  ogImage={`${siteUrl}assets/og/og-about.jpg`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'О компании' },
+    ]}
+  />
+
+  <IndustryHero {...hero} />
+
+  <TimelineCompany
+    eyebrow="История"
+    heading="История бренда TERMY"
+    lead="Шесть точек на нашей траектории: от запуска бренда в 2020 до экспортных приоритетов 2026 года."
+    items={milestones}
+  />
+
+  <section class="callouts" aria-labelledby="callouts-h2">
+    <div class="container">
+      <h2 id="callouts-h2" class="callouts__h2">Загляните глубже</h2>
+      <ul class="callouts__grid" role="list">
+        <li>
+          <CardBase variant="feature">
+            <h3 slot="title" class="callouts__title">Производство в Люберцах</h3>
+            <p>2000 м², ~1 млн ед/мес, 3 стадии контроля качества. Видео и фото с производства.</p>
+            <Button slot="cta" variant="secondary" size="base" href="/about/production/">Открыть страницу производства →</Button>
+          </CardBase>
+        </li>
+        <li>
+          <CardBase variant="feature">
+            <h3 slot="title" class="callouts__title">8 преимуществ TERMY</h3>
+            <p>Формат 42×50 PRO впервые в РФ, МОЗ от 1 коробки, бесплатный макет, патент-защищённый SHOCK®.</p>
+            <Button slot="cta" variant="secondary" size="base" href="/about/advantages/">Открыть преимущества →</Button>
+          </CardBase>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <DocumentsList
+    eyebrow="Сертификаты"
+    heading="Стандарты и документы"
+    lead="Полный compliance-пакет для тендеров и аудита: ТР ТС, ГОСТ, ТУ, патент. Дополнительные документы — по запросу через форму."
+    items={certificates}
+  />
+
+  <section class="clients" aria-labelledby="clients-h2">
+    <div class="container">
+      <p class="clients__eyebrow">Среди клиентов</p>
+      <h2 id="clients-h2" class="clients__h2">Крупнейшие сервисы доставки и ритейл-сети России</h2>
+      <p class="clients__lead">
+        Мы работаем с крупнейшими сервисами доставки и ритейл-сетями. Имена клиентов
+        раскрываем по запросу и при наличии письменного согласия — это часть нашей
+        политики конфиденциальности.
+      </p>
+    </div>
+  </section>
+
+  <PreFooterCta
+    heading="Готовы посчитать?"
+    lead="Получите расчёт под вашу задачу или скачайте карточку предприятия для бухгалтерии."
+    primaryCta={{ label: 'Получить расчёт →', href: '/contacts/#cta' }}
+    secondaryCta={{ label: 'Скачать карточку предприятия PDF →', href: '/contacts/#docs' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>
+
+<style>
+  .key-facts { padding-block: var(--spacing-7); background: var(--color-bg-surface-warm); }
+  .key-facts__h2 { margin-block-end: var(--spacing-5); }
+  .key-facts__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-3);
+  }
+  @media (min-width: 768px)  { .key-facts__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .key-facts__grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .callouts { padding-block: var(--spacing-8); }
+  .callouts__h2 { margin-block-end: var(--spacing-5); }
+  .callouts__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+  @media (min-width: 768px) { .callouts__grid { grid-template-columns: repeat(2, 1fr); } }
+  .callouts__title { margin: 0; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
+
+  .clients { padding-block: var(--spacing-8); background: var(--color-bg-surface); }
+  .clients__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .clients__h2 { max-width: 36ch; margin-block-end: var(--spacing-4); }
+  .clients__lead { max-width: 60ch; color: var(--color-text-secondary); line-height: var(--font-line-height-normal); }
+</style>

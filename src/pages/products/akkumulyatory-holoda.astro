@@ -1,0 +1,56 @@
+---
+/**
+ * /products/akkumulyatory-holoda/ — Тонкий wrapper над единым каталогом.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import CatalogPage from '@components/organisms/CatalogPage.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { collectionPage, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const schema = [
+  collectionPage({
+    name: 'Termy SHOCK® — аккумуляторы холода',
+    description: 'Многоразовые аккумуляторы холода Termy SHOCK®: 12 SKU, 4 размера, 3 температурных режима.',
+    numberOfItems: 12,
+  }),
+  breadcrumbList([
+    { name: 'Главная', url: siteUrl },
+    { name: 'Каталог', url: `${siteUrl}products/` },
+    { name: 'SHOCK®', url: `${siteUrl}products/akkumulyatory-holoda/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Termy SHOCK® — аккумуляторы холода"
+  description="Многоразовые SHOCK® Cool / Gel / Freeze. ГОСТ Р 50962-96. 4 объёма (300/450/600/1000 мл) × 3 режима. От 1 коробки."
+  ogType="website"
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'Каталог', href: '/products/' },
+      { name: 'SHOCK®' },
+    ]}
+  />
+
+  <CatalogPage initialCategory="akkumulyatory-holoda" />
+
+  <FormBlock id="cta" variant="lead" eyebrow="Получить КП"
+    heading="Получить КП по SHOCK®"
+    description="Менеджер свяжется в течение 2 часов с прайсом и MOQ."
+    submitLabel="Получить КП →" />
+
+  <PreFooterCta heading="Готовы посчитать?" lead="Напишите в WhatsApp — менеджер ответит сразу."
+    primaryCta={{ label: 'Написать в WhatsApp', href: 'https://wa.me/78001011525' }}
+    secondaryCta={{ label: 'Позвонить +7 (800) 101-15-25', href: 'tel:+78001011525' }} />
+
+  <StickyWhatsApp />
+</BaseLayout>

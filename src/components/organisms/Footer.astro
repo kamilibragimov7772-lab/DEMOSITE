@@ -1,0 +1,258 @@
+---
+/**
+ * Footer — organism.
+ * Composition: 4-col grid + Email-gate prices + Social row + Legal-strip + Bottom-row юр.
+ *
+ * Источники:
+ * - 01_ia/sitemap.md §3 (footer 4 колонки)
+ * - 03_design_system/components_atomic.md §Organisms (Footer)
+ * - tone_of_voice.md «Скачать прайс-лист PDF» (footer-CTA, email-gate)
+ */
+
+import {
+  FOOTER_COL_PRODUCTS,
+  FOOTER_COL_SOLUTIONS,
+  FOOTER_COL_COMPANY,
+  FOOTER_COL_CONTACTS,
+  FOOTER_LEGAL,
+} from '@lib/nav';
+import { ORG_PHONE, ORG_EMAIL, ORG_LEGAL_NAME } from '@lib/schema';
+import FormField from '@components/molecules/FormField.astro';
+import Button from '@components/atoms/Button.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="ftr" role="contentinfo">
+  <div class="ftr__inner container">
+    <div class="ftr__grid">
+      <nav class="ftr__col" aria-labelledby="ftr-products">
+        <h2 id="ftr-products" class="ftr__title">Продукция</h2>
+        <ul role="list">
+          {FOOTER_COL_PRODUCTS.map((item) => (
+            <li><a class="ftr__link" href={item.href}>{item.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <nav class="ftr__col" aria-labelledby="ftr-solutions">
+        <h2 id="ftr-solutions" class="ftr__title">Решения</h2>
+        <ul role="list">
+          {FOOTER_COL_SOLUTIONS.map((item) => (
+            <li><a class="ftr__link" href={item.href}>{item.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <nav class="ftr__col" aria-labelledby="ftr-company">
+        <h2 id="ftr-company" class="ftr__title">Компания</h2>
+        <ul role="list">
+          {FOOTER_COL_COMPANY.map((item) => (
+            <li><a class="ftr__link" href={item.href}>{item.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="ftr__col" aria-labelledby="ftr-contacts">
+        <h2 id="ftr-contacts" class="ftr__title">Контакты</h2>
+        <ul role="list">
+          <li>
+            <a class="ftr__link" href={`tel:${ORG_PHONE.replace(/[^+\d]/g, '')}`}>{ORG_PHONE}</a>
+          </li>
+          <li>
+            <a class="ftr__link" href={`mailto:${ORG_EMAIL}`}>{ORG_EMAIL}</a>
+          </li>
+          {FOOTER_COL_CONTACTS.map((item) => (
+            <li><a class="ftr__link" href={item.href}>{item.label}</a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <section class="ftr__price" aria-labelledby="ftr-price-title">
+      <div class="ftr__price-text">
+        <h2 id="ftr-price-title" class="ftr__price-h">Скачать прайс-лист PDF</h2>
+        <p class="ftr__price-lead">
+          Полный прайс с 6 категориями, ~58 SKU, действующими МОЗ. Отправим на email
+          в течение 2 минут. Согласно 152-ФЗ — потребуется ваше согласие.
+        </p>
+      </div>
+      <form
+        class="ftr__price-form"
+        action="/api/leads/price-pdf/"
+        method="post"
+        novalidate
+        aria-label="Запрос прайс-листа PDF"
+      >
+        <FormField
+          id="ftr-email"
+          name="email"
+          type="email"
+          label="Корпоративный email"
+          placeholder="zakupki@company.ru"
+          autocomplete="email"
+          inputmode="email"
+          required
+          helper="На него отправим PDF и карточку предприятия"
+        />
+        <label class="ftr__consent">
+          <input type="checkbox" name="consent" required class="ftr__consent-input" />
+          <span class="ftr__consent-text">
+            Соглашаюсь с обработкой персональных данных согласно
+            <a href="/legal/privacy/">политике конфиденциальности</a>
+            (152-ФЗ)
+          </span>
+        </label>
+        <Button type="submit" variant="primary" size="base" fullWidth>Скачать PDF →</Button>
+      </form>
+    </section>
+
+    <div class="ftr__legal-strip">
+      <ul class="ftr__legal-list" role="list">
+        {FOOTER_LEGAL.map((item) => (
+          <li><a class="ftr__legal-link" href={item.href}>{item.label}</a></li>
+        ))}
+      </ul>
+      <p class="ftr__copy">
+        © {year} {ORG_LEGAL_NAME}. ОГРН 1227700339976. ИНН 9709082000.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .ftr {
+    margin-block-start: var(--spacing-9);
+    padding-block: var(--spacing-7);
+    background: var(--color-bg-dark);
+    color: var(--color-text-on-dark);
+  }
+
+  .ftr__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-7);
+  }
+
+  .ftr__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+
+  .ftr__col ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  .ftr__title {
+    margin: 0 0 var(--spacing-3);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    color: var(--color-text-on-dark);
+    opacity: 0.8;
+  }
+
+  .ftr__link {
+    color: var(--color-text-on-dark);
+    text-decoration: none;
+    line-height: var(--font-line-height-loose);
+    opacity: 0.85;
+    font-size: var(--font-size-base);
+    transition: opacity var(--duration-fast) var(--easing-standard);
+  }
+  .ftr__link:hover { opacity: 1; text-decoration: underline; text-underline-offset: 0.2em; }
+
+  .ftr__price {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-5);
+    padding: var(--spacing-5);
+    background: var(--color-overlay-on-dark-low);
+    border: 1px solid var(--color-overlay-on-dark-mid);
+    border-radius: var(--radius-lg);
+  }
+  .ftr__price-h {
+    margin: 0 0 var(--spacing-2);
+    font-size: var(--font-size-xl);
+    color: var(--color-text-on-dark);
+  }
+  .ftr__price-lead {
+    color: var(--color-text-on-dark);
+    opacity: 0.85;
+    line-height: var(--font-line-height-normal);
+    font-size: var(--font-size-base);
+  }
+  .ftr__price-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+  .ftr__price-form :global(.form-field__label),
+  .ftr__price-form :global(.form-field__helper) {
+    color: var(--color-text-on-dark);
+    opacity: 0.9;
+  }
+
+  .ftr__consent {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2);
+    color: var(--color-text-on-dark);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    opacity: 0.85;
+    cursor: pointer;
+  }
+  .ftr__consent-input {
+    width: 18px;
+    height: 18px;
+    margin-block-start: 2px;
+    accent-color: var(--color-action-primary);
+    flex-shrink: 0;
+  }
+  .ftr__consent a { color: inherit; text-decoration: underline; text-underline-offset: 0.2em; }
+
+  .ftr__legal-strip {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    padding-block-start: var(--spacing-5);
+    border-block-start: 1px solid var(--color-overlay-on-dark-mid);
+    font-size: var(--font-size-sm);
+  }
+  .ftr__legal-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+  }
+  .ftr__legal-link {
+    color: var(--color-text-on-dark);
+    text-decoration: none;
+    opacity: 0.7;
+  }
+  .ftr__legal-link:hover { opacity: 1; text-decoration: underline; }
+  .ftr__copy {
+    color: var(--color-text-on-dark);
+    opacity: 0.6;
+    font-size: var(--font-size-sm);
+  }
+
+  @media (min-width: 768px) {
+    .ftr__grid { grid-template-columns: repeat(2, 1fr); gap: var(--spacing-7); }
+    .ftr__price { grid-template-columns: 1fr 1fr; align-items: start; }
+    .ftr__legal-strip { flex-direction: row; justify-content: space-between; align-items: center; }
+  }
+  @media (min-width: 1024px) {
+    .ftr__grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>

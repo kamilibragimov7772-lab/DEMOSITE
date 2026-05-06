@@ -1,0 +1,326 @@
+/* Termy — глобальные стили.
+ * Порядок: Tailwind v4 base → дизайн-токены → @font-face → resets → typography base → utilities.
+ * tokens.css генерируется Style Dictionary из tokens.json (см. style-dictionary/build.mjs).
+ * Никаких magic-цветов и magic-numbers. Всё через var(--*).
+ */
+
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* ==========================================================================
+   Tailwind v4 — theme bridging.
+   Соединяем design tokens (CSS vars) с Tailwind theme через @theme inline,
+   чтобы класcсы вида text-text-primary / bg-bg-page работали в utility-режиме.
+   ========================================================================== */
+
+@theme inline {
+  /* Цвет — semantic. Primitive доступен через прямые var(--color-*). */
+  --color-text-primary:   var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary:  var(--color-text-tertiary);
+  --color-text-on-brand:  var(--color-text-on-brand);
+  --color-text-on-dark:   var(--color-text-on-dark);
+  --color-text-link:      var(--color-text-link);
+
+  --color-bg-page:         var(--color-bg-page);
+  --color-bg-surface:      var(--color-bg-surface);
+  --color-bg-surface-warm: var(--color-bg-surface-warm);
+  --color-bg-dark:         var(--color-bg-dark);
+
+  --color-border-default: var(--color-border-default);
+  --color-border-strong:  var(--color-border-strong);
+  --color-border-subtle:  var(--color-border-subtle);
+  --color-border-focus:   var(--color-border-focus);
+
+  --color-action-primary:        var(--color-action-primary);
+  --color-action-primary-hover:  var(--color-action-primary-hover);
+  --color-action-secondary:      var(--color-action-secondary);
+  --color-action-secondary-text: var(--color-action-secondary-text);
+
+  --color-feedback-error:    var(--color-feedback-error);
+  --color-feedback-error-bg: var(--color-feedback-error-bg);
+  --color-feedback-warning:  var(--color-feedback-warning);
+  --color-feedback-success:  var(--color-feedback-success);
+  --color-feedback-info:     var(--color-feedback-info);
+
+  /* Типографика */
+  --font-sans:      var(--font-family-sans);
+  --font-mono:      var(--font-family-monospace);
+
+  /* Брейкпоинты — Tailwind v4 узнаёт их через --breakpoint-* */
+  --breakpoint-sm:  320px;
+  --breakpoint-md:  768px;
+  --breakpoint-lg:  1024px;
+  --breakpoint-xl:  1320px;
+  --breakpoint-2xl: 1920px;
+
+  /* Радиусы */
+  --radius-xs:   var(--radius-xs);
+  --radius-sm:   var(--radius-sm);
+  --radius-base: var(--radius-base);
+  --radius-lg:   var(--radius-lg);
+  --radius-pill: var(--radius-pill);
+}
+
+/* ==========================================================================
+   Шрифты — Inter Variable + JetBrains Mono (self-hosted, разделение по subset).
+   Источник WOFF2: @fontsource-variable/inter (OFL) + @fontsource/jetbrains-mono (Apache 2.0).
+   Файлы лежат в public/fonts/. Per-subset unicode-range — браузер
+   качает только тот файл, который нужен под текущий контент (Cyrillic / Latin).
+   ========================================================================== */
+
+/* --- Inter Variable (wght axis 100-900) — Cyrillic --- */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-cyrillic-wght.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* --- Inter Variable — Cyrillic Extended --- */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-cyrillic-ext-wght.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+/* --- Inter Variable — Latin (covers basic Latin + typography + currency) --- */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-latin-wght.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* --- Inter Variable — italic Cyrillic --- */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-cyrillic-wght-italic.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* --- Inter Variable — italic Latin --- */
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-latin-wght-italic.woff2') format('woff2-variations');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191,
+    U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* --- JetBrains Mono — Latin 400 --- */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-latin-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2212;
+}
+
+/* --- JetBrains Mono — Cyrillic 400 --- */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-cyrillic-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* --- JetBrains Mono — Latin 700 --- */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-latin-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2212;
+}
+
+/* --- JetBrains Mono — Cyrillic 700 --- */
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-cyrillic-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* ==========================================================================
+   Reset + base.
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-family: var(--font-family-sans);
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--font-line-height-normal);
+  color: var(--color-text-primary);
+  background: var(--color-bg-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  min-height: 100vh;
+}
+
+img, svg, video, canvas, picture { display: block; max-width: 100%; height: auto; }
+button { font: inherit; cursor: pointer; }
+button, [type='button'], [type='submit'], [type='reset'] { -webkit-appearance: none; appearance: none; }
+input, select, textarea { font: inherit; }
+
+a {
+  color: var(--color-text-link);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-thickness var(--duration-fast) var(--easing-standard);
+}
+a:hover { text-decoration-thickness: 2px; }
+
+/* Заголовки — токены типографики */
+h1, h2, h3, h4, h5, h6 { margin: 0; font-weight: var(--font-weight-bold); color: var(--color-text-primary); }
+h1 { font-size: var(--font-size-h1-fluid); line-height: var(--font-line-height-tight); letter-spacing: var(--font-letter-spacing-tighter); }
+h2 { font-size: var(--font-size-h2-fluid); line-height: var(--font-line-height-snug);  letter-spacing: var(--font-letter-spacing-tight);   }
+h3 { font-size: var(--font-size-lg);       line-height: 1.4; letter-spacing: var(--font-letter-spacing-snug); font-weight: var(--font-weight-semibold); }
+h4 { font-size: var(--font-size-md);       line-height: 1.4; letter-spacing: var(--font-letter-spacing-snug); font-weight: var(--font-weight-semibold); }
+
+p { margin: 0; }
+
+code, kbd, pre, samp { font-family: var(--font-family-monospace); font-size: 0.9em; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* ==========================================================================
+   Focus visible — единый стиль на всём сайте.
+   WCAG 2.2 AA SC 2.4.7.
+   ========================================================================== */
+
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+  box-shadow: var(--shadow-focus-ring);
+}
+
+/* ==========================================================================
+   Skip-to-content (WCAG 2.2 AA SC 2.4.1).
+   ========================================================================== */
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 9999;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--color-bg-dark);
+  color: var(--color-text-on-dark);
+  text-decoration: none;
+  font-weight: var(--font-weight-semibold);
+  border-radius: 0 0 var(--radius-base) 0;
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  left: 0;
+}
+
+/* ==========================================================================
+   Touch targets — mobile.
+   На мобильных все интерактивные элементы ≥44×44px (WCAG 2.5.8 / Apple HIG).
+   ========================================================================== */
+
+@media (max-width: 767px) {
+  button,
+  [role='button'],
+  a.btn,
+  a[role='link'].interactive,
+  input[type='submit'],
+  input[type='button'],
+  input[type='reset'] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* ==========================================================================
+   prefers-reduced-motion (WCAG 2.2 AA SC 2.3.3).
+   Глобальный fallback — обязательный (HIGH-блокер DC8 phase 3).
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* Параллакс / hero-blob / параллакс-декорации — opacity-only fallback. */
+  .hero::after,
+  .termy-blob,
+  [data-parallax],
+  [data-motion='blob'] {
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+/* ==========================================================================
+   Container.
+   ========================================================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--spacing-4);
+}
+@media (min-width: 768px)  { .container { padding-inline: var(--spacing-5); } }
+@media (min-width: 1024px) { .container { padding-inline: var(--spacing-6); } }
+
+/* ==========================================================================
+   Утилиты visually-hidden / sr-only.
+   ========================================================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

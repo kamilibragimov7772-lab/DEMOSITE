@@ -1,0 +1,45 @@
+---
+/**
+ * /legal/cookies/ — Использование cookies.
+ *
+ * Реализация по spec'у `04_visuals/22-legal-cookies.spec.md` + outline `02_content/page_outlines/22-legal-cookies.md`.
+ * Template: Legal (3 из 3). Контент — из коллекции `legal` (`src/content/legal/cookies.md`).
+ *
+ * Schema.org: WebPage + BreadcrumbList — генерируется в LegalLayout.
+ */
+
+import { getEntry, render } from 'astro:content';
+import LegalLayout from '@layouts/LegalLayout.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+
+const entry = await getEntry('legal', 'cookies');
+if (!entry) throw new Error('Content collection entry "legal/cookies" не найдена.');
+const { Content } = await render(entry);
+
+const toc = [
+  { id: 'что-такое-cookies',                      label: 'Что такое cookies' },
+  { id: 'какие-cookies-использует-termy',         label: 'Какие cookies использует TERMY' },
+  { id: 'как-настроить-согласие',                 label: 'Как настроить согласие' },
+  { id: 'как-удалить-cookies',                    label: 'Как удалить cookies' },
+  { id: 'передача-данных-третьим-лицам',          label: 'Передача данных третьим лицам' },
+  { id: 'связь-с-обработкой-персональных-данных', label: 'Связь с обработкой персональных данных' },
+  { id: 'изменения-политики-cookies',             label: 'Изменения политики cookies' },
+  { id: 'контакты-для-запросов',                  label: 'Контакты для запросов' },
+];
+---
+
+<LegalLayout
+  documentTitle={entry.data.title}
+  metaDescription={entry.data.metaDescription}
+  publishedAt={entry.data.publishedAt.toISOString().slice(0, 10)}
+  updatedAt={(entry.data.updatedAt ?? entry.data.publishedAt).toISOString().slice(0, 10)}
+  brief="Сайт termybrand.com использует cookies для аналитики, лидогенерации и улучшения пользовательского опыта. Этот документ объясняет, какие именно cookies устанавливаются и как настроить согласие."
+  toc={toc}
+  currentSlug="cookies"
+  schemaSpecialty="Cookie Policy"
+  ogImage="/assets/og/og-legal.jpg"
+>
+  <Content />
+</LegalLayout>
+
+<StickyWhatsApp />

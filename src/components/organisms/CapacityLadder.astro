@@ -1,0 +1,199 @@
+---
+/**
+ * CapacityLadder — organism.
+ * Selection-aid: ряд step'ов «От малого к большому» (объёмы / размеры) с опциональными ссылками.
+ *
+ * Used:
+ *   - /products/ (hub) — 6 шагов (от 0,5 л до 100 л)
+ *   - /products/termosumki-bolshie/ — 4 шага (30 / 50 / 75 / 100 л)
+ *   - /products/bablpak/ (опц., размерная сетка) — но здесь могут быть и просто строки
+ *
+ * Каждый step: dot + value + label + опц. href.
+ *
+ * Источник:
+ * - 04_visuals/08-catalog-hub.spec.md §«Capacity ladder (selection-aid)»
+ * - 04_visuals/13-catalog-termosumki-bolshie.spec.md §«Capacity-ladder»
+ * - components_atomic.md §Molecules (Capacity-ladder из brandbook)
+ * - brandbook .ladder
+ */
+
+export interface LadderStep {
+  /** Числовое значение / диапазон (е.г. «30 л», «100 шт»). */
+  value: string;
+  /** Подпись (е.г. «Малые партии», «Кейтеринг 200 км»). */
+  label: string;
+  /** Опц. ссылка → анкер / категория / PDP. */
+  href?: string;
+  /** Подсветить (selected). */
+  active?: boolean;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  /** Lead-абзац (опц.). */
+  lead?: string;
+  steps: ReadonlyArray<LadderStep>;
+  /** id для anchor. */
+  id?: string;
+}
+
+const { heading, eyebrow, lead, steps, id = 'capacity' } = Astro.props;
+---
+
+<section class="ldr" id={id} aria-labelledby={`${id}-h2`}>
+  <div class="container">
+    {eyebrow && <p class="ldr__eyebrow">{eyebrow}</p>}
+    <h2 id={`${id}-h2`} class="ldr__h2">{heading}</h2>
+    {lead && <p class="ldr__lead">{lead}</p>}
+
+    <ol class="ldr__list" aria-label="Лестница объёмов / размеров">
+      {steps.map((s, idx) => (
+        <li class={`ldr__step${s.active ? ' ldr__step--active' : ''}`}>
+          {s.href ? (
+            <a class="ldr__link" href={s.href} aria-label={`${s.value} — ${s.label}`}>
+              <span class="ldr__dot" aria-hidden="true">{idx + 1}</span>
+              <span class="ldr__value num">{s.value}</span>
+              <span class="ldr__label">{s.label}</span>
+            </a>
+          ) : (
+            <div class="ldr__inner">
+              <span class="ldr__dot" aria-hidden="true">{idx + 1}</span>
+              <span class="ldr__value num">{s.value}</span>
+              <span class="ldr__label">{s.label}</span>
+            </div>
+          )}
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .ldr {
+    padding-block: var(--spacing-7);
+    background: var(--color-bg-page);
+  }
+  .ldr__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .ldr__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-3);
+  }
+  .ldr__lead {
+    max-width: 56ch;
+    color: var(--color-text-secondary);
+    margin-block-end: var(--spacing-5);
+    line-height: var(--font-line-height-normal);
+  }
+
+  .ldr__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+  .ldr__step {
+    position: relative;
+  }
+
+  .ldr__link,
+  .ldr__inner {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas: 'dot value' 'dot label';
+    column-gap: var(--spacing-3);
+    row-gap: var(--spacing-1);
+    align-items: center;
+    padding: var(--spacing-4) var(--spacing-5);
+    background: var(--color-bg-surface-warm);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color var(--duration-fast) var(--easing-standard),
+      transform var(--duration-fast) var(--easing-standard),
+      box-shadow var(--duration-fast) var(--easing-standard);
+    min-height: 64px;
+  }
+
+  .ldr__link:hover {
+    border-color: var(--color-border-focus);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-base);
+  }
+  .ldr__link:focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  .ldr__step--active .ldr__link,
+  .ldr__step--active .ldr__inner {
+    border-color: var(--color-action-primary);
+    background: var(--color-bg-page);
+  }
+
+  .ldr__dot {
+    grid-area: dot;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-pill);
+    background: var(--color-action-primary);
+    color: var(--color-text-on-brand);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .ldr__value {
+    grid-area: value;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-snug);
+  }
+  .ldr__label {
+    grid-area: label;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-snug);
+  }
+
+  @media (min-width: 768px) {
+    .ldr__list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (min-width: 1024px) {
+    .ldr__list {
+      grid-template-columns: repeat(6, 1fr);
+    }
+    .ldr__link,
+    .ldr__inner {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto auto;
+      grid-template-areas: 'dot' 'value' 'label';
+      justify-items: center;
+      text-align: center;
+      gap: var(--spacing-2);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ldr__link:hover { transform: none; }
+  }
+</style>

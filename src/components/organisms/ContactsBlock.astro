@@ -1,0 +1,269 @@
+---
+/**
+ * ContactsBlock — organism.
+ * Контактная панель: phone / email / WhatsApp / Telegram / addresses + map placeholder.
+ * Используется на /contacts/ как Block 3+4 (4 карточки + Где мы находимся).
+ *
+ * Map placeholder: статический image-block + ссылка «Открыть на Яндекс.Картах»
+ * (НЕ external iframe в Wave 1 — CSP/GDPR/perf). Реальный embed — phase 8.
+ *
+ * Composition: H2 + 4 channel-cards (1-col mobile / 2x2 tablet / 4x1 desktop)
+ *              + Map placeholder section.
+ *
+ * Состояния: default / link hover (underline + opacity 0.92) / focus-visible.
+ * Touch: phone/email/wa/tg ≥48 hit (через padding на anchor).
+ *
+ * Источник:
+ * - 04_visuals/19-contacts.spec.md §«Block: Контактный блок» + §«Block: Map-block»
+ * - 02_content/page_outlines/19-contacts.md §«H2: Выберите удобный канал» + §«H2: Где мы находимся»
+ */
+
+export interface ContactChannel {
+  /** Ключ канала — для иконок и data-event. */
+  type: 'phone' | 'email' | 'whatsapp' | 'telegram' | 'address';
+  /** Заголовок карточки. */
+  title: string;
+  /** Главное значение (телефон / email / адрес). */
+  value: string;
+  /** Доп. описание (часы работы / SLA / комментарий). */
+  description?: string;
+  /** href — tel: / mailto: / wa.me / t.me / yandex maps. */
+  href: string;
+  /** CTA-label (для button-like CTA). */
+  ctaLabel?: string;
+  /** Эмоджи-иконка (TODO replace SVG в phase 8). */
+  icon?: string;
+  /** Внешняя ссылка — добавит target="_blank" + rel. */
+  external?: boolean;
+}
+
+export interface MapPlaceholder {
+  /** Статическая картинка-плейсхолдер карты. */
+  imageSrc: string;
+  alt: string;
+  /** Подпись под картой. */
+  caption?: string;
+  /** «Открыть на Яндекс.Картах» — full URL. */
+  yandexUrl: string;
+  /** Lat/lng для подписи (опц., human-readable). */
+  coords?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  channels: ReadonlyArray<ContactChannel>;
+  /** Опц. map placeholder. */
+  map?: MapPlaceholder;
+  id?: string;
+}
+
+const { heading, eyebrow, channels, map, id = 'contacts-block' } = Astro.props;
+---
+
+<section class="cb" id={id} aria-labelledby={`${id}-h2`}>
+  <div class="container">
+    {eyebrow && <p class="cb__eyebrow">{eyebrow}</p>}
+    <h2 id={`${id}-h2`} class="cb__h2">{heading}</h2>
+
+    <ul class="cb__grid" role="list">
+      {channels.map((c) => (
+        <li>
+          <a
+            class={`cb__card cb__card--${c.type}`}
+            href={c.href}
+            {...(c.external ? { target: '_blank', rel: 'noopener' } : {})}
+          >
+            {c.icon && <span class="cb__icon" aria-hidden="true">{c.icon}</span>}
+            <div class="cb__body">
+              <span class="cb__title">{c.title}</span>
+              <span class="cb__value">{c.value}</span>
+              {c.description && <span class="cb__desc">{c.description}</span>}
+              {c.ctaLabel && <span class="cb__cta">{c.ctaLabel} →</span>}
+            </div>
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {map && (
+      <div class="cb__map" aria-label="Карта расположения офиса">
+        <a
+          class="cb__map-link"
+          href={map.yandexUrl}
+          target="_blank"
+          rel="noopener"
+          aria-label="Открыть в Яндекс.Картах (новая вкладка)"
+        >
+          <img
+            class="cb__map-img"
+            src={map.imageSrc}
+            alt={map.alt}
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="cb__map-overlay">
+            <span class="cb__map-cta">Открыть на Яндекс.Картах →</span>
+            {map.coords && <span class="cb__map-coords num">{map.coords}</span>}
+          </span>
+        </a>
+        {map.caption && <p class="cb__map-caption">{map.caption}</p>}
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .cb {
+    padding-block: var(--spacing-8);
+  }
+  .cb__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .cb__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-6);
+  }
+
+  .cb__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+  @media (min-width: 768px) {
+    .cb__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .cb__grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .cb__card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    padding: var(--spacing-5);
+    min-height: 48px;
+    background: var(--color-bg-page);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-base);
+    box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    transition:
+      border-color var(--duration-fast) var(--easing-standard),
+      box-shadow var(--duration-fast) var(--easing-standard),
+      transform var(--duration-fast) var(--easing-standard),
+      opacity var(--duration-fast) var(--easing-standard);
+  }
+  .cb__card:hover {
+    border-color: var(--color-border-focus);
+    box-shadow: var(--shadow-base);
+    transform: translateY(-2px);
+    text-decoration: none;
+  }
+
+  .cb__icon {
+    flex-shrink: 0;
+    font-size: var(--font-size-2xl);
+    line-height: 1;
+  }
+  .cb__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    min-width: 0;
+  }
+  .cb__title {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: var(--font-letter-spacing-widest);
+  }
+  .cb__value {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: 1.35;
+    word-break: break-word;
+  }
+  .cb__desc {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.45;
+  }
+  .cb__cta {
+    margin-block-start: var(--spacing-1);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-action-primary);
+  }
+
+  /* Map placeholder */
+  .cb__map {
+    margin-block-start: var(--spacing-7);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+  .cb__map-link {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius-base);
+    border: 1px solid var(--color-border-default);
+    background: var(--color-bg-surface);
+    aspect-ratio: 16 / 9;
+    text-decoration: none;
+    transition: border-color var(--duration-fast) var(--easing-standard);
+  }
+  .cb__map-link:hover {
+    border-color: var(--color-border-focus);
+    text-decoration: none;
+  }
+  .cb__map-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cb__map-overlay {
+    position: absolute;
+    inset-inline: var(--spacing-4);
+    inset-block-end: var(--spacing-4);
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--color-bg-page);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-base);
+    max-width: max-content;
+  }
+  .cb__map-cta {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+  }
+  .cb__map-coords {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+  }
+  .cb__map-caption {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.45;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cb__card { transition: none; }
+    .cb__card:hover { transform: none; }
+  }
+</style>

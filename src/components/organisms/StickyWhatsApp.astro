@@ -1,0 +1,62 @@
+---
+/**
+ * StickyWhatsApp — organism.
+ * Sticky bottom CTA на mobile only (≥48×48 hit, fixed-position).
+ * Скрывается на desktop (≥1024px) — там WhatsApp в Header.
+ *
+ * Источник:
+ * - 04_visuals/01-homepage.spec.md §«Sticky bottom: WhatsApp btn» mobile-only
+ * - tone_of_voice.md §Контактные CTA п.23 («Написать в WhatsApp»)
+ */
+
+import { ORG_PHONE } from '@lib/schema';
+
+const whatsappHref = `https://wa.me/${ORG_PHONE.replace(/[^\d]/g, '')}`;
+---
+
+<a
+  class="sticky-wa"
+  href={whatsappHref}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Написать в WhatsApp"
+>
+  <span class="sticky-wa__icon" aria-hidden="true">💬</span>
+  <span class="sticky-wa__label">WhatsApp</span>
+</a>
+
+<style>
+  .sticky-wa {
+    position: fixed;
+    inset-inline-end: var(--spacing-4);
+    inset-block-end: var(--spacing-4);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    height: 56px;
+    padding: 0 var(--spacing-5);
+    background: var(--color-utility-ecology-deep);
+    color: var(--color-text-on-dark);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-base);
+    text-decoration: none;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    z-index: var(--z-elevated);
+    transition: transform var(--duration-fast) var(--easing-standard), box-shadow var(--duration-fast) var(--easing-standard);
+  }
+  .sticky-wa:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+  .sticky-wa__icon { font-size: 1.2em; }
+
+  /* Desktop — скрыть, WhatsApp есть в Header. */
+  @media (min-width: 1024px) {
+    .sticky-wa { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sticky-wa:hover { transform: none; }
+  }
+</style>

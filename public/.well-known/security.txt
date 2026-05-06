@@ -1,0 +1,8 @@
+# Vulnerability disclosure policy для termy.ru
+# RFC 9116 — https://www.rfc-editor.org/rfc/rfc9116
+
+Contact: mailto:security@termy.ru
+Expires: 2027-05-02T23:59:59.000Z
+Preferred-Languages: ru, en
+Canonical: https://termy.ru/.well-known/security.txt
+Policy: https://termy.ru/legal/privacy/

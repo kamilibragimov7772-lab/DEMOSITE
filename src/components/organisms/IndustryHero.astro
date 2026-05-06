@@ -1,0 +1,177 @@
+---
+/**
+ * IndustryHero — organism.
+ * Hero для industry-pages (`/solutions/<slug>/`).
+ * Composition: Eyebrow (segment) + H1 + Lead + CTA-row (Primary + Secondary) + 4 фактоида (stats).
+ *
+ * Отличия от HeroLanding:
+ *   - Без stagger-анимации (не главная — короткий 5-секундный TL;DR per brief).
+ *   - Eyebrow содержит сегмент (B1-B5).
+ *   - Поддерживает опциональный mascot-icon emoji-fallback (визуал — TODO дизайнер).
+ *
+ * Источник:
+ * - components_atomic.md §Organisms (Hero — industry) — line 78
+ * - 04_visuals/03-07-*.spec.md §Block: Hero
+ * - tone_of_voice.md §Hero CTA
+ */
+
+import Button from '@components/atoms/Button.astro';
+import Stat from '@components/molecules/Stat.astro';
+
+export interface HeroStat {
+  value: string;
+  label: string;
+}
+
+export interface Props {
+  /** Сегмент (B1-B5) или короткое отрасль-eyebrow. */
+  eyebrow: string;
+  /** H1, ≤120 симв. */
+  h1: string;
+  /** Lead — pain → solution. */
+  lead: string;
+  primaryCta: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  /** 4 фактоида (опционально — без них блок просто не рендерится). */
+  stats?: ReadonlyArray<HeroStat>;
+  /** Декоративный emoji-маскот (Курьер / Шеф-ресторан / Мясник / Онлайн-магазины / Пробирка). */
+  mascot?: string;
+}
+
+const { eyebrow, h1, lead, primaryCta, secondaryCta, stats, mascot } = Astro.props;
+---
+
+<section class="ihero" aria-labelledby="ihero-h1">
+  <div class="ihero__decor" aria-hidden="true"></div>
+  <div class="ihero__inner container">
+    <div class="ihero__text">
+      <p class="ihero__eyebrow">{eyebrow}</p>
+      <h1 id="ihero-h1" class="ihero__h1">{h1}</h1>
+      <p class="ihero__lead">{lead}</p>
+      <div class="ihero__cta">
+        <Button variant="primary" size="lg" href={primaryCta.href}>{primaryCta.label}</Button>
+        {secondaryCta && (
+          <Button variant="secondary" size="lg" href={secondaryCta.href}>{secondaryCta.label}</Button>
+        )}
+      </div>
+    </div>
+
+    {mascot && (
+      <div class="ihero__mascot" aria-hidden="true">
+        <span class="ihero__mascot-emoji">{mascot}</span>
+      </div>
+    )}
+
+    {stats && stats.length > 0 && (
+      <ul class="ihero__stats" role="list">
+        {stats.map((s) => (
+          <li>
+            <Stat value={s.value} label={s.label} size="base" variant="surface" />
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</section>
+
+<style>
+  .ihero {
+    position: relative;
+    overflow: clip;
+    padding-block: var(--spacing-6) var(--spacing-7);
+    background: var(--color-bg-page);
+    isolation: isolate;
+  }
+  .ihero__decor {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(ellipse 50% 40% at top right, var(--color-overlay-brand-tint-low), transparent 65%);
+  }
+  .ihero__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-5);
+    max-width: var(--container-max);
+  }
+  .ihero__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+  .ihero__eyebrow {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+  }
+  .ihero__h1 {
+    max-width: 22ch;
+    font-size: var(--font-size-h1-fluid);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tighter);
+  }
+  .ihero__lead {
+    max-width: 56ch;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: var(--font-line-height-normal);
+  }
+  .ihero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-3);
+  }
+
+  .ihero__mascot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-5);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-lg);
+    min-height: 160px;
+  }
+  .ihero__mascot-emoji {
+    font-size: 96px;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgb(0 0 0 / 0.08));
+  }
+
+  .ihero__stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (max-width: 767px) {
+    .ihero__cta { flex-direction: column; align-items: stretch; }
+    .ihero__cta :global(.btn) { width: 100%; }
+  }
+  @media (min-width: 768px) {
+    .ihero { padding-block: var(--spacing-8) var(--spacing-9); }
+    .ihero__inner {
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--spacing-7);
+      align-items: start;
+    }
+    .ihero__stats {
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(4, 1fr);
+      margin-block-start: var(--spacing-4);
+    }
+    .ihero__mascot {
+      min-height: 240px;
+    }
+    .ihero__mascot-emoji {
+      font-size: 144px;
+    }
+  }
+</style>

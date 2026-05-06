@@ -1,0 +1,222 @@
+---
+/**
+ * /branding/termoshoppery/ — брендирование термошопперов.
+ *
+ * Реализация по outline `02_content/page_outlines/27-branding-termoshoppery.md` (SKELETON).
+ * STRATEGY: outline + reuse organisms + BrandingMethodsTable.
+ *
+ * Schema.org: Service + BreadcrumbList + FAQPage.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import Button from '@components/atoms/Button.astro';
+import BrandingMethodsTable from '@components/organisms/BrandingMethodsTable.astro';
+import VariantsChips from '@components/organisms/VariantsChips.astro';
+import FaqAccordion from '@components/organisms/FaqAccordion.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { service, breadcrumbList, faqPage } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const breadcrumbs = [
+  { name: 'Главная',         url: siteUrl },
+  { name: 'Брендирование',   url: `${siteUrl}branding/` },
+  { name: 'Термошопперы',    url: `${siteUrl}branding/termoshoppery/` },
+];
+
+const methodsRows = [
+  {
+    name: 'Шелкография',
+    moq: '100 шт',
+    colors: 'до 4 цветов Pantone',
+    terms: '2–3 недели',
+    priceFactor: '₽ базовая',
+    bestFor: 'Малый тираж, чёткие плашки. Передняя сторона, ручки.',
+  },
+  {
+    name: 'Флексопечать',
+    moq: '5 000 шт',
+    colors: 'фотопечать, полноцвет',
+    terms: '3–4 недели',
+    priceFactor: '₽ оптимальная на тиражах',
+    bestFor: 'Большие партии для доставки и ритейл-акций. Фотомакеты.',
+  },
+  {
+    name: 'УФ-печать',
+    moq: '300 шт',
+    colors: 'полноцвет, высокое разрешение',
+    terms: '2–3 недели',
+    priceFactor: '₽₽ премиум-сегмент',
+    bestFor: 'Премиум-сегмент HoReCa и подарочные тиражи. Стойкость к истиранию.',
+  },
+];
+
+const sizeGroups = [
+  {
+    legend: 'Размеры (л)',
+    slug: 'sizes',
+    options: [
+      { label: '8 л',   href: '/products/termoshoppery/' },
+      { label: '10 л',  href: '/products/termoshoppery/' },
+      { label: '16 л',  href: '/products/termoshoppery/' },
+      { label: '30 л',  href: '/products/termoshoppery/' },
+      { label: '53 л',  href: '/products/termoshoppery/' },
+    ],
+  },
+];
+
+const faqs = [
+  {
+    question: 'Можно ли брендировать ручки термошоппера?',
+    answer: 'Да. На ручках обычно используется тампопечать (1–2 цвета) или мини-этикетки. Полноцветные логотипы — на основной фронтальной зоне.',
+  },
+  {
+    question: 'Какой минимальный тираж?',
+    answer: '100 шт для шелкографии, 5 000 шт для флексопечати, 300 шт для УФ-печати. Выбор метода зависит от тиража, цветности и бюджета.',
+  },
+  {
+    question: 'Стойкость логотипа на одноразовом термошоппере?',
+    answer: 'Шелкография и УФ-печать выдерживают 5–10 циклов использования (для одноразовых это с запасом). Флексопечать — 3–5 циклов. Для одноразового сценария — все методы избыточны по стойкости.',
+  },
+  {
+    question: 'Можно ли заказать смешанный тираж размеров?',
+    answer: 'Да, в одной партии — разные размеры с одним макетом. Каждый размер должен соответствовать своему МОЗ (например, 100 шт 30 л + 100 шт 53 л = 200 шт общая партия).',
+  },
+  {
+    question: 'Сколько циклов выдерживает фольгированный термошоппер?',
+    answer: 'Зависит от использования: для разовой доставки — 1 цикл (по сути одноразовый), для ритейл-акций с возвратом — 5–10 циклов с сохранением термоизоляции и брендирования.',
+  },
+];
+
+const schema = [
+  service({
+    name: 'Брендирование термошопперов',
+    description: 'Нанесение логотипа на одноразовые термошопперы 8 / 10 / 16 / 30 / 53 л: шелкография от 100 шт, флексопечать от 5 000 шт.',
+    audience: 'B1 доставка / B2 ритейл / HoReCa',
+    termsOfServiceUrl: `${siteUrl}legal/oferta/`,
+  }),
+  breadcrumbList(breadcrumbs),
+  faqPage(faqs),
+];
+---
+
+<BaseLayout
+  title="Брендирование термошопперов — TERMY"
+  description="Логотип на 5 размерах термошопперов от 100 шт. Шелкография, флексопечать. Pantone, 2–4 недели. Запросите расчёт."
+  ogType="website"
+  ogImage="/assets/og/og-branding-termoshoppery.jpg"
+  schema={schema}
+>
+  <div class="container">
+    <Breadcrumbs items={breadcrumbs} />
+  </div>
+
+  <section class="bs-hero" aria-labelledby="bs-h1">
+    <div class="container bs-hero__inner">
+      <p class="bs-hero__eyebrow">Брендирование › Термошопперы</p>
+      <h1 id="bs-h1" class="bs-hero__h1">Брендирование термошопперов с вашим логотипом</h1>
+      <p class="bs-hero__lead">
+        Ваш логотип на термошоппере 8 / 10 / 16 / 30 / 53 л от 100 шт.
+        Шелкография — от 100, флексопечать — от 5 000. 2–4 недели.
+      </p>
+      <div class="bs-hero__cta">
+        <Button variant="primary" size="lg" href="#form-branding-termoshoppery">Запросить макет на термошоппере →</Button>
+        <Button variant="secondary" size="lg" href="/products/termoshoppery/">Каталог термошопперов</Button>
+      </div>
+      <ul class="bs-hero__proof" role="list">
+        <li><strong class="num">100 шт</strong><span>МОЗ</span></li>
+        <li><strong class="num">5</strong><span>размеров</span></li>
+        <li><strong class="num">Pantone</strong><span>точность</span></li>
+        <li><strong class="num">2–4</strong><span>недели</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="bs-vars">
+    <div class="container">
+      <h2 class="bs-vars__h">Доступные размеры</h2>
+      <p class="bs-vars__lead">
+        Пять стандартных размеров — от 8 л (один заказ) до 53 л (загрузка курьера на сутки).
+        Зоны нанесения: front (основная), handles, по периметру.
+      </p>
+      <VariantsChips groups={sizeGroups} />
+    </div>
+  </section>
+
+  <BrandingMethodsTable
+    eyebrow="Методы"
+    heading="Сравнение методов нанесения на термошопперы"
+    lead="Шелкография — для малых тиражей. Флексопечать — для больших партий с фотомакетами. УФ-печать — для премиум-сегмента."
+    rows={methodsRows}
+    id="methods-termoshoppery"
+  />
+
+  <FaqAccordion
+    eyebrow="FAQ"
+    heading="Брендирование термошопперов — частые вопросы"
+    items={faqs}
+    id="faq-branding-termoshoppery"
+  />
+
+  <FormBlock
+    id="branding-termoshoppery"
+    variant="lead"
+    eyebrow="Получить расчёт"
+    heading="Расчёт брендирования термошопперов"
+    description="Укажите размер, тираж и метод. Если хотите смешанный тираж нескольких размеров — отметьте в комментарии, посчитаем."
+    submitLabel="Получить расчёт →"
+  />
+
+  <PreFooterCta
+    heading="Запустим вашу партию термошопперов с логотипом"
+    lead="Бесплатный макет за 1–2 рабочих дня. Производство — 2–4 недели."
+    primaryCta={{ label: 'Запросить макет →', href: '#form-branding-termoshoppery' }}
+    secondaryCta={{ label: 'Решения для доставки →', href: '/solutions/dostavka/' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>
+
+<style>
+  .bs-hero { padding-block: var(--spacing-6) var(--spacing-7); background: var(--color-bg-page); }
+  .bs-hero__inner { display: flex; flex-direction: column; gap: var(--spacing-4); max-width: 800px; }
+  .bs-hero__eyebrow {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .bs-hero__h1 {
+    margin: 0;
+    font-size: var(--font-size-h1-fluid);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tighter);
+  }
+  .bs-hero__lead { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-md); line-height: var(--font-line-height-normal); }
+  .bs-hero__cta { display: flex; flex-wrap: wrap; gap: var(--spacing-3); margin-block-start: var(--spacing-2); }
+  .bs-hero__proof {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+    margin: var(--spacing-3) 0 0;
+    padding: var(--spacing-4);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+    list-style: none;
+  }
+  .bs-hero__proof li { display: flex; flex-direction: column; gap: var(--spacing-1); }
+  .bs-hero__proof strong { color: var(--color-action-primary); font-size: var(--font-size-md); font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }
+  .bs-hero__proof span { color: var(--color-text-tertiary); font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: var(--font-letter-spacing-wide); }
+
+  .bs-vars { padding-block: var(--spacing-7); background: var(--color-bg-surface); }
+  .bs-vars__h { margin-block-end: var(--spacing-3); }
+  .bs-vars__lead { max-width: 56ch; color: var(--color-text-secondary); margin-block-end: var(--spacing-5); line-height: var(--font-line-height-normal); }
+
+  @media (min-width: 768px) { .bs-hero__proof { grid-template-columns: repeat(4, 1fr); } }
+</style>

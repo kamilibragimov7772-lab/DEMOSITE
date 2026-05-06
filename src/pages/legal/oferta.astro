@@ -1,0 +1,49 @@
+---
+/**
+ * /legal/oferta/ — Публичная оферта.
+ *
+ * Реализация по spec'у `04_visuals/21-legal-oferta.spec.md` + outline `02_content/page_outlines/21-legal-oferta.md`.
+ * Template: Legal (2 из 3). Контент — из коллекции `legal` (`src/content/legal/oferta.md`).
+ *
+ * Schema.org: WebPage + BreadcrumbList — генерируется в LegalLayout.
+ */
+
+import { getEntry, render } from 'astro:content';
+import LegalLayout from '@layouts/LegalLayout.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+
+const entry = await getEntry('legal', 'oferta');
+if (!entry) throw new Error('Content collection entry "legal/oferta" не найдена.');
+const { Content } = await render(entry);
+
+const toc = [
+  { id: 'обшие-положения',                       label: 'Общие положения' },
+  { id: 'предмет-договора',                       label: 'Предмет договора' },
+  { id: 'цена-и-порядок-расчётов',                label: 'Цена и порядок расчётов' },
+  { id: 'сроки-и-порядок-поставки',               label: 'Сроки и порядок поставки' },
+  { id: 'качество-и-гарантии',                    label: 'Качество и гарантии' },
+  { id: 'брендирование',                          label: 'Брендирование' },
+  { id: 'возврат-и-обмен',                        label: 'Возврат и обмен' },
+  { id: 'ответственность-сторон',                 label: 'Ответственность сторон' },
+  { id: 'конфиденциальность',                     label: 'Конфиденциальность' },
+  { id: 'срок-действия-и-изменения-оферты',       label: 'Срок действия и изменения оферты' },
+  { id: 'реквизиты-сторон',                       label: 'Реквизиты сторон' },
+  { id: 'контакты-для-договорной-работы',         label: 'Контакты для договорной работы' },
+];
+---
+
+<LegalLayout
+  documentTitle={entry.data.title}
+  metaDescription={entry.data.metaDescription}
+  publishedAt={entry.data.publishedAt.toISOString().slice(0, 10)}
+  updatedAt={(entry.data.updatedAt ?? entry.data.publishedAt).toISOString().slice(0, 10)}
+  brief="Условия заказа, оплаты и отгрузки термоупаковки от ООО «ТЕРМИ». Принятие оферты — оплата счёта или подписание спецификации."
+  toc={toc}
+  currentSlug="oferta"
+  schemaSpecialty="Terms of Service"
+  ogImage="/assets/og/og-legal.jpg"
+>
+  <Content />
+</LegalLayout>
+
+<StickyWhatsApp />

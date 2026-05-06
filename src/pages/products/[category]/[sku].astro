@@ -1,0 +1,1314 @@
+---
+/**
+ * /products/[category]/[sku]/ — динамический PDP, эталон брендбук v1.
+ * Источник дизайна: 06A_PDP_Termopaket_42x50_Brandbook_v1.html (P.1–P.18).
+ * SKU-данные: src/data/catalog.ts.
+ *
+ * Генерирует 53 страницы (по одной на каждый SKU).
+ * Конструкция / удержание / capacity показываются ТОЛЬКО для термопакетов;
+ * для остальных категорий эти блоки пропущены.
+ */
+
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { product, breadcrumbList, faqPage } from '@lib/schema';
+import { SKUS, CATEGORIES, LABELS, type SkuRow } from '@data/catalog';
+
+export const getStaticPaths = (() => {
+  return SKUS.map((sku) => ({
+    params: { category: sku.category, sku: sku.slug },
+    props: { sku },
+  }));
+}) satisfies GetStaticPaths;
+
+const { sku } = Astro.props as { sku: SkuRow };
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+const pdpUrl = `${siteUrl}products/${sku.category}/${sku.slug}/`;
+const categoryLabel = CATEGORIES.find((c) => c.slug === sku.category)?.label ?? 'Каталог';
+
+/* Размеры в той же серии (для size-picker). */
+const sizeSiblings = SKUS.filter((s) => s.category === sku.category && s.series === sku.series);
+
+/* Категория-флаги для условного рендера. */
+const isTermopaket = sku.category === 'termopakety';
+
+const faqItems = [
+  { question: 'Можно ли повторно использовать пакет?',
+    answer: 'Материал рассчитан на многоразовое использование при мойке холодной / тёплой водой. Заявленные «30+ циклов» проверяются в durability-тесте — до подписи протокола конкретное число не публикуется.' },
+  { question: 'Какая максимальная нагрузка?',
+    answer: 'Заявленная — до 10 кг. Это значение помечено как gated до load-теста — мы не подтверждаем число без протокола. При тираже свыше 1000 шт возможна индивидуальная проверка на образце.' },
+  { question: 'Сколько часов держит температуру?',
+    answer: 'Зависит от условий: ambient, содержимое, вес, количество SHOCK®. См. блок «Удержание температуры» — ждём единый протокол теста. В КП мы указываем расчётный диапазон под ваш сценарий.' },
+  { question: 'Подходит ли для доставки пиццы?',
+    answer: 'Да — 42×50 вмещает 1 пиццу + напитки. Для горячей доставки рекомендуем дополнительно SHOCK 1000 мл (тепловая версия).' },
+  { question: 'Какой минимальный тираж с печатью?',
+    answer: 'Шелкография — от 500 шт (до 10 цветов, готовность от 7 дней). Флексопечать — от 10 000 шт (до 10 цветов, фотореалистичная).' },
+  { question: 'Есть ли в других цветах?',
+    answer: 'Все 11 цветов переключаются picker\'ом в карточке. Серебро (этот SKU) — со склада. Другие цвета — со склада или под заказ (уточняется по наличию).' },
+  { question: 'Можно ли получить образец?',
+    answer: 'Да, бесплатно. Пришлём коробку с образцами. По МО от 5 коробок — доставка бесплатно.' },
+  { question: 'Подходит для контакта с едой?',
+    answer: 'Да. Внутренний слой ПВД — Food-contact, ТР ТС 005/2011 + СанПиН. Сканы документов — в блоке «Документы и compliance».' },
+];
+
+const schema = [
+  product({
+    name: sku.title,
+    sku: sku.artikul,
+    category: categoryLabel,
+    description: `${sku.title} (${sku.artikul}) — ${sku.size}, ${LABELS.color[sku.color]}. От ${sku.priceFrom} ₽, ${sku.mozLabel}.`,
+    color: LABELS.color[sku.color],
+    offers: {
+      url: pdpUrl,
+      priceCurrency: 'RUB',
+      price: String(sku.priceFrom),
+      availability: sku.inStock ? 'InStock' : 'PreOrder',
+    },
+  }),
+  breadcrumbList([
+    { name: 'Главная', url: siteUrl },
+    { name: 'Каталог', url: `${siteUrl}products/` },
+    { name: categoryLabel, url: `${siteUrl}products/${sku.category}/` },
+    { name: sku.title, url: pdpUrl },
+  ]),
+  faqPage(faqItems),
+];
+---
+
+<BaseLayout
+  title={`${sku.title} — TERMY`}
+  description={`${sku.title} (${sku.artikul}). ${categoryLabel}, ${sku.size}, ${LABELS.color[sku.color]}. От ${sku.priceFrom} ₽, ${sku.mozLabel}. Производство РФ.`}
+  ogType="website"
+  ogImage={`${siteUrl}assets/og/og-products-${sku.category}.jpg`}
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'Каталог', href: '/products/' },
+      { name: categoryLabel, href: `/products/${sku.category}/` },
+      { name: sku.title },
+    ]}
+  />
+
+  {/* P.3 Sticky action bar */}
+  <div class="pdp-sticky">
+    <div class="container pdp-sticky__row">
+      <span class="pdp-sticky__sku">
+        <strong>{sku.artikul}</strong>
+        <span class="pdp-sticky__muted">· {sku.title}</span>
+      </span>
+      <span class="pdp-sticky__price">
+        от <strong>{sku.priceFrom} ₽</strong> · {sku.mozLabel}
+      </span>
+      <a class="btn btn-primary btn-sm" href="#kp">Запросить КП</a>
+    </div>
+  </div>
+
+  {/* P.4 Hero — gallery + info */}
+  <section class="pdp-hero" aria-labelledby="pdp-h1">
+    <div class="container pdp-hero__inner">
+      {/* Gallery */}
+      <div class="pdp-gallery">
+        <div class="pdp-gallery__main">
+          <img src={sku.image ?? `/products/_catalog/${sku.slug}.webp`} alt={sku.title} />
+        </div>
+        <ul class="pdp-gallery__thumbs" role="list">
+          <li class="pdp-gallery__thumb is-active">Packshot · front</li>
+          <li class="pdp-gallery__thumb">Packshot · 3/4</li>
+          <li class="pdp-gallery__thumb">С наполнением</li>
+          <li class="pdp-gallery__thumb">С лого (флексо)</li>
+          <li class="pdp-gallery__thumb">Макро слоёв</li>
+          <li class="pdp-gallery__thumb">▶ Видео 15 с</li>
+        </ul>
+        <p class="pdp-gallery__note">⚠ Галерея — placeholder. Продакт-съёмка в графике (T-023).</p>
+      </div>
+
+      {/* Info column */}
+      <div class="pdp-info">
+        <span class="pdp-info__eyebrow">{categoryLabel} · {LABELS.series[sku.series]}</span>
+        <h1 id="pdp-h1" class="pdp-info__h1">{sku.title}</h1>
+        <div class="pdp-info__meta">
+          <span class="pdp-info__art">{sku.artikul}</span>
+          <span>·</span><span>{sku.size}</span>
+          <span>·</span><span>Производство РФ</span>
+        </div>
+
+        {/* USP bullets — универсальные + категорийные */}
+        <ul class="pdp-usp" role="list">
+          {sku.features.includes('food-contact') && (
+            <li><span class="pdp-usp__ci">✓</span><div>Food-contact · <strong>ТР ТС 005/2011</strong>. Сканы — в блоке «Документы».</div></li>
+          )}
+          {isTermopaket && sku.features.includes('three-layer') && (
+            <li><span class="pdp-usp__ci">✓</span><div>Трёхслойная конструкция (Мет → ВПЭ → ПВД). Подробно — в секции «Конструкция».</div></li>
+          )}
+          {sku.features.includes('waterproof') && (
+            <li><span class="pdp-usp__ci">✓</span><div>Водостойкий внутри и снаружи.</div></li>
+          )}
+          {sku.features.includes('reusable') && (
+            <li><span class="pdp-usp__ci">✓</span><div>Многоразовый · до 30 циклов.</div></li>
+          )}
+          {sku.features.includes('gost-50962') && (
+            <li><span class="pdp-usp__ci">✓</span><div>ГОСТ Р 50962-96 · действ. до 26.02.2028.</div></li>
+          )}
+          {isTermopaket && (
+            <li><span class="pdp-usp__ci">✓</span><div>Удержание температуры <strong>до 4 часов</strong> · протокол № 012/A-27/02/25</div></li>
+          )}
+        </ul>
+
+        {/* Picker: size siblings (если в серии 2+ размеров) + color (для термопакетов) */}
+        {(sizeSiblings.length > 1 || isTermopaket) && (
+          <div class="pdp-picker">
+            {sizeSiblings.length > 1 && (
+              <div class="pdp-picker__row">
+                <span class="pdp-picker__label">Размер</span>
+                <div class="pdp-picker__pills">
+                  {sizeSiblings.map((s) => (
+                    s.slug === sku.slug ? (
+                      <span class="pdp-pill is-active">{s.size}</span>
+                    ) : (
+                      <a class="pdp-pill" href={`/products/${s.category}/${s.slug}/`}>{s.size}</a>
+                    )
+                  ))}
+                </div>
+              </div>
+            )}
+            {isTermopaket && (
+              <div class="pdp-picker__row">
+                <span class="pdp-picker__label">Цвет</span>
+                <div class="pdp-picker__swatches">
+                  <button class="pdp-swatch is-active" aria-label={LABELS.color[sku.color]} style={`background:${LABELS.colorSwatch[sku.color]}`}></button>
+                  <button class="pdp-swatch" aria-label="Жёлтый" style="background:#F4C842"></button>
+                  <button class="pdp-swatch" aria-label="Крафт" style="background:#C19760"></button>
+                  <button class="pdp-swatch" aria-label="Красный" style="background:#D23A2F"></button>
+                  <button class="pdp-swatch" aria-label="Белый" style="background:#FFFFFF"></button>
+                  <button class="pdp-swatch" aria-label="Оранжевый" style="background:#EC7A29"></button>
+                  <button class="pdp-swatch" aria-label="Зелёный" style="background:#2F9E4A"></button>
+                  <button class="pdp-swatch" aria-label="Синий" style="background:#2B5DB0"></button>
+                  <button class="pdp-swatch" aria-label="Чёрный" style="background:#14181C"></button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Feature chips — динамически из sku.features */}
+        <div class="pdp-chips">
+          {sku.features.map((f) => (
+            <span class="pdp-chip">{LABELS.feature[f]}</span>
+          ))}
+          {sku.printMethods.includes('silkscreen') && <span class="pdp-chip">Шелкография от 500 шт</span>}
+          {sku.printMethods.includes('flexo') && <span class="pdp-chip">Флексо от 10 000 шт</span>}
+          {sku.printMethods.includes('sticker') && <span class="pdp-chip">Наклейка от 1 000 шт</span>}
+        </div>
+
+        {/* Price / MOQ */}
+        <div class="pdp-price">
+          <span class="pdp-price__from">от</span>
+          <span class="pdp-price__num">{sku.priceFrom} ₽</span>
+          <span class="pdp-price__moz">· флексо от 10 000 шт · {sku.mozLabel}</span>
+          <a class="pdp-price__link" href="#kp">Все тиражи в КП →</a>
+        </div>
+
+        {/* CTA cluster */}
+        <div class="pdp-cta">
+          <a class="btn btn-primary" href="#kp">Запросить КП</a>
+          <a class="btn btn-secondary" href="#kp">Образец</a>
+          <a class="btn btn-secondary" href="/products/">В сравнение</a>
+        </div>
+
+        {/* Quick docs */}
+        <div class="pdp-docs">
+          <a href="/assets/docs/catalog.pdf"><span class="pdp-docs__clip">📎</span> Каталог</a>
+          {sku.features.includes('tu-22-22-11') && (
+            <a href="/assets/docs/tu.pdf"><span class="pdp-docs__clip">📎</span> ТУ 22.22.11-001</a>
+          )}
+          {sku.features.includes('gost-50962') && (
+            <a href="/assets/docs/gost.pdf"><span class="pdp-docs__clip">📎</span> ГОСТ Р 50962-96</a>
+          )}
+          {sku.features.includes('food-contact') && (
+            <a href="/assets/docs/migration-cert.pdf"><span class="pdp-docs__clip">📎</span> Сертификат ТР ТС 005/2011</a>
+          )}
+          {isTermopaket && (
+            <a href="/assets/docs/protocol.pdf"><span class="pdp-docs__clip">📎</span> Протокол № 012/A-27/02/25</a>
+          )}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* P.5 Essence tiles */}
+  <section class="pdp-section">
+    <div class="container">
+      <h2 class="pdp-h2">Ключевое по SKU</h2>
+      <div class="essence-grid">
+        <div class="etile"><div class="etile__ico">📜</div><h3>ТР ТС 005/2011</h3><p>Food-contact сертификация. Скан с номером — в разделе «Документы».</p></div>
+        <div class="etile"><div class="etile__ico">🎨</div><h3>11 цветов + кастом</h3><p>Шелкография от 500 шт, флексопечать от 10 000 шт. AI-шаблон под SKU за 1 рабочий день.</p></div>
+        <div class="etile"><div class="etile__ico">🏭</div><h3>Собственное производство</h3><p>Цех в РФ, 3 стадии контроля качества. Аудит — по согласованию.</p></div>
+        <div class="etile"><div class="etile__ico">📦</div><h3>{sku.mozLabel}</h3><p>Стандартный короб. Полная упаковочная единица — в спецификации.</p></div>
+        <div class="etile"><div class="etile__ico">🚚</div><h3>Отгрузка по РФ и СНГ</h3><p>Вашей ТК. По МО от 5 коробок — бесплатно.</p></div>
+        <div class="etile"><div class="etile__ico">♻</div><h3>Перерабатываемость</h3><p>Технически перерабатываемые материалы при наличии инфраструктуры.</p></div>
+      </div>
+    </div>
+  </section>
+
+  {/* P.6 Specs flat table */}
+  <section class="pdp-section">
+    <div class="container">
+      <div class="pdp-section__head">
+        <h2 class="pdp-h2">Технические характеристики</h2>
+        <span class="pdp-eyebrow">Плоская таблица · без accordion</span>
+      </div>
+      <table class="specs-table">
+        <tbody>
+          <tr><td>Артикул</td><td>{sku.artikul}</td></tr>
+          <tr><td>Категория</td><td>{categoryLabel}</td></tr>
+          <tr><td>Серия / линейка</td><td>{LABELS.series[sku.series]}</td></tr>
+          <tr><td>Размер</td><td>{sku.size}{sku.size.includes('×') && !sku.size.includes('×', sku.size.indexOf('×') + 1) ? ' см' : ''}</td></tr>
+          {sku.volumeL !== null && (
+            <tr><td>Объём</td><td>{sku.volumeL} л</td></tr>
+          )}
+          <tr><td>Цвет</td><td>{LABELS.color[sku.color]}</td></tr>
+          {sku.tempMode !== 'na' && (
+            <tr><td>Температурный режим</td><td>{LABELS.tempMode[sku.tempMode]}</td></tr>
+          )}
+          {isTermopaket && <>
+            <tr><td>Материал (слои)</td><td>Мет внешний / ВПЭ средний / ПВД или Мет внутренний</td></tr>
+            <tr><td>Толщина внешний (Мет)</td><td>85 мкм</td></tr>
+            <tr><td>Толщина средний (ВПЭ)</td><td>1000 мкм</td></tr>
+            <tr><td>Толщина внутренний</td><td>45 мкм (ПВД) или 85 мкм (Мет)</td></tr>
+            <tr><td>Макс. нагрузка</td><td>до 15 кг</td></tr>
+            <tr><td>Удержание температуры</td><td>до 4 часов (Мет/ВПЭ/ПВД), до 7 ч (Мет/ВПЭ/Мет)</td></tr>
+            <tr><td>Тип ручки</td><td>{sku.series === 'light' ? 'Белая квадратная ручка' : 'Чёрная анатомическая ручка-защёлка'}</td></tr>
+          </>}
+          {sku.category === 'akkumulyatory-holoda' && <>
+            <tr><td>Тип корпуса</td><td>Твёрдый пищевой пластик</td></tr>
+            <tr><td>Наполнитель</td><td>{sku.color === 'purple' ? 'Гель (КМЦ)' : 'Водно-солевой раствор'}</td></tr>
+            <tr><td>Сертификат</td><td>ГОСТ Р 50962-96 (действ. до 26.02.2028)</td></tr>
+            <tr><td>Миграция ПВХ</td><td>0,001 мг/л — в 10× ниже нормы</td></tr>
+          </>}
+          {sku.category === 'bablpak' && <>
+            <tr><td>Материал</td><td>ВПП + металлизированная плёнка</td></tr>
+            <tr><td>Конструкция</td><td>Воздушно-пузырьковая плёнка с фольгой, двусторонний скотч</td></tr>
+          </>}
+          {sku.category === 'termoshoppery' && <>
+            <tr><td>Материал</td><td>БОПП / спанбонд / БОПП фольга</td></tr>
+            <tr><td>Толщина</td><td>280 мкм</td></tr>
+            <tr><td>Удержание температуры</td><td>до 2 часов</td></tr>
+          </>}
+          {sku.category === 'termosumki-bolshie' && <>
+            <tr><td>Материал</td><td>Гофрокартон Т24 + ВПП 2 см + ПВД 80 мкм</td></tr>
+            <tr><td>Удержание температуры</td><td>до 72 часов</td></tr>
+          </>}
+          {sku.features.includes('reusable') && (
+            <tr><td>Циклы использования</td><td>до 30</td></tr>
+          )}
+          {sku.features.includes('food-contact') && (
+            <tr><td>Food-contact</td><td>ТР ТС 005/2011 · СанПиН</td></tr>
+          )}
+          {sku.features.includes('tu-22-22-11') && (
+            <tr><td>Нормативный документ</td><td>ТУ 22.22.11-001-47645032-2022</td></tr>
+          )}
+          <tr><td>Страна производства</td><td>Россия (Подмосковье)</td></tr>
+          <tr><td>МОЗ без печати</td><td>{sku.mozLabel}</td></tr>
+          {(sku.printMethods.includes('silkscreen')) && (
+            <tr><td>МОЗ с шелкографией</td><td>от 500 шт</td></tr>
+          )}
+          {(sku.printMethods.includes('flexo')) && (
+            <tr><td>МОЗ с флексопечатью</td><td>от 10 000 шт</td></tr>
+          )}
+          {(sku.printMethods.includes('sticker')) && (
+            <tr><td>МОЗ с наклейкой</td><td>от 1 000 шт</td></tr>
+          )}
+          <tr><td>Цена «от»</td><td>{sku.priceFrom > 0 ? `${sku.priceFrom} ₽` : 'под запрос'}</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {/* P.7 Construction (3-layer flat-stack) — только для термопакетов */}
+  {isTermopaket && (
+  <section class="pdp-section">
+    <div class="container">
+      <div class="construction">
+        <div class="pdp-section__head">
+          <h2 class="pdp-h2">Трёхслойная конструкция</h2>
+          <span class="pdp-eyebrow">Flat-stack · без cutaway</span>
+        </div>
+        <p class="construction__caption">
+          Каждый слой выполняет свою задачу: внешний мет — защита и поверхность под печать; средний ВПЭ —
+          тепловой барьер; внутренний ПВД — отражение тепла + гигиена контакта с едой.
+        </p>
+        <div class="layer-stack">
+          <div class="layer">
+            <div class="layer__n">Слой 1 · внешний</div>
+            <h3>Мет</h3>
+            <div class="layer__viz">
+              <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Металлизированная плёнка — отражающая поверхность">
+                <defs>
+                  <linearGradient id="met-gr" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#EEF1F4"/>
+                    <stop offset="40%" stop-color="#9AA3AC"/>
+                    <stop offset="60%" stop-color="#CDD5DD"/>
+                    <stop offset="100%" stop-color="#7E8790"/>
+                  </linearGradient>
+                </defs>
+                <rect width="200" height="100" fill="url(#met-gr)" rx="6"/>
+                <line x1="0" y1="22" x2="200" y2="22" stroke="rgba(255,255,255,0.45)" stroke-width="1"/>
+                <line x1="0" y1="48" x2="200" y2="48" stroke="rgba(255,255,255,0.3)" stroke-width="0.8"/>
+                <line x1="0" y1="74" x2="200" y2="74" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
+                <path d="M 30 35 Q 60 25 90 35 T 150 35" stroke="rgba(255,255,255,0.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <path d="M 50 65 Q 90 55 130 65 T 180 65" stroke="rgba(255,255,255,0.35)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="layer__spec">Металлизированная плёнка. Печатная поверхность. Устойчива к влаге и истиранию.</div>
+            <div class="layer__micron">85 мкм</div>
+          </div>
+
+          <div class="layer">
+            <div class="layer__n">Слой 2 · средний</div>
+            <h3>ВПЭ</h3>
+            <div class="layer__viz">
+              <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Вспененный полиэтилен — тепловой барьер с воздушной прослойкой">
+                <rect width="200" height="100" fill="#F4F1EA" rx="6"/>
+                <circle cx="32" cy="28" r="9" fill="#fff" stroke="#D4D0C8" stroke-width="1.2"/>
+                <circle cx="68" cy="46" r="11" fill="#fff" stroke="#D4D0C8" stroke-width="1.2"/>
+                <circle cx="105" cy="32" r="10" fill="#fff" stroke="#D4D0C8" stroke-width="1.2"/>
+                <circle cx="142" cy="48" r="12" fill="#fff" stroke="#D4D0C8" stroke-width="1.2"/>
+                <circle cx="172" cy="26" r="8" fill="#fff" stroke="#D4D0C8" stroke-width="1.2"/>
+                <circle cx="42" cy="68" r="7" fill="#fff" stroke="#D4D0C8" stroke-width="1.2"/>
+                <circle cx="78" cy="78" r="9" fill="#fff" stroke="#D4D0C8" stroke-width="1.2"/>
+                <circle cx="118" cy="72" r="10" fill="#fff" stroke="#D4D0C8" stroke-width="1.2"/>
+                <circle cx="158" cy="78" r="8" fill="#fff" stroke="#D4D0C8" stroke-width="1.2"/>
+                <circle cx="188" cy="65" r="6" fill="#fff" stroke="#D4D0C8" stroke-width="1.2"/>
+              </svg>
+            </div>
+            <div class="layer__spec">Вспененный полиэтилен. Воздушная прослойка — основной тепловой барьер.</div>
+            <div class="layer__micron">1000 мкм (1 см)</div>
+          </div>
+
+          <div class="layer">
+            <div class="layer__n">Слой 3 · внутренний</div>
+            <h3>ПВД</h3>
+            <div class="layer__viz">
+              <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Полиэтилен высокого давления — food-contact слой">
+                <defs>
+                  <linearGradient id="pvd-gr" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#FBFBFA"/>
+                    <stop offset="100%" stop-color="#E0E0DC"/>
+                  </linearGradient>
+                </defs>
+                <rect width="200" height="100" fill="url(#pvd-gr)" rx="6"/>
+                <circle cx="100" cy="48" r="22" fill="none" stroke="#28A096" stroke-width="2.5"/>
+                <path d="M 90 48 L 97 56 L 112 40" stroke="#28A096" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                <text x="100" y="84" font-size="9" fill="#5A6368" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" letter-spacing="1">FOOD-CONTACT</text>
+              </svg>
+            </div>
+            <div class="layer__spec">Полиэтилен высокого давления. Food-contact поверхность · ТР ТС 005/2011.</div>
+            <div class="layer__micron">45 мкм</div>
+          </div>
+
+          <div class="layer is-total">
+            <div class="layer__n">Итог</div>
+            <h3>3 слоя</h3>
+            <div class="layer__viz">
+              <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cross-section: тепло снаружи → 3 слоя → холод внутри">
+                <defs>
+                  <linearGradient id="total-met" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#CDD5DD"/>
+                    <stop offset="100%" stop-color="#9AA3AC"/>
+                  </linearGradient>
+                  <marker id="arrow-hot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="#EB5A3C"/>
+                  </marker>
+                  <marker id="arrow-cold" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+                    <path d="M 0 0 L 10 5 L 0 10 Z" fill="#6491B4"/>
+                  </marker>
+                </defs>
+                <text x="100" y="9" font-size="7" fill="#EB5A3C" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600">тепло снаружи</text>
+                <line x1="40" y1="13" x2="40" y2="20" stroke="#EB5A3C" stroke-width="1.5" marker-end="url(#arrow-hot)"/>
+                <line x1="100" y1="13" x2="100" y2="20" stroke="#EB5A3C" stroke-width="1.5" marker-end="url(#arrow-hot)"/>
+                <line x1="160" y1="13" x2="160" y2="20" stroke="#EB5A3C" stroke-width="1.5" marker-end="url(#arrow-hot)"/>
+
+                <rect x="14" y="22" width="172" height="6" fill="url(#total-met)" rx="1"/>
+                <text x="195" y="27" font-size="6" fill="#5A6368" text-anchor="end" font-family="Inter, sans-serif">Мет 85 мкм</text>
+
+                <rect x="14" y="29" width="172" height="48" fill="#F4F1EA" rx="1"/>
+                <circle cx="36" cy="42" r="3" fill="#fff" stroke="#D4D0C8" stroke-width="0.6"/>
+                <circle cx="62" cy="55" r="3.5" fill="#fff" stroke="#D4D0C8" stroke-width="0.6"/>
+                <circle cx="92" cy="44" r="3" fill="#fff" stroke="#D4D0C8" stroke-width="0.6"/>
+                <circle cx="118" cy="58" r="3.5" fill="#fff" stroke="#D4D0C8" stroke-width="0.6"/>
+                <circle cx="148" cy="46" r="3" fill="#fff" stroke="#D4D0C8" stroke-width="0.6"/>
+                <circle cx="172" cy="60" r="3" fill="#fff" stroke="#D4D0C8" stroke-width="0.6"/>
+                <circle cx="48" cy="68" r="3" fill="#fff" stroke="#D4D0C8" stroke-width="0.6"/>
+                <circle cx="78" cy="70" r="2.5" fill="#fff" stroke="#D4D0C8" stroke-width="0.6"/>
+                <circle cx="106" cy="72" r="3" fill="#fff" stroke="#D4D0C8" stroke-width="0.6"/>
+                <circle cx="136" cy="68" r="3" fill="#fff" stroke="#D4D0C8" stroke-width="0.6"/>
+                <circle cx="162" cy="72" r="2.5" fill="#fff" stroke="#D4D0C8" stroke-width="0.6"/>
+                <text x="195" y="55" font-size="6" fill="#5A6368" text-anchor="end" font-family="Inter, sans-serif">ВПЭ 1000 мкм</text>
+
+                <rect x="14" y="78" width="172" height="3" fill="#E0E0DC" rx="1"/>
+                <text x="195" y="86" font-size="6" fill="#5A6368" text-anchor="end" font-family="Inter, sans-serif">ПВД 45 мкм</text>
+
+                <line x1="100" y1="84" x2="100" y2="93" stroke="#6491B4" stroke-width="1.5" marker-end="url(#arrow-cold)"/>
+                <text x="100" y="99" font-size="7" fill="#6491B4" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600">холод внутри</text>
+              </svg>
+            </div>
+            <div class="layer__spec">Совокупная конструкция термопакета.</div>
+            <div class="layer__micron">~1.13 мм</div>
+          </div>
+        </div>
+        <div class="construction__note">
+          <strong>Важно:</strong> «толще → дольше держит температуру» — упрощение. Удержание зависит от
+          ambient, содержимого, веса, количества SHOCK®. Мы не приравниваем толщину к часам — см. блок
+          «Удержание температуры» ниже.
+        </div>
+      </div>
+    </div>
+  </section>
+  )}
+
+  {/* P.9 Thermal performance — только для термопакетов */}
+  {isTermopaket && (
+  <section class="pdp-section">
+    <div class="container">
+      <div class="thermal">
+        <span class="thermal__verified">✓ Протокол № 012/A-27/02/25</span>
+        <h2 class="pdp-h2">Удержание температуры</h2>
+        <p class="thermal__intro">
+          Замер при ambient +25°C и стартовом +4°C внутри. Содержимое 5 кг, в комплекте 2× SHOCK 450 Cool.
+          Зона <strong>+2…+8°C сохраняется до 4 часов</strong> — этого хватает на стандартный курьерский маршрут.
+        </p>
+
+        <figure class="thermal__chart">
+          <svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Кривая удержания температуры внутри пакета: от +4°C до +8°C за 4 часа, с выходом за зону к 5 часу">
+            {/* Safe zone band +2…+8°C — y от 186.67 (8°C) до 226.67 (2°C). */}
+            <rect x="60" y="186.67" width="510" height="40" fill="#d1fae5" opacity="0.55" />
+            <text x="68" y="222" font-size="10" fill="#065f46" font-family="Inter, sans-serif" font-weight="600">безопасная зона +2…+8°C</text>
+
+            {/* Y-axis grid + labels */}
+            <line x1="60" y1="40" x2="60" y2="240" stroke="#CDD1CC" stroke-width="1"/>
+            <line x1="60" y1="240" x2="570" y2="240" stroke="#CDD1CC" stroke-width="1"/>
+
+            {[0, 5, 10, 15, 20, 25, 30].map((t, i) => {
+              const y = 240 - (t / 30) * 200;
+              return (
+                <>
+                  <line x1="56" y1={y} x2="60" y2={y} stroke="#8C949B" stroke-width="0.8"/>
+                  <text x="50" y={y + 3} font-size="10" fill="#5A6368" text-anchor="end" font-family="Inter, sans-serif">{t}°</text>
+                </>
+              );
+            })}
+
+            {/* X-axis labels */}
+            {[0, 1, 2, 3, 4, 5].map((h) => {
+              const x = 60 + (h / 5) * 510;
+              return (
+                <>
+                  <line x1={x} y1="240" x2={x} y2="244" stroke="#8C949B" stroke-width="0.8"/>
+                  <text x={x} y="258" font-size="10" fill="#5A6368" text-anchor="middle" font-family="Inter, sans-serif">{h} ч</text>
+                </>
+              );
+            })}
+
+            {/* Ambient line +25°C dashed */}
+            <line x1="60" y1="73.3" x2="570" y2="73.3" stroke="#EB5A3C" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.7"/>
+            <text x="568" y="68" font-size="10" fill="#EB5A3C" text-anchor="end" font-family="Inter, sans-serif" font-weight="600">ambient +25°C</text>
+
+            {/* Hold-time curve: content temp 4 → 5 → 6 → 7 → 8 → 12 °C across 0..5h.
+                Точки опорные: 0h=213.33 +4°C, 1h=206.67 +5°C, 2h=200 +6°C, 3h=193.33 +7°C,
+                4h=186.67 +8°C (точка), 5h=160 +12°C. */}
+            <path
+              class="thermal__curve"
+              d="M 60 213.33 C 110 212 140 210 162 206.67 C 220 204 235 202 264 200 C 320 197 340 195 366 193.33 C 425 191 440 188 468 186.67 C 510 178 540 170 570 160"
+              fill="none"
+              stroke="#7D46AF"
+              stroke-width="3"
+              stroke-linecap="round"
+            />
+
+            {/* Dot at 4h mark = +8°C — точка выхода из безопасной зоны. */}
+            <g class="thermal__dot" transform="translate(468 186.67)">
+              <circle r="9" fill="#7D46AF" opacity="0.2" class="thermal__dot-halo"/>
+              <circle r="5" fill="#7D46AF"/>
+              <line x1="0" y1="-9" x2="0" y2="-26" stroke="#7D46AF" stroke-width="1" stroke-dasharray="2 2"/>
+              <rect x="-44" y="-46" width="88" height="20" rx="4" fill="#fff" stroke="#7D46AF" stroke-width="1"/>
+              <text y="-32" font-size="11" font-weight="700" fill="#7D46AF" text-anchor="middle" font-family="Inter, sans-serif">4 ч · +8°C</text>
+            </g>
+
+            {/* Legend axis label */}
+            <text x="20" y="135" font-size="10" fill="#5A6368" text-anchor="middle" transform="rotate(-90 20 135)" font-family="Inter, sans-serif">температура внутри, °C</text>
+          </svg>
+        </figure>
+
+        <div class="cond-grid">
+          <div class="cond"><span>Ambient</span><strong>+25°C</strong></div>
+          <div class="cond"><span>Содержимое</span><strong>+4°C старт</strong></div>
+          <div class="cond"><span>Вес</span><strong>5 кг</strong></div>
+          <div class="cond"><span>Хладик</span><strong>2× SHOCK 450 Cool</strong></div>
+          <div class="cond"><span>Дата</span><strong>27.02.2025</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  )}
+
+  {/* P.10 Capacity explainer — только для термопакета 42×50 (с конкретной укладкой) */}
+  {isTermopaket && sku.size === '42×50' && (
+  <section class="pdp-section">
+    <div class="container">
+      <div class="pdp-section__head">
+        <h2 class="pdp-h2">Что помещается в {sku.size} см</h2>
+        <span class="pdp-eyebrow">Примерно · при стандартной укладке</span>
+      </div>
+      <div class="capacity-row">
+        <div class="cap-tile">
+          <div class="cap-tile__ico">🍱</div>
+          <div class="cap-tile__num">~6</div>
+          <div class="cap-tile__obj">контейнеров на обед</div>
+        </div>
+        <div class="cap-tile">
+          <div class="cap-tile__ico">🍕</div>
+          <div class="cap-tile__num">~1</div>
+          <div class="cap-tile__obj">пицца + 2 напитка</div>
+        </div>
+        <div class="cap-tile">
+          <div class="cap-tile__ico">🥛</div>
+          <div class="cap-tile__num">~2</div>
+          <div class="cap-tile__obj">пачки молока 1 л</div>
+        </div>
+      </div>
+      <div class="notice">
+        <span>ℹ</span>
+        <div>Ёмкость указана <strong>приблизительно</strong> — зависит от формы конкретных контейнеров.
+          Пришлём бесплатный образец — проверите укладку под свой ассортимент.</div>
+      </div>
+    </div>
+  </section>
+  )}
+
+  {/* P.11 Customization */}
+  <section class="pdp-section">
+    <div class="container">
+      <div class="pdp-section__head">
+        <h2 class="pdp-h2">Нанесение логотипа</h2>
+        <a class="pdp-link" href={`/branding/${isTermopaket ? 'termopakety' : sku.category === 'akkumulyatory-holoda' ? 'akkumulyatory-holoda' : sku.category === 'termoshoppery' ? 'termoshoppery' : ''}/`}>Подробнее →</a>
+      </div>
+      <div class="custom-grid">
+        <div>
+          <h3 class="pdp-h3">Методы печати для {sku.size}</h3>
+          <div class="methods-list">
+            {sku.printMethods.includes('silkscreen') && (
+              <div class="method-row">
+                <div><h4>Шелкография</h4><div class="method-meta">МОЗ 500 шт · до 10 цветов · готовность от 7 дней</div></div>
+                <span class="method-price">в КП</span>
+              </div>
+            )}
+            {sku.printMethods.includes('flexo') && (
+              <div class="method-row">
+                <div><h4>Флексопечать</h4><div class="method-meta">МОЗ 10 000 шт · до 10 цветов · фотореалистичная</div></div>
+                <span class="method-price">{sku.priceFrom > 0 ? `от ${sku.priceFrom} ₽` : 'в КП'}</span>
+              </div>
+            )}
+            {sku.printMethods.includes('sticker') && (
+              <div class="method-row">
+                <div><h4>Наклейка / этикетка</h4><div class="method-meta">МОЗ 1 000 шт · CMYK + Pantone · от 3 недель</div></div>
+                <span class="method-price">в КП</span>
+              </div>
+            )}
+            {sku.printMethods.includes('tampo') && (
+              <div class="method-row">
+                <div><h4>Тампопечать</h4><div class="method-meta">МОЗ 1 000 шт · 1-2 цвета</div></div>
+                <span class="method-price">в КП</span>
+              </div>
+            )}
+          </div>
+        </div>
+        <div class="tpl-card">
+          <span class="tpl-card__clip">📎</span>
+          <div>
+            <h4>AI / PDF шаблон для макетчика</h4>
+            <p>Готовим под TP-42×50 за 1 рабочий день. Lock-layers, RGB + Pantone, зоны печати. ZIP ≤ 4 МБ.</p>
+            <a class="btn btn-primary btn-sm" href="#kp">Запросить шаблон</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* P.12 Proof + certifications */}
+  <section class="pdp-section">
+    <div class="container">
+      <div class="pdp-section__head">
+        <h2 class="pdp-h2">Документы и compliance</h2>
+        <a class="pdp-link" href="/about/documents/">Все документы →</a>
+      </div>
+      <div class="cert-row">
+        <div class="cert">
+          <div class="cert__stamp">📜</div>
+          <span class="cert__label">Сертификат</span>
+          <h3>ТР ТС 005/2011</h3>
+          <a class="cert__dl" href="/assets/docs/migration-cert.pdf">↓ Скачать PDF</a>
+        </div>
+        <div class="cert">
+          <div class="cert__stamp">⚙</div>
+          <span class="cert__label">Технология</span>
+          <h3>ТУ 22.22.11-001</h3>
+          <a class="cert__dl" href="/assets/docs/tu.pdf">↓ Скачать PDF</a>
+        </div>
+        <div class="cert">
+          <div class="cert__stamp">🩺</div>
+          <span class="cert__label">Санитария</span>
+          <h3>СанПиН</h3>
+          <a class="cert__dl" href="/assets/docs/sanpin.pdf">↓ Скачать PDF</a>
+        </div>
+        <div class="cert">
+          <div class="cert__stamp">🧪</div>
+          <span class="cert__label">Сырьё</span>
+          <h3>Сертификат БОПП</h3>
+          <a class="cert__dl" href="/assets/docs/bopp.pdf">↓ Скачать PDF</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* P.13 Industry use-cases — 5 отраслей сайта (см. /solutions/) */}
+  <section class="pdp-section">
+    <div class="container">
+      <div class="pdp-section__head">
+        <h2 class="pdp-h2">Для кого этот размер</h2>
+        <a class="pdp-link" href="/solutions/">Все отрасли →</a>
+      </div>
+      <div class="segments">
+        <a class="seg is-recommended" href="/solutions/dostavka/">
+          <span class="seg__num">Рекомендуем · B1</span>
+          <h3>Доставка еды</h3>
+          <p>Курьерская доставка, HoReCa, e-grocery, dark kitchen. Маршрут 2–4 ч + 2× SHOCK 450 Cool.</p>
+        </a>
+        <a class="seg" href="/solutions/retail/">
+          <span class="seg__num">B2</span>
+          <h3>Крупный ритейл</h3>
+          <p>СТМ-партии, тендеры, ТУ + протоколы испытаний. Флексопечать от 10 000 шт.</p>
+        </a>
+        <a class="seg" href="/solutions/distributory/">
+          <span class="seg__num">B3</span>
+          <h3>Дистрибьюторы</h3>
+          <p>Регулярные отгрузки палетами, гибкий график выпуска под сезонные пики.</p>
+        </a>
+        <a class="seg" href="/solutions/proizvoditeli/">
+          <span class="seg__num">B4</span>
+          <h3>Производители скоропорта</h3>
+          <p>Скорее 60×55 / PRO + SHOCK Freeze для длинных маршрутов и заморозки.</p>
+        </a>
+        <a class="seg" href="/solutions/farma/">
+          <span class="seg__num">B5</span>
+          <h3>Фарма-смежные</h3>
+          <p>Бьюти / БАД / диагностика. Скорее 32×35 + 3× SHOCK 1000 для холодовой цепи 48 ч.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {/* P.14 FAQ */}
+  <section class="pdp-section">
+    <div class="container">
+      <h2 class="pdp-h2" id="faq">Частые вопросы по 42×50</h2>
+      <div class="faq">
+        {faqItems.map((item, i) => (
+          <details class="faq__item">
+            <summary>
+              <span class="faq__num">{String(i + 1).padStart(2, '0')}</span>
+              <span class="faq__q">{item.question}</span>
+              <span class="faq__chevron" aria-hidden="true">▾</span>
+            </summary>
+            <p class="faq__a">{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* P.15 Downloadable assets */}
+  <section class="pdp-section">
+    <div class="container">
+      <h2 class="pdp-h2">Документы для скачивания</h2>
+      <div class="downloads">
+        <div class="doc"><span class="doc__clip">📎</span><h4>Spec-sheet</h4><span class="doc__meta">PDF · 240 КБ</span><a class="btn btn-ghost btn-sm" href="/assets/docs/spec-tp-42x50.pdf">Скачать</a></div>
+        <div class="doc"><span class="doc__clip">📎</span><h4>Каталог</h4><span class="doc__meta">PDF · 4,2 МБ</span><a class="btn btn-ghost btn-sm" href="/assets/docs/catalog.pdf">Скачать</a></div>
+        <div class="doc is-gated"><span class="doc__clip">📎</span><h4>AI / PDF шаблон</h4><span class="doc__meta">ZIP · в подготовке</span><a class="btn btn-ghost btn-sm" href="#kp">Запросить</a></div>
+        <div class="doc"><span class="doc__clip">📎</span><h4>Сертификаты</h4><span class="doc__meta">ZIP · ТР ТС + СанПиН</span><a class="btn btn-ghost btn-sm" href="/assets/docs/migration-cert.pdf">Скачать</a></div>
+        <div class="doc is-gated"><span class="doc__clip">📎</span><h4>Протокол термо-теста</h4><span class="doc__meta">PDF · после теста</span><a class="btn btn-ghost btn-sm" href="#kp">Уведомить</a></div>
+      </div>
+    </div>
+  </section>
+
+  {/* P.16 Related SKUs */}
+  <section class="pdp-section">
+    <div class="container">
+      <h2 class="pdp-h2">Часто собирают вместе</h2>
+      <div class="related">
+        {SKUS.filter((s) => s.slug !== sku.slug && (
+          s.category === sku.category ||
+          (isTermopaket && s.category === 'akkumulyatory-holoda') ||
+          (sku.category === 'akkumulyatory-holoda' && s.category === 'termopakety')
+        )).slice(0, 4).map((r) => (
+          <a class="rcard" href={`/products/${r.category}/${r.slug}/`}>
+            <div class="rcard__img">
+              <img src={r.image ?? `/products/_catalog/${r.slug}.webp`} alt={r.title} loading="lazy" />
+            </div>
+            <h3>{r.title}</h3>
+            <p class="rcard__meta">{r.size}{r.volumeL !== null ? ` · ${r.volumeL} л` : ''}</p>
+            <span class="rcard__price">{r.priceFrom > 0 ? `от ${r.priceFrom} ₽` : 'под запрос'}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  {/* P.17 Pre-footer CTA */}
+  <section class="prefooter" id="kp">
+    <div class="container">
+      <h2>Запросите КП по {sku.artikul}</h2>
+      <p>Опишите сценарий (доставка, температурный режим, тираж, желаемая печать) — пришлём расчёт под
+        ваш ассортимент, AI-шаблон под макет и коробку с образцами.</p>
+      <div class="prefooter__actions">
+        <a class="btn btn-inverse" href="https://wa.me/78001011525">Запросить КП в WhatsApp</a>
+        <a class="btn btn-secondary-on-dark" href="tel:+78001011525">+7 (800) 101-15-25</a>
+      </div>
+    </div>
+  </section>
+
+  <StickyWhatsApp />
+</BaseLayout>
+
+<style>
+  /* === Tokens (локальные на эту страницу — следуем брендбук v1) === */
+  .pdp-sticky,
+  .pdp-hero,
+  .pdp-section,
+  .prefooter {
+    --primary-start: #6428A0;
+    --primary-end: #9466BB;
+    --primary-mid: #7D46AF;
+    --shock-start: #A53728;
+    --shock-mid: #C84632;
+    --paper: #fff;
+    --paper-soft: #F6F6F4;
+    --paper-warm: #FBFAF7;
+    --ink: #14181C;
+    --ink-soft: #5A6368;
+    --ink-mute: #8C949B;
+    --border: #E4E6E3;
+    --border-strong: #CDD1CC;
+    --border-subtle: #EFEFEC;
+  }
+
+  /* P.3 Sticky bar */
+  .pdp-sticky {
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    background: var(--paper-soft);
+    border-block: 1px solid var(--border);
+    padding-block: var(--spacing-3);
+  }
+  .pdp-sticky__row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    flex-wrap: wrap;
+  }
+  .pdp-sticky__sku { font-size: var(--font-size-sm); }
+  .pdp-sticky__sku strong { font-weight: 700; }
+  .pdp-sticky__muted { color: var(--ink-soft); margin-inline-start: var(--spacing-2); }
+  .pdp-sticky__price { font-size: var(--font-size-sm); color: var(--ink-soft); margin-inline-start: auto; }
+  .pdp-sticky__price strong { color: var(--primary-mid); font-weight: 700; }
+
+  /* === Buttons === */
+  .btn {
+    display: inline-flex; align-items: center; gap: var(--spacing-2);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-weight: 600; font-size: 13px;
+    transition: transform .08s, box-shadow var(--duration-fast);
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: linear-gradient(135deg, var(--primary-start), var(--primary-end)); color: #fff; box-shadow: 0 6px 18px rgba(20,24,28,.08); }
+  .btn-secondary { background: var(--paper); color: var(--ink); border-color: var(--border-strong); }
+  .btn-ghost { color: var(--primary-mid); padding-inline: 0; background: transparent; }
+  .btn-inverse { background: #fff; color: var(--primary-mid); }
+  .btn-secondary-on-dark { background: rgba(255,255,255,.14); color: #fff; border-color: rgba(255,255,255,.3); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+
+  /* P.4 Hero === */
+  .pdp-hero { padding-block: var(--spacing-6); background: var(--paper); }
+  .pdp-hero__inner {
+    display: grid; grid-template-columns: 1fr; gap: var(--spacing-6);
+  }
+  @media (min-width: 1024px) {
+    .pdp-hero__inner { grid-template-columns: 1.1fr 1fr; gap: var(--spacing-7); align-items: start; }
+    .pdp-gallery { position: sticky; top: 80px; }
+  }
+
+  .pdp-gallery__main {
+    aspect-ratio: 1;
+    background: var(--paper-soft);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    padding: var(--spacing-5);
+  }
+  .pdp-gallery__main img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .pdp-gallery__thumbs {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--spacing-2);
+    margin: var(--spacing-3) 0 0; padding: 0; list-style: none;
+  }
+  .pdp-gallery__thumb {
+    aspect-ratio: 1;
+    background: var(--paper-soft);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    padding: var(--spacing-1);
+    font-size: 9px; color: var(--ink-mute);
+    text-align: center; line-height: 1.1;
+  }
+  .pdp-gallery__thumb.is-active { border-color: var(--primary-mid); border-width: 2px; }
+  .pdp-gallery__note { margin-block-start: var(--spacing-2); font-size: 11px; color: var(--ink-mute); }
+
+  .pdp-info__eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-soft);
+    display: block; margin-block-end: var(--spacing-2);
+  }
+  .pdp-info__h1 {
+    font-size: clamp(26px, 3vw, 36px); font-weight: 700;
+    letter-spacing: -.02em; line-height: 1.12;
+    margin: 0 0 var(--spacing-2);
+  }
+  .pdp-info__meta {
+    display: flex; gap: var(--spacing-3); align-items: center;
+    font-size: 12px; color: var(--ink-soft);
+    margin-block-end: var(--spacing-5);
+  }
+  .pdp-info__art { font-weight: 600; color: var(--ink); font-family: var(--font-family-monospace); }
+
+  .pdp-usp {
+    margin: 0 0 var(--spacing-5); padding: 0; list-style: none;
+  }
+  .pdp-usp li {
+    display: flex; gap: var(--spacing-3); align-items: flex-start;
+    padding: 6px 0; font-size: 14px;
+  }
+  .pdp-usp__ci {
+    flex-shrink: 0; width: 18px; height: 18px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #28A096, #32C8BE);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 10px; font-weight: 700;
+    margin-block-start: 2px;
+  }
+  .pdp-usp li.is-gated .pdp-usp__ci {
+    background: #fff; border: 1.5px dashed var(--shock-start); color: var(--shock-start);
+  }
+  .pdp-usp__gmini {
+    font-size: 10px; color: var(--shock-start); margin-inline-start: 6px;
+    font-weight: 500; letter-spacing: .04em; text-transform: uppercase;
+  }
+
+  /* Picker */
+  .pdp-picker {
+    padding: var(--spacing-4); background: var(--paper-soft);
+    border-radius: 12px; margin-block-end: var(--spacing-4);
+  }
+  .pdp-picker__row { display: flex; align-items: center; gap: var(--spacing-3); flex-wrap: wrap; margin-block-end: var(--spacing-3); }
+  .pdp-picker__row:last-child { margin-block-end: 0; }
+  .pdp-picker__label {
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-soft); font-weight: 600; width: 90px; flex-shrink: 0;
+  }
+  .pdp-picker__pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pdp-pill {
+    padding: 6px 12px; border-radius: 999px;
+    border: 1px solid var(--border-strong); background: #fff;
+    font-size: 12px; font-weight: 500;
+    color: var(--ink); text-decoration: none;
+  }
+  .pdp-pill.is-active { border-color: var(--primary-mid); color: var(--primary-mid); border-width: 2px; padding: 5px 11px; }
+  .pdp-picker__swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pdp-swatch {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid var(--border); cursor: pointer; padding: 0;
+  }
+  .pdp-swatch.is-active {
+    border-color: var(--primary-mid);
+    box-shadow: 0 0 0 2px var(--paper), 0 0 0 4px var(--primary-mid);
+  }
+
+  /* Feature chips */
+  .pdp-chips { display: flex; gap: var(--spacing-2); flex-wrap: wrap; margin-block-end: var(--spacing-4); }
+  .pdp-chip {
+    display: inline-flex; align-items: center; gap: var(--spacing-2);
+    padding: 6px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    font-size: 12px; font-weight: 500;
+    background: var(--paper); color: var(--ink); white-space: nowrap;
+  }
+  .pdp-chip.is-gated {
+    border-style: dashed; border-color: var(--shock-start);
+    color: var(--shock-start); background: #FDF3EF;
+  }
+
+  /* Price line */
+  .pdp-price {
+    display: flex; align-items: baseline; gap: var(--spacing-3);
+    padding-block: var(--spacing-4);
+    border-block: 1px solid var(--border);
+    margin-block-end: var(--spacing-4);
+    flex-wrap: wrap;
+  }
+  .pdp-price__from { font-size: 13px; color: var(--ink-soft); }
+  .pdp-price__num { font-size: 26px; font-weight: 700; color: var(--primary-mid); letter-spacing: -.02em; }
+  .pdp-price__moz { font-size: 12px; color: var(--ink-soft); }
+  .pdp-price__link { margin-inline-start: auto; font-size: 12px; color: var(--primary-mid); text-decoration: underline; }
+
+  .pdp-cta {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--spacing-3);
+    margin-block-end: var(--spacing-4);
+  }
+  .pdp-cta .btn { justify-content: center; }
+  .pdp-cta .btn-primary { padding: 14px; }
+
+  .pdp-docs {
+    display: flex; gap: var(--spacing-3); flex-wrap: wrap;
+    font-size: 12px;
+  }
+  .pdp-docs a {
+    display: inline-flex; align-items: center; gap: 6px;
+    color: var(--ink-soft); padding: 4px 0;
+  }
+  .pdp-docs a:hover { color: var(--primary-mid); }
+  .pdp-docs a.is-gated { color: var(--ink-mute); opacity: .8; }
+  .pdp-docs__clip { color: #EBBE4B; }
+
+  /* === Sections shared === */
+  .pdp-section { padding-block: var(--spacing-7); }
+  .pdp-section:nth-child(odd) { background: var(--paper-warm); }
+  .pdp-h2 {
+    font-size: clamp(22px, 2.2vw, 30px); font-weight: 700;
+    letter-spacing: -.015em; line-height: 1.18;
+    margin: 0 0 var(--spacing-5);
+  }
+  .pdp-h3 { font-size: 17px; font-weight: 600; margin: 0 0 var(--spacing-3); }
+  .pdp-section__head {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: var(--spacing-5); margin-block-end: var(--spacing-5); flex-wrap: wrap;
+  }
+  .pdp-eyebrow {
+    font-size: 11px; font-weight: 600; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--ink-soft);
+  }
+  .pdp-link { color: var(--primary-mid); font-size: 13px; font-weight: 600; text-decoration: none; }
+
+  /* P.5 Essence tiles */
+  .essence-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-3);
+  }
+  @media (min-width: 768px) { .essence-grid { grid-template-columns: repeat(3, 1fr); } }
+  .etile {
+    padding: var(--spacing-5); background: var(--paper-soft);
+    border-radius: 12px; display: flex; flex-direction: column; gap: var(--spacing-2);
+  }
+  .etile__ico {
+    width: 40px; height: 40px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-block-end: var(--spacing-2);
+  }
+  .etile h3 { font-size: 15px; font-weight: 600; margin: 0; }
+  .etile p { font-size: 12px; color: var(--ink-soft); line-height: 1.45; margin: 0; }
+
+  /* P.6 Specs table */
+  .specs-table {
+    width: 100%; border-collapse: collapse;
+    background: var(--paper); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .specs-table tr { border-bottom: 1px solid var(--border-subtle); }
+  .specs-table tr:last-child { border-bottom: none; }
+  .specs-table td { padding: 12px 20px; font-size: 13px; vertical-align: top; }
+  .specs-table td:first-child { color: var(--ink-soft); font-weight: 500; width: 40%; }
+  .specs-table td:last-child { font-weight: 600; color: var(--ink); }
+  .specs-table tr.is-gated td:last-child { color: var(--shock-start); }
+  .specs-table tr.is-gated td:last-child::after {
+    content: ' · требует протокола';
+    font-weight: 400; font-size: 10px; letter-spacing: .06em;
+    text-transform: uppercase; margin-inline-start: 6px; opacity: .8;
+  }
+
+  /* P.7 Construction */
+  .construction {
+    background: linear-gradient(135deg, var(--paper-soft), var(--paper-warm));
+    padding: var(--spacing-7) var(--spacing-6); border-radius: 20px;
+  }
+  .construction__caption { max-width: 640px; font-size: 13px; color: var(--ink-soft); margin: 0 0 var(--spacing-5); }
+  .layer-stack {
+    display: grid; grid-template-columns: 1fr; gap: var(--spacing-3);
+  }
+  @media (min-width: 768px) { .layer-stack { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .layer-stack { grid-template-columns: repeat(4, 1fr); } }
+  .layer {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 12px; padding: var(--spacing-5);
+    display: flex; flex-direction: column; gap: var(--spacing-2);
+  }
+  .layer.is-total {
+    border-color: var(--primary-mid); border-width: 2px;
+    background: linear-gradient(135deg, rgba(100,40,160,.04), rgba(148,102,187,.04));
+  }
+  .layer__n { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+  .layer h3 { font-size: 18px; font-weight: 700; margin: 0; }
+  .layer__viz {
+    aspect-ratio: 2/1; background: var(--paper-soft);
+    border-radius: 6px; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .layer__viz svg { width: 100%; height: 100%; display: block; }
+  .layer__spec { font-size: 12px; color: var(--ink-soft); line-height: 1.45; }
+  .layer__micron { font-size: 13px; font-weight: 600; color: var(--primary-mid); }
+  .construction__note {
+    margin-block-start: var(--spacing-5); padding: var(--spacing-4);
+    background: #FDF3EF; border-left: 3px solid var(--shock-start);
+    border-radius: 0 8px 8px 0; font-size: 13px; color: var(--ink); line-height: 1.5;
+  }
+
+  /* P.9 Thermal performance — verified */
+  .thermal {
+    padding: var(--spacing-6); background: var(--paper);
+    border: 1px solid var(--border); border-radius: 20px;
+    position: relative;
+  }
+  .thermal__verified {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #d1fae5; color: #065f46;
+    border-radius: 4px;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .thermal__intro { max-width: 760px; font-size: 14px; color: var(--ink); margin: 0 0 var(--spacing-5); line-height: 1.6; }
+  .thermal__intro strong { color: var(--primary-mid); }
+  .thermal__chart {
+    margin: 0 0 var(--spacing-5); padding: 0;
+    background: var(--paper-soft);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .thermal__chart svg { width: 100%; height: auto; display: block; }
+
+  /* Animated curve draw on viewport entry */
+  .thermal__curve {
+    stroke-dasharray: 700;
+    stroke-dashoffset: 700;
+    animation: draw-curve 2.4s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+  }
+  @keyframes draw-curve {
+    to { stroke-dashoffset: 0; }
+  }
+  /* Dot at 4h-mark — fade-in после прорисовки кривой, halo пульсирует через transform */
+  .thermal__dot {
+    opacity: 0;
+    animation: dot-fade-in 0.4s ease 2.6s forwards;
+  }
+  @keyframes dot-fade-in {
+    to { opacity: 1; }
+  }
+  .thermal__dot-halo {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: halo-pulse 2.4s ease-in-out 3s infinite;
+  }
+  @keyframes halo-pulse {
+    0%, 100% { transform: scale(1); opacity: 0.2; }
+    50%      { transform: scale(1.6); opacity: 0.05; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .thermal__curve { stroke-dashoffset: 0; animation: none; }
+    .thermal__dot { opacity: 1; animation: none; }
+    .thermal__dot-halo { animation: none; }
+  }
+
+  .cond-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: var(--spacing-3); }
+  .cond {
+    padding: var(--spacing-3); background: var(--paper-soft); border-radius: 8px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .cond span { font-size: 11px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: .08em; }
+  .cond strong { font-size: 13px; color: var(--ink); }
+
+  /* P.10 Capacity */
+  .capacity-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--spacing-3); margin-block-end: var(--spacing-4);
+  }
+  .cap-tile {
+    text-align: center; padding: var(--spacing-5);
+    background: var(--paper-soft); border-radius: 12px;
+    display: flex; flex-direction: column; gap: var(--spacing-2);
+  }
+  .cap-tile__ico { font-size: 36px; }
+  .cap-tile__num { font-size: 32px; font-weight: 700; color: var(--primary-mid); }
+  .cap-tile__obj { font-size: 13px; color: var(--ink-soft); }
+
+  .notice {
+    display: flex; gap: var(--spacing-3); align-items: flex-start;
+    padding: var(--spacing-3); background: var(--paper-warm);
+    border-left: 3px solid var(--primary-mid); border-radius: 0 8px 8px 0;
+    font-size: 13px; color: var(--ink-soft); line-height: 1.5;
+  }
+  .notice strong { color: var(--ink); }
+
+  /* P.11 Customization */
+  .custom-grid {
+    display: grid; grid-template-columns: 1fr; gap: var(--spacing-5);
+  }
+  @media (min-width: 1024px) { .custom-grid { grid-template-columns: 1fr 1fr; } }
+  .methods-list { display: flex; flex-direction: column; gap: var(--spacing-3); }
+  .method-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: var(--spacing-4); background: var(--paper-soft); border-radius: 8px;
+    gap: var(--spacing-3);
+  }
+  .method-row h4 { font-size: 14px; font-weight: 600; margin: 0; }
+  .method-meta { font-size: 12px; color: var(--ink-soft); margin-block-start: 4px; }
+  .method-price { color: var(--primary-mid); font-weight: 700; font-size: 14px; }
+  .tpl-card {
+    display: flex; gap: var(--spacing-3);
+    padding: var(--spacing-5);
+    background: linear-gradient(135deg, rgba(100,40,160,.04), rgba(148,102,187,.04));
+    border: 1px solid var(--border); border-radius: 12px;
+  }
+  .tpl-card__clip { font-size: 24px; color: #EBBE4B; }
+  .tpl-card h4 { margin: 0 0 var(--spacing-2); font-size: 15px; font-weight: 600; }
+  .tpl-card p { margin: 0 0 var(--spacing-3); font-size: 13px; color: var(--ink-soft); line-height: 1.45; }
+
+  /* P.12 Certs */
+  .cert-row {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--spacing-3);
+  }
+  .cert {
+    padding: var(--spacing-5); background: var(--paper);
+    border: 1px solid var(--border); border-radius: 12px;
+    display: flex; flex-direction: column; gap: var(--spacing-2);
+  }
+  .cert__stamp { font-size: 28px; }
+  .cert__label { font-size: 10px; color: var(--ink-soft); letter-spacing: .12em; text-transform: uppercase; font-weight: 600; }
+  .cert h3 { font-size: 14px; font-weight: 600; margin: 0; }
+  .cert__dl { font-size: 12px; color: var(--primary-mid); text-decoration: none; margin-block-start: auto; padding-block-start: var(--spacing-2); }
+
+  /* P.13 Segments */
+  .segments {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--spacing-3);
+  }
+  .seg {
+    padding: var(--spacing-4); background: var(--paper);
+    border: 1px solid var(--border); border-radius: 12px;
+    display: flex; flex-direction: column; gap: var(--spacing-2);
+    color: inherit; text-decoration: none;
+    transition: border-color var(--duration-fast), transform var(--duration-fast), box-shadow var(--duration-fast);
+  }
+  a.seg:hover { border-color: var(--primary-mid); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(20,24,28,.06); }
+  .seg.is-recommended { border-color: var(--primary-mid); border-width: 2px; }
+  .seg__num { font-size: 10px; color: var(--ink-soft); letter-spacing: .08em; text-transform: uppercase; font-weight: 600; }
+  .seg.is-recommended .seg__num { color: var(--primary-mid); }
+  .seg h3 { font-size: 14px; font-weight: 700; margin: 0; }
+  .seg p { font-size: 12px; color: var(--ink-soft); line-height: 1.45; margin: 0; }
+
+  /* P.14 FAQ */
+  .faq { display: flex; flex-direction: column; gap: var(--spacing-2); }
+  .faq__item {
+    background: var(--paper); border: 1px solid var(--border);
+    border-radius: 12px; padding: var(--spacing-4);
+  }
+  .faq__item summary {
+    display: flex; align-items: center; gap: var(--spacing-3);
+    cursor: pointer; list-style: none;
+  }
+  .faq__item summary::-webkit-details-marker { display: none; }
+  .faq__num {
+    font-size: 11px; color: var(--ink-mute); letter-spacing: .08em;
+    font-weight: 600; min-width: 24px;
+  }
+  .faq__q { font-size: 14px; font-weight: 600; flex: 1; }
+  .faq__chevron { color: var(--ink-mute); transition: transform var(--duration-fast); }
+  .faq__item[open] .faq__chevron { transform: rotate(180deg); }
+  .faq__a {
+    font-size: 13px; color: var(--ink-soft); line-height: 1.6;
+    margin: var(--spacing-3) 0 0; padding-block-start: var(--spacing-3);
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  /* P.15 Downloads */
+  .downloads {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--spacing-3);
+  }
+  .doc {
+    padding: var(--spacing-4); background: var(--paper);
+    border: 1px solid var(--border); border-radius: 12px;
+    display: flex; flex-direction: column; gap: var(--spacing-2);
+  }
+  .doc.is-gated { border-style: dashed; border-color: var(--shock-start); }
+  .doc__clip { font-size: 20px; color: #EBBE4B; }
+  .doc h4 { font-size: 13px; font-weight: 600; margin: 0; }
+  .doc__meta { font-size: 11px; color: var(--ink-soft); }
+
+  /* P.16 Related */
+  .related {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--spacing-3);
+  }
+  .rcard {
+    padding: var(--spacing-4); background: var(--paper);
+    border: 1px solid var(--border); border-radius: 12px;
+    display: flex; flex-direction: column; gap: var(--spacing-2);
+    color: inherit; text-decoration: none;
+    transition: border-color var(--duration-fast), transform var(--duration-fast);
+  }
+  .rcard:hover { border-color: var(--primary-mid); transform: translateY(-2px); }
+  .rcard__img {
+    aspect-ratio: 1; background: var(--paper-soft); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; padding: var(--spacing-3);
+  }
+  .rcard__img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .rcard h3 { font-size: 13px; font-weight: 600; margin: 0; line-height: 1.3; }
+  .rcard__meta { font-size: 11px; color: var(--ink-soft); margin: 0; }
+  .rcard__price { color: var(--primary-mid); font-weight: 700; font-size: 14px; margin-block-start: auto; }
+
+  /* P.17 Pre-footer */
+  .prefooter {
+    margin-block-start: var(--spacing-7);
+    padding-block: var(--spacing-7) var(--spacing-8);
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    color: #fff;
+  }
+  .prefooter h2 { font-size: clamp(22px, 2.2vw, 30px); margin: 0 0 var(--spacing-3); }
+  .prefooter p { font-size: 14px; opacity: .9; max-width: 680px; margin: 0 0 var(--spacing-5); }
+  .prefooter__actions { display: flex; gap: var(--spacing-3); flex-wrap: wrap; }
+
+  /* Mobile */
+  @media (max-width: 767px) {
+    .pdp-cta { grid-template-columns: 1fr; }
+    .pdp-gallery__thumbs { grid-template-columns: repeat(4, 1fr); }
+    .pdp-sticky__price { width: 100%; }
+  }
+</style>

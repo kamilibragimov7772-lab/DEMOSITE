@@ -1,0 +1,158 @@
+---
+/**
+ * TimelineCompany — organism.
+ * История компании: vertical timeline (mobile) / horizontal milestones (desktop).
+ * Используется на /about/ для блока «История бренда».
+ *
+ * Composition: H2 + (опц. lead) + ordered list событий. Каждое событие — год + заголовок + описание.
+ * Состояния: default; hover на dot — увеличение. Без интерактивности (pure display).
+ *
+ * Источник:
+ * - 04_visuals/16-about-company.spec.md §«Block: История + миссия»
+ * - 02_content/page_outlines/16-about-company.md §«H2: История бренда»
+ */
+
+export interface Milestone {
+  /** Год / период (например «2020», «2024 Q4»). */
+  year: string;
+  /** Краткий заголовок события. */
+  title: string;
+  /** Описание события (опц.). */
+  description?: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  lead?: string;
+  items: ReadonlyArray<Milestone>;
+  id?: string;
+}
+
+const { heading, eyebrow, lead, items, id = 'history' } = Astro.props;
+---
+
+<section class="tl" id={id} aria-labelledby={`${id}-h2`}>
+  <div class="container">
+    {eyebrow && <p class="tl__eyebrow">{eyebrow}</p>}
+    <h2 id={`${id}-h2`} class="tl__h2">{heading}</h2>
+    {lead && <p class="tl__lead">{lead}</p>}
+
+    <ol class="tl__list" role="list">
+      {items.map((m) => (
+        <li class="tl__item">
+          <div class="tl__dot" aria-hidden="true"></div>
+          <div class="tl__body">
+            <div class="tl__year num">{m.year}</div>
+            <h3 class="tl__title">{m.title}</h3>
+            {m.description && <p class="tl__desc">{m.description}</p>}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .tl {
+    padding-block: var(--spacing-8);
+  }
+  .tl__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .tl__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-4);
+  }
+  .tl__lead {
+    max-width: 60ch;
+    margin-block-end: var(--spacing-6);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: var(--font-line-height-normal);
+  }
+
+  .tl__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+    position: relative;
+  }
+  /* vertical line — mobile */
+  .tl__list::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: var(--spacing-3);
+    bottom: var(--spacing-3);
+    width: 2px;
+    background: var(--color-border-default);
+    border-radius: var(--radius-pill);
+  }
+
+  .tl__item {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    gap: var(--spacing-4);
+    align-items: flex-start;
+  }
+  .tl__dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-action-primary), var(--color-brand-primary-end));
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+    margin-block-start: var(--spacing-1);
+    z-index: 1;
+    transition: transform var(--duration-fast) var(--easing-standard);
+  }
+  .tl__item:hover .tl__dot {
+    transform: scale(1.15);
+  }
+
+  .tl__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+  .tl__year {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-action-primary);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+  }
+  .tl__title {
+    margin: 0;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    line-height: 1.35;
+  }
+  .tl__desc {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+
+  @media (min-width: 1024px) {
+    .tl__list {
+      gap: var(--spacing-6);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tl__dot { transition: none; }
+    .tl__item:hover .tl__dot { transform: none; }
+  }
+</style>

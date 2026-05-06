@@ -1,0 +1,262 @@
+---
+/**
+ * /branding/termopakety/ — брендирование термопакетов.
+ *
+ * Реализация по outline `02_content/page_outlines/25-branding-termopakety.md` (SKELETON).
+ * STRATEGY: outline + reuse organisms + новый BrandingMethodsTable.
+ * Открытый scope-gap (spec.md 25-branding-termopakety.md отсутствует) — escalations[type=data_gap].
+ *
+ * Schema.org: Service + BreadcrumbList + FAQPage.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import Button from '@components/atoms/Button.astro';
+import BrandingMethodsTable from '@components/organisms/BrandingMethodsTable.astro';
+import VariantsChips from '@components/organisms/VariantsChips.astro';
+import FaqAccordion from '@components/organisms/FaqAccordion.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { service, breadcrumbList, faqPage } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const breadcrumbs = [
+  { name: 'Главная',                  url: siteUrl },
+  { name: 'Брендирование',            url: `${siteUrl}branding/` },
+  { name: 'Термопакеты',              url: `${siteUrl}branding/termopakety/` },
+];
+
+const methodsRows = [
+  {
+    name: 'Шелкография',
+    moq: '100 шт',
+    colors: 'до 4 цветов Pantone',
+    terms: '2–3 недели',
+    priceFactor: '₽ базовая',
+    bestFor: 'Малый тираж, чёткие плашки, 1–4 цвета. Light, Standart, PRO.',
+  },
+  {
+    name: 'Флексопечать',
+    moq: '10 000 шт',
+    colors: 'фотопечать, полноцвет',
+    terms: '3–4 недели',
+    priceFactor: '₽ оптимальная на тиражах',
+    bestFor: 'Большие партии для ритейла. Фотореалистичные макеты, мелкие детали.',
+  },
+  {
+    name: 'Тампопечать',
+    moq: '500 шт',
+    colors: '1–2 цвета',
+    terms: '2 недели',
+    priceFactor: '₽₽ дороже на тираж',
+    bestFor: 'Зоны со складками, ручки, нестандартные геометрии. Маркировка SKU/партий.',
+  },
+];
+
+const sizesGroups = [
+  {
+    legend: 'Стандартные размеры (см)',
+    slug: 'sizes',
+    options: [
+      { label: '30×40',     href: '/products/termopakety/' },
+      { label: '40×50',     href: '/products/termopakety/' },
+      { label: '42×50',     href: '/products/termopakety/' },
+      { label: '60×55',     href: '/products/termopakety/' },
+      { label: 'По спецификации', meta: 'согласуем' },
+    ],
+  },
+  {
+    legend: 'Серии',
+    slug: 'series',
+    options: [
+      { label: 'Light',    href: '/products/termopakety/', meta: '1-сл, до 4 ч' },
+      { label: 'Standart', href: '/products/termopakety/', meta: '2-сл, до 5 ч' },
+      { label: 'PRO',      href: '/products/termopakety/', meta: '3-сл, до 7 ч' },
+    ],
+  },
+];
+
+const faqs = [
+  {
+    question: 'Какой минимальный тираж для шелкографии?',
+    answer: '100 шт. Это технологический минимум — меньше делать невыгодно из-за подготовки печатных форм.',
+  },
+  {
+    question: 'Можно ли использовать свои цвета Pantone?',
+    answer: 'Да, любые. На шелкографии до 4 цветов одновременно, на флексопечати — полноцвет CMYK + spot Pantone.',
+  },
+  {
+    question: 'Сколько стоит макет?',
+    answer: 'Бесплатно при заказе от МОЗ. Сложные макеты (мульти-цвет, фотореалистика) — отдельно по согласованию.',
+  },
+  {
+    question: 'Какие материалы можно брендировать?',
+    answer: 'Все три серии: Light (1-слойный), Standart (2-слойный), PRO (3-слойный с ВПП 1 см). Метод выбирается под материал.',
+  },
+  {
+    question: 'Можно ли менять зоны нанесения?',
+    answer: 'Да, по согласованию. Стандартные зоны: front (основная), back, handles. Нестандартные — обсуждаем с технологом, могут быть ограничения по площади и геометрии.',
+  },
+];
+
+const schema = [
+  service({
+    name: 'Брендирование термопакетов',
+    description: 'Нанесение логотипа на B2B-термопакеты: шелкография от 100 шт, флексопечать от 10 000 шт, тампопечать на сложных зонах.',
+    audience: 'B2 ритейл / B1 доставка / B4 производитель',
+    termsOfServiceUrl: `${siteUrl}legal/oferta/`,
+  }),
+  breadcrumbList(breadcrumbs),
+  faqPage(faqs),
+];
+---
+
+<BaseLayout
+  title="Брендирование термопакетов — TERMY"
+  description="Шелкография от 100 шт, флексопечать от 10 000 шт на термопакетах. Pantone, бесплатный макет. Сроки 2–4 недели."
+  ogType="website"
+  ogImage="/assets/og/og-branding-termopakety.jpg"
+  schema={schema}
+>
+  <div class="container">
+    <Breadcrumbs items={breadcrumbs} />
+  </div>
+
+  {/* Hero */}
+  <section class="bp-hero" aria-labelledby="bp-h1">
+    <div class="container bp-hero__inner">
+      <p class="bp-hero__eyebrow">Брендирование › Термопакеты</p>
+      <h1 id="bp-h1" class="bp-hero__h1">Брендирование термопакетов с вашим логотипом</h1>
+      <p class="bp-hero__lead">
+        Логотип на термопакете 42×50 от 100 шт. Шелкография — от 100 шт, флексопечать —
+        от 10 000. Pantone, бесплатный макет, 2–4 недели.
+      </p>
+      <div class="bp-hero__cta">
+        <Button variant="primary" size="lg" href="#form-branding-termopakety">Запросить макет с вашим логотипом →</Button>
+        <Button variant="secondary" size="lg" href="/products/termopakety/">Открыть каталог термопакетов</Button>
+      </div>
+      <ul class="bp-hero__proof" role="list">
+        <li><strong class="num">100 шт</strong><span>МОЗ</span></li>
+        <li><strong class="num">4</strong><span>цвета Pantone</span></li>
+        <li><strong class="num">2–4</strong><span>недели</span></li>
+        <li><strong>бесплатно</strong><span>макет</span></li>
+      </ul>
+    </div>
+  </section>
+
+  {/* Variants — размеры и серии */}
+  <section class="bp-vars">
+    <div class="container">
+      <h2 class="bp-vars__h">Доступные размеры и серии</h2>
+      <p class="bp-vars__lead">
+        Брендируем все размеры и серии термопакетов. Размер влияет на размещение макета;
+        серия — на технологию (Light принимает шелкографию, PRO с ВПП — обе технологии).
+      </p>
+      <VariantsChips groups={sizesGroups} />
+    </div>
+  </section>
+
+  {/* Сравнение методов */}
+  <BrandingMethodsTable
+    eyebrow="Методы"
+    heading="Сравнение методов нанесения на термопакеты"
+    lead="Выбор метода зависит от тиража, цветности и зоны нанесения. Если не уверены — пришлите бриф, технолог подберёт оптимальный."
+    rows={methodsRows}
+    id="methods-termopakety"
+  />
+
+  {/* FAQ */}
+  <FaqAccordion
+    eyebrow="FAQ"
+    heading="Брендирование термопакетов — частые вопросы"
+    items={faqs}
+    id="faq-branding-termopakety"
+  />
+
+  {/* Form */}
+  <FormBlock
+    id="branding-termopakety"
+    variant="lead"
+    eyebrow="Получить расчёт"
+    heading="Расчёт брендирования термопакетов"
+    description="Укажите тираж, размер и метод (если уже выбрали). Если макета ещё нет — приложите бриф или эталон, мы соберём бесплатно."
+    submitLabel="Получить расчёт →"
+  />
+
+  <PreFooterCta
+    heading="Запустим вашу партию термопакетов с логотипом"
+    lead="Бесплатный макет за 1–2 рабочих дня. Полная партия — 2–4 недели от утверждения."
+    primaryCta={{ label: 'Запросить макет →', href: '#form-branding-termopakety' }}
+    secondaryCta={{ label: 'Решения для ритейла →', href: '/solutions/retail/' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>
+
+<style>
+  .bp-hero {
+    padding-block: var(--spacing-6) var(--spacing-7);
+    background: var(--color-bg-page);
+  }
+  .bp-hero__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    max-width: 800px;
+  }
+  .bp-hero__eyebrow {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .bp-hero__h1 {
+    margin: 0;
+    font-size: var(--font-size-h1-fluid);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tighter);
+  }
+  .bp-hero__lead {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: var(--font-line-height-normal);
+  }
+  .bp-hero__cta { display: flex; flex-wrap: wrap; gap: var(--spacing-3); margin-block-start: var(--spacing-2); }
+  .bp-hero__proof {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+    margin: var(--spacing-3) 0 0;
+    padding: var(--spacing-4);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+    list-style: none;
+  }
+  .bp-hero__proof li { display: flex; flex-direction: column; gap: var(--spacing-1); }
+  .bp-hero__proof strong {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    font-variant-numeric: tabular-nums;
+  }
+  .bp-hero__proof span {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--font-letter-spacing-wide);
+  }
+
+  .bp-vars { padding-block: var(--spacing-7); background: var(--color-bg-surface); }
+  .bp-vars__h { margin-block-end: var(--spacing-3); }
+  .bp-vars__lead { max-width: 56ch; color: var(--color-text-secondary); margin-block-end: var(--spacing-5); line-height: var(--font-line-height-normal); }
+
+  @media (min-width: 768px) {
+    .bp-hero__proof { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>

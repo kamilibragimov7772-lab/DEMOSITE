@@ -1,0 +1,234 @@
+---
+/**
+ * /branding/akkumulyatory-holoda/ — брендирование SHOCK®.
+ *
+ * NOTE: outline-URL по spec'у — `/branding/akkumulyatory/`, но мы используем `akkumulyatory-holoda`
+ * для согласованности с `/products/akkumulyatory-holoda/`. Канон nav.ts пока «akkumulyatory» —
+ * обновим в backlog (см. escalations).
+ *
+ * Реализация по outline `02_content/page_outlines/26-branding-akkumulyatory.md` (SKELETON).
+ * STRATEGY: outline + reuse organisms + BrandingMethodsTable.
+ *
+ * Schema.org: Service + BreadcrumbList + FAQPage.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import Button from '@components/atoms/Button.astro';
+import BrandingMethodsTable from '@components/organisms/BrandingMethodsTable.astro';
+import VariantsChips from '@components/organisms/VariantsChips.astro';
+import FaqAccordion from '@components/organisms/FaqAccordion.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { service, breadcrumbList, faqPage } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const breadcrumbs = [
+  { name: 'Главная',           url: siteUrl },
+  { name: 'Брендирование',     url: `${siteUrl}branding/` },
+  { name: 'Аккумуляторы SHOCK®', url: `${siteUrl}branding/akkumulyatory-holoda/` },
+];
+
+const methodsRows = [
+  {
+    name: 'Наклейка (полноцвет)',
+    moq: '1 000 шт',
+    colors: 'CMYK + spot, любой логотип',
+    terms: '2–3 недели',
+    priceFactor: '₽ базовая',
+    bestFor: 'Полноцветные логотипы, фотореалистика. Удержание формы 30+ циклов.',
+  },
+  {
+    name: 'Тампопечать на корпусе',
+    moq: '3 000 шт',
+    colors: '1–2 цвета',
+    terms: '3–4 недели',
+    priceFactor: '₽₽ дороже на тираж',
+    bestFor: 'Стойкость на десятки циклов. Простой логотип, маркировка партий.',
+  },
+  {
+    name: 'Выбивка (тиснение)',
+    moq: '5 000 шт',
+    colors: 'без цвета, рельеф',
+    terms: '4 недели',
+    priceFactor: '₽₽₽ премиум-сегмент',
+    bestFor: 'Премиум, тактильный логотип. Не стирается весь срок службы корпуса.',
+  },
+];
+
+const variantsGroups = [
+  {
+    legend: 'Объёмы',
+    slug: 'volumes',
+    options: [
+      { label: '300 мл',  href: '/products/akkumulyatory-holoda/' },
+      { label: '450 мл',  href: '/products/akkumulyatory-holoda/' },
+      { label: '600 мл',  href: '/products/akkumulyatory-holoda/' },
+      { label: '1000 мл', href: '/products/akkumulyatory-holoda/' },
+    ],
+  },
+  {
+    legend: 'Режимы',
+    slug: 'modes',
+    options: [
+      { label: 'Cool',   href: '/products/akkumulyatory-holoda/', meta: '+2…+8°C' },
+      { label: 'Gel',    href: '/products/akkumulyatory-holoda/', meta: '0…+4°C' },
+      { label: 'Freeze', href: '/products/akkumulyatory-holoda/', meta: '−15…−5°C' },
+    ],
+  },
+];
+
+const faqs = [
+  {
+    question: 'Что лучше — наклейка или выбивка?',
+    answer: 'Наклейка — для коротких циклов и полноцвета. Выбивка — для премиум-сегмента и максимальной долговечности (рельеф не стирается весь срок службы). Тампопечать — компромисс по цене и стойкости.',
+  },
+  {
+    question: 'Сколько стоит макет?',
+    answer: 'Бесплатно при заказе от МОЗ. Сложные мульти-цветные макеты или нестандартные зоны — отдельно по согласованию.',
+  },
+  {
+    question: 'Какие цвета доступны для наклейки?',
+    answer: 'Любые CMYK и spot Pantone. Разрешение макета — от 300 dpi на финальном размере. Шрифты — в кривых.',
+  },
+  {
+    question: 'Сохраняется ли логотип после 30 циклов заморозки?',
+    answer: 'Да — при выборе соответствующего метода. Наклейка — до 30 циклов гарантированно (производитель ламината). Тампопечать — десятки циклов. Выбивка — весь срок службы корпуса (логотип физически в материале).',
+  },
+  {
+    question: 'Можно ли брендировать жидкие хладоэлементы?',
+    answer: 'Да, для жидких хладоэлементов используется наклейка от 1 000 шт. Подробности — на странице /branding/ хаб или напишите нам.',
+  },
+];
+
+const schema = [
+  service({
+    name: 'Брендирование аккумуляторов холода SHOCK®',
+    description: 'Нанесение логотипа на B2B-аккумуляторы холода SHOCK®: наклейка от 1 000 шт, тампопечать от 3 000 шт, выбивка от 5 000 шт.',
+    audience: 'B2 ритейл / B4 производитель скоропорта',
+    termsOfServiceUrl: `${siteUrl}legal/oferta/`,
+  }),
+  breadcrumbList(breadcrumbs),
+  faqPage(faqs),
+];
+---
+
+<BaseLayout
+  title="Брендирование SHOCK® с вашим логотипом — TERMY"
+  description="Наклейка от 1 000 шт, выбивка от 3 000 шт на корпусе SHOCK®. 3 режима: Cool / Gel / Freeze. Запросите макет с вашим брендом."
+  ogType="website"
+  ogImage="/assets/og/og-branding-akkumulyatory.jpg"
+  schema={schema}
+>
+  <div class="container">
+    <Breadcrumbs items={breadcrumbs} />
+  </div>
+
+  <section class="ba-hero" aria-labelledby="ba-h1">
+    <div class="container ba-hero__inner">
+      <p class="ba-hero__eyebrow">Брендирование › Аккумуляторы SHOCK®</p>
+      <h1 id="ba-h1" class="ba-hero__h1">Брендирование аккумуляторов SHOCK® с вашим логотипом</h1>
+      <p class="ba-hero__lead">
+        Ваш логотип на корпусе SHOCK® — наклейка от 1 000 шт, выбивка от 3 000.
+        3 режима, 4 объёма, 30+ циклов заморозки.
+      </p>
+      <div class="ba-hero__cta">
+        <Button variant="primary" size="lg" href="#form-branding-akkumulyatory">Запросить макет на SHOCK® →</Button>
+        <Button variant="secondary" size="lg" href="/products/akkumulyatory-holoda/">Каталог SHOCK®</Button>
+      </div>
+      <ul class="ba-hero__proof" role="list">
+        <li><strong class="num">1 000 шт</strong><span>МОЗ наклейка</span></li>
+        <li><strong class="num">3</strong><span>режима</span></li>
+        <li><strong class="num">30+</strong><span>циклов</span></li>
+        <li><strong>ГОСТ</strong><span>Р 50962-96</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="ba-vars">
+    <div class="container">
+      <h2 class="ba-vars__h">Доступные объёмы и режимы</h2>
+      <p class="ba-vars__lead">
+        Брендируем 4 объёма (300 / 450 / 600 / 1000 мл) в трёх температурных режимах.
+        Объём и режим влияют на доступные зоны нанесения и площадь логотипа.
+      </p>
+      <VariantsChips groups={variantsGroups} />
+    </div>
+  </section>
+
+  <BrandingMethodsTable
+    eyebrow="Методы"
+    heading="Сравнение методов нанесения на SHOCK®"
+    lead="Наклейка — оптимум для большинства задач. Тампопечать — для среднего сегмента. Выбивка — премиум, не стирается весь срок службы."
+    rows={methodsRows}
+    id="methods-akkumulyatory"
+  />
+
+  <FaqAccordion
+    eyebrow="FAQ"
+    heading="Брендирование SHOCK® — частые вопросы"
+    items={faqs}
+    id="faq-branding-akkumulyatory"
+  />
+
+  <FormBlock
+    id="branding-akkumulyatory"
+    variant="lead"
+    eyebrow="Получить расчёт"
+    heading="Расчёт брендирования SHOCK®"
+    description="Укажите объём, режим, тираж и метод. Если выбираете между методами — опишите задачу, технолог подскажет оптимум по цене и стойкости."
+    submitLabel="Получить расчёт →"
+  />
+
+  <PreFooterCta
+    heading="Запустим вашу партию SHOCK® с логотипом"
+    lead="Бесплатный макет за 1–2 рабочих дня. Производство — 3–4 недели от утверждения."
+    primaryCta={{ label: 'Запросить макет →', href: '#form-branding-akkumulyatory' }}
+    secondaryCta={{ label: 'Решения для производителей →', href: '/solutions/proizvoditeli/' }}
+  />
+
+  <StickyWhatsApp />
+</BaseLayout>
+
+<style>
+  .ba-hero { padding-block: var(--spacing-6) var(--spacing-7); background: var(--color-bg-page); }
+  .ba-hero__inner { display: flex; flex-direction: column; gap: var(--spacing-4); max-width: 800px; }
+  .ba-hero__eyebrow {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin: 0;
+  }
+  .ba-hero__h1 {
+    margin: 0;
+    font-size: var(--font-size-h1-fluid);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tighter);
+  }
+  .ba-hero__lead { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-md); line-height: var(--font-line-height-normal); }
+  .ba-hero__cta { display: flex; flex-wrap: wrap; gap: var(--spacing-3); margin-block-start: var(--spacing-2); }
+  .ba-hero__proof {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+    margin: var(--spacing-3) 0 0;
+    padding: var(--spacing-4);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+    list-style: none;
+  }
+  .ba-hero__proof li { display: flex; flex-direction: column; gap: var(--spacing-1); }
+  .ba-hero__proof strong { color: var(--color-action-primary); font-size: var(--font-size-md); font-weight: var(--font-weight-bold); font-variant-numeric: tabular-nums; }
+  .ba-hero__proof span { color: var(--color-text-tertiary); font-size: var(--font-size-xs); text-transform: uppercase; letter-spacing: var(--font-letter-spacing-wide); }
+
+  .ba-vars { padding-block: var(--spacing-7); background: var(--color-bg-surface); }
+  .ba-vars__h { margin-block-end: var(--spacing-3); }
+  .ba-vars__lead { max-width: 56ch; color: var(--color-text-secondary); margin-block-end: var(--spacing-5); line-height: var(--font-line-height-normal); }
+
+  @media (min-width: 768px) { .ba-hero__proof { grid-template-columns: repeat(4, 1fr); } }
+</style>

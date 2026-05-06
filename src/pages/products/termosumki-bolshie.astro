@@ -1,0 +1,56 @@
+---
+/**
+ * /products/termosumki-bolshie/ — Тонкий wrapper над единым каталогом.
+ */
+
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
+import CatalogPage from '@components/organisms/CatalogPage.astro';
+import FormBlock from '@components/organisms/FormBlock.astro';
+import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
+import { collectionPage, breadcrumbList } from '@lib/schema';
+
+const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
+
+const schema = [
+  collectionPage({
+    name: 'Термосумки большие TERMY',
+    description: 'Многоразовые термосумки и LinerBox® TERMY: 16 / 24 / 40 л, гофрокартон Т24 + ВПП.',
+    numberOfItems: 4,
+  }),
+  breadcrumbList([
+    { name: 'Главная', url: siteUrl },
+    { name: 'Каталог', url: `${siteUrl}products/` },
+    { name: 'Термосумки большие', url: `${siteUrl}products/termosumki-bolshie/` },
+  ]),
+];
+---
+
+<BaseLayout
+  title="Термосумки большие — TERMY LinerBox®"
+  description="Многоразовые LinerBox® 16/24/40 л + курьерская сумка 50 л. Гофрокартон Т24 + ВПП 2 см."
+  ogType="website"
+  schema={schema}
+>
+  <Breadcrumbs
+    items={[
+      { name: 'Главная', href: '/' },
+      { name: 'Каталог', href: '/products/' },
+      { name: 'Термосумки большие' },
+    ]}
+  />
+
+  <CatalogPage initialCategory="termosumki-bolshie" />
+
+  <FormBlock id="cta" variant="lead" eyebrow="Получить КП"
+    heading="Получить КП по термосумкам"
+    description="Менеджер свяжется в течение 2 часов с прайсом и MOQ."
+    submitLabel="Получить КП →" />
+
+  <PreFooterCta heading="Готовы посчитать?" lead="Напишите в WhatsApp — менеджер ответит сразу."
+    primaryCta={{ label: 'Написать в WhatsApp', href: 'https://wa.me/78001011525' }}
+    secondaryCta={{ label: 'Позвонить +7 (800) 101-15-25', href: 'tel:+78001011525' }} />
+
+  <StickyWhatsApp />
+</BaseLayout>

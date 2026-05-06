@@ -1,0 +1,120 @@
+---
+/**
+ * BrandingDuo — organism.
+ * Composition: H2 + 2 крупные cards (Термопакеты с лого / SHOCK с брендом).
+ *
+ * Источник:
+ * - 04_visuals/01-homepage.spec.md §«Block 9: Брендирование»
+ * - 02_content/page_outlines/01-homepage.md §«H2: Упаковка и хладоэлементы с вашим логотипом»
+ * - tone_of_voice.md §Hero CTA Primary п.3 («Запросить макет с вашим логотипом»)
+ */
+
+import CardBase from '@components/molecules/CardBase.astro';
+import Button from '@components/atoms/Button.astro';
+
+export interface BrandingCard {
+  /** Slug для /branding/<slug>/. */
+  slug: 'termopakety' | 'akkumulyatory' | 'termoshoppery';
+  title: string;
+  description: string;
+  /** Уточнения по методам / срокам / тиражам. */
+  details: ReadonlyArray<string>;
+  ctaLabel: string;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  cards: ReadonlyArray<BrandingCard>;
+}
+
+const { heading, eyebrow, cards } = Astro.props;
+---
+
+<section class="brand" aria-labelledby="brand-h2">
+  <div class="container">
+    {eyebrow && <p class="brand__eyebrow">{eyebrow}</p>}
+    <h2 id="brand-h2" class="brand__h2">{heading}</h2>
+
+    <ul class="brand__grid" role="list">
+      {cards.map((card) => (
+        <li>
+          <CardBase variant="feature" padded>
+            <h3 slot="title" class="brand__title">{card.title}</h3>
+            <p class="brand__desc">{card.description}</p>
+            <ul class="brand__details" role="list" slot="meta">
+              {card.details.map((d) => (
+                <li class="brand__detail">{d}</li>
+              ))}
+            </ul>
+            <div slot="cta" class="brand__cta">
+              <Button variant="primary" size="base" href={`/branding/${card.slug}/`}>{card.ctaLabel}</Button>
+            </div>
+          </CardBase>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .brand {
+    padding-block: var(--spacing-8);
+    background: var(--color-bg-surface-warm);
+  }
+  .brand__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .brand__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-6);
+  }
+  .brand__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .brand__title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+  }
+  .brand__desc {
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+  .brand__details {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+  .brand__detail {
+    position: relative;
+    padding-inline-start: var(--spacing-5);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: var(--font-line-height-normal);
+  }
+  .brand__detail::before {
+    content: '';
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 0.55em;
+    width: 12px;
+    height: 2px;
+    background: var(--color-action-primary);
+  }
+  .brand__cta { margin-block-start: var(--spacing-4); }
+
+  @media (min-width: 768px) { .brand__grid { grid-template-columns: repeat(2, 1fr); } }
+</style>

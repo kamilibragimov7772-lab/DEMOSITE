@@ -1,0 +1,409 @@
+---
+/**
+ * CaseCardsGrid — organism.
+ * Composition: H2 + N case-cards (5 на главной) + footer-CTA «Все кейсы →».
+ *
+ * Каждая карточка получает:
+ *   - Тематическую иконку (по c.segment) — те же 5 иконок что в IndustryCardsGrid
+ *     (dostavka/retail/distributory/proizvoditeli/farma). Глобальные jind-* анимации
+ *     из IndustryCardsGrid <style is:global> подхватываются автоматически через data-ind-icon.
+ *   - Reveal через IntersectionObserver (stagger 90ms × idx).
+ *   - Метрики «выскакивают» (scale 0.6 → 1) при reveal с дополнительным stagger по столбцам.
+ *
+ * Все кейсы Wave 1 — с пометкой «расчётный пример» (NDA до получения согласия).
+ *
+ * Источник:
+ * - 04_visuals/01-homepage.spec.md §«Block 8: Кейсы и доказательства»
+ * - 02_content/page_outlines/01-homepage.md §«H2: Кейсы и доказательства»
+ * - tone_of_voice.md §Edge cases — «Кейс расчётный»
+ */
+
+import CardBase from '@components/molecules/CardBase.astro';
+import Chip from '@components/molecules/Chip.astro';
+import Button from '@components/atoms/Button.astro';
+
+export interface CaseMetric {
+  label: string;
+  value: string;
+}
+
+export interface CasePreview {
+  /** Slug для /cases/<slug>/ (если страница ещё не реализована — линк может быть на хаб /cases/). */
+  slug?: string;
+  /** Сегмент: dostavka / retail / distributory / proizvoditeli / farma. */
+  segment: string;
+  segmentLabel: string;
+  title: string;
+  /** Краткое summary (1-2 предложения). */
+  excerpt: string;
+  metrics: ReadonlyArray<CaseMetric>;
+  /** Признак расчётного примера. */
+  isCalculatedExample?: boolean;
+}
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  cases: ReadonlyArray<CasePreview>;
+  hubCta: { label: string; href: string };
+}
+
+const { heading, eyebrow, cases, hubCta } = Astro.props;
+
+/**
+ * Иконки по сегменту. Те же что в IndustryCardsGrid — глобальные анимации jind-*
+ * автоматически применятся через data-ind-icon="<slug>".
+ */
+const ICONS: Record<string, string> = {
+  dostavka: `
+    <circle class="jind-wheel jind-wheel-l" cx="5.5" cy="17.5" r="3.5"/>
+    <circle class="jind-wheel jind-wheel-r" cx="18.5" cy="17.5" r="3.5"/>
+    <circle cx="15" cy="5" r="1"/>
+    <path d="M12 17.5V14l-3-3 4-3 2 3h2"/>
+  `,
+  retail: `
+    <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/>
+    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+    <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/>
+    <path d="M2 7h20"/>
+    <path class="jind-roof-line" d="M22 7v3a2 2 0 0 1-2 2 2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/>
+  `,
+  distributory: `
+    <path class="jind-layer jind-layer-1" d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/>
+    <path class="jind-layer jind-layer-2" d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/>
+    <path class="jind-layer jind-layer-3" d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>
+  `,
+  proizvoditeli: `
+    <path class="jind-chef" d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/>
+    <line x1="6" x2="18" y1="17" y2="17"/>
+  `,
+  farma: `
+    <path class="jind-pill" d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
+    <path d="m8.5 8.5 7 7"/>
+  `,
+  branding: `
+    <path class="jind-spark jind-spark-1" d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+    <path class="jind-spark jind-spark-2" d="M5 3v4"/>
+    <path class="jind-spark jind-spark-3" d="M19 17v4"/>
+    <path class="jind-spark jind-spark-4" d="M3 5h4"/>
+    <path class="jind-spark jind-spark-5" d="M17 19h4"/>
+  `,
+};
+
+const getIcon = (segment: string): string => ICONS[segment] ?? ICONS.dostavka ?? '';
+---
+
+<section class="cases" aria-labelledby="cases-h2">
+  <div class="container">
+    {eyebrow && <p class="cases__eyebrow">{eyebrow}</p>}
+    <h2 id="cases-h2" class="cases__h2">{heading}</h2>
+
+    <ul class="cases__grid" data-cases-grid role="list">
+      {cases.map((c, idx) => {
+        const href = c.slug ? `/cases/${c.slug}/` : `/cases/`;
+        return (
+          <li class="cases__cell" style={`--idx: ${idx}`}>
+            <CardBase href={href}>
+              <div slot="media" class="cases__cover" data-segment={c.segment}>
+                <span class="cases__cover-icon" aria-hidden="true" data-ind-icon={c.segment}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" set:html={getIcon(c.segment)} />
+                </span>
+                <span class="cases__cover-label">{c.segmentLabel}</span>
+              </div>
+              <h3 slot="title" class="cases__title">{c.title}</h3>
+              <p class="cases__excerpt">{c.excerpt}</p>
+              <ul class="cases__metrics" role="list" slot="meta">
+                {c.metrics.map((m, mi) => (
+                  <li class="cases__metric" style={`--mi: ${mi}`}>
+                    <strong class="num">{m.value}</strong>
+                    <span class="cases__metric-label">{m.label}</span>
+                  </li>
+                ))}
+              </ul>
+              {c.isCalculatedExample && (
+                <p class="cases__note" slot="meta">
+                  <span class="cases__note-tag">Сценарий из практики</span>
+                  Имена компаний изменены, цифры иллюстративные.
+                </p>
+              )}
+            </CardBase>
+          </li>
+        );
+      })}
+    </ul>
+
+    <div class="cases__hub-cta">
+      <Button variant="ghost" size="base" href={hubCta.href}>{hubCta.label}</Button>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  (() => {
+    const grid = document.querySelector('[data-cases-grid]');
+    if (!grid) return;
+
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const cells = Array.from(grid.querySelectorAll('.cases__cell'));
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      cells.forEach((c) => c.classList.add('is-revealed'));
+      return;
+    }
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !entry.target.classList.contains('is-revealed')) {
+            entry.target.classList.add('is-revealed');
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.25, rootMargin: '0px 0px -5% 0px' }
+    );
+
+    cells.forEach((c) => io.observe(c));
+  })();
+</script>
+
+<style>
+  .cases {
+    padding-block: var(--spacing-8);
+    background: var(--color-bg-page);
+  }
+  .cases__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .cases__h2 {
+    max-width: 32ch;
+    margin-block-end: var(--spacing-6);
+  }
+  .cases__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+    margin: 0 0 var(--spacing-6);
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Reveal stagger через .is-revealed (через IntersectionObserver). */
+  .cases__cell {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+      opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--idx, 0) * 90ms);
+  }
+  .cases__cell.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── Cover на всю ширину карточки ─────────────────────────────
+     Brand gradient по сегменту + большая иконка по центру + label ниже.
+     Высота 180px на mobile, 200px на desktop.
+     Negative-margin компенсирует card padding (CardBase --spacing-5). */
+  .cases__cover {
+    position: relative;
+    height: 180px;
+    margin: calc(0px - var(--spacing-5)) calc(0px - var(--spacing-5)) var(--spacing-2);
+    border-radius: var(--radius-base) var(--radius-base) 0 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2, 8px);
+    isolation: isolate;
+    color: #ffffff;
+    /* Default brand gradient (если data-segment не задан) */
+    background: linear-gradient(135deg, #6428A0 0%, #3D1E66 100%);
+  }
+
+  /* Per-segment gradient tints — все на основе brand purple, варьируется холодный/тёплый акцент */
+  .cases__cover[data-segment="dostavka"] {
+    background:
+      radial-gradient(ellipse 80% 60% at 30% 20%, rgba(255, 145, 80, 0.55), transparent 60%),
+      linear-gradient(135deg, #6428A0 0%, #3D1E66 100%);
+  }
+  .cases__cover[data-segment="retail"] {
+    background:
+      radial-gradient(ellipse 80% 60% at 30% 20%, rgba(80, 145, 255, 0.45), transparent 60%),
+      linear-gradient(135deg, #6428A0 0%, #2A1B5C 100%);
+  }
+  .cases__cover[data-segment="distributory"] {
+    background:
+      radial-gradient(ellipse 80% 60% at 30% 20%, rgba(80, 200, 145, 0.45), transparent 60%),
+      linear-gradient(135deg, #6428A0 0%, #3D1E66 100%);
+  }
+  .cases__cover[data-segment="proizvoditeli"] {
+    background:
+      radial-gradient(ellipse 80% 60% at 30% 20%, rgba(255, 100, 100, 0.45), transparent 60%),
+      linear-gradient(135deg, #6428A0 0%, #4A1A5C 100%);
+  }
+  .cases__cover[data-segment="farma"] {
+    background:
+      radial-gradient(ellipse 80% 60% at 30% 20%, rgba(80, 220, 220, 0.45), transparent 60%),
+      linear-gradient(135deg, #6428A0 0%, #2D2080 100%);
+  }
+  .cases__cover[data-segment="branding"] {
+    background:
+      radial-gradient(ellipse 80% 60% at 30% 20%, rgba(255, 200, 80, 0.5), transparent 60%),
+      linear-gradient(135deg, #7A2DC0 0%, #4A1A8A 100%);
+  }
+
+  /* Декоративный pattern сверху gradient — тонкая сетка для текстуры */
+  .cases__cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 14px),
+      repeating-linear-gradient(-45deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 14px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .cases__cover-icon {
+    position: relative;
+    z-index: 1;
+    width: 80px;
+    height: 80px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: #ffffff;
+    /* Старт: appear pop-in после reveal cell */
+    transform: scale(0.6);
+    opacity: 0;
+    transition:
+      transform 600ms cubic-bezier(0.34, 1.4, 0.35, 1),
+      opacity 500ms cubic-bezier(0.16, 1, 0.3, 1),
+      background 320ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--idx, 0) * 90ms + 200ms);
+  }
+  .cases__cell.is-revealed .cases__cover-icon {
+    transform: scale(1);
+    opacity: 1;
+  }
+  .cases__cover-icon svg {
+    width: 42px;
+    height: 42px;
+    display: block;
+  }
+  .card--linked:hover .cases__cover-icon,
+  .card--linked:focus-within .cases__cover-icon {
+    transform: scale(1.1) rotate(-3deg);
+    background: rgba(255, 255, 255, 0.24);
+  }
+
+  .cases__cover-label {
+    position: relative;
+    z-index: 1;
+    color: rgba(255, 255, 255, 0.85);
+    font-family: var(--font-family-monospace, 'JetBrains Mono', monospace);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 500ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--idx, 0) * 90ms + 380ms);
+  }
+  .cases__cell.is-revealed .cases__cover-label {
+    opacity: 1;
+  }
+
+  .cases__title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+  }
+  .cases__excerpt {
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+
+  /* Metrics — каждая «выскакивает» с stagger по столбцам после reveal карточки */
+  .cases__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+    margin: 0;
+    padding-block-start: var(--spacing-3);
+    border-block-start: 1px solid var(--color-border-subtle);
+    list-style: none;
+  }
+  .cases__metric {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    /* Стартовое состояние: метрика появится через transform после reveal карточки */
+    opacity: 0;
+    transform: scale(0.7) translateY(8px);
+    transition:
+      opacity 500ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 500ms cubic-bezier(0.34, 1.4, 0.35, 1);
+    /* Дельта = (delay карточки) + 280ms (после fade-in карточки) + (метрика-stagger) */
+    transition-delay: calc(var(--idx, 0) * 90ms + 280ms + var(--mi, 0) * 90ms);
+  }
+  .cases__cell.is-revealed .cases__metric {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  .cases__metric strong {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-action-primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .cases__metric-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+
+  .cases__note {
+    margin-block-start: var(--spacing-3);
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    line-height: 1.5;
+  }
+  .cases__note-tag {
+    display: inline-block;
+    margin-inline-end: var(--spacing-2);
+    padding: 2px var(--spacing-2);
+    background: var(--color-feedback-error-bg);
+    color: var(--color-feedback-error);
+    border-radius: var(--radius-xs);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-letter-spacing-wide);
+    text-transform: uppercase;
+  }
+  .cases__hub-cta { text-align: center; }
+
+  @media (min-width: 768px)  { .cases__grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .cases__grid { grid-template-columns: repeat(3, 1fr); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cases__cell,
+    .cases__metric {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+    .cases__icon { transition: none !important; }
+  }
+</style>

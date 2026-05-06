@@ -1,0 +1,315 @@
+---
+/**
+ * CasesGrid — organism.
+ * Листинг кейсов с filter-chips по индустриям. SSR-фильтрация через CSS data-attribute и
+ * URL hash (без JS-state — progressive enhancement через chip-anchors).
+ *
+ * Variant отличается от CaseCardsGrid (homepage):
+ *   - Включает filter-chips ряд (Все / Доставка / Ритейл / Дистрибуция / Скоропорт / Фарм / Брендирование)
+ *   - Поддерживает empty-state (когда нет кейсов в категории)
+ *   - Вариант coming-soon — карточки-плейсхолдеры до получения согласия клиентов на публикацию
+ *
+ * JS-фильтрация через data-attribute toggling (минимально). Если JS отключён — chips ведут на anchor (#filter-X)
+ * + все кейсы видны.
+ *
+ * Источник:
+ * - 02_content/page_outlines/28-cases-hub.md §H2 «Все кейсы — карточки» + «По отраслям»
+ * - components_atomic.md §Organisms (Card, Chip)
+ */
+
+import CardBase from '@components/molecules/CardBase.astro';
+import Chip from '@components/molecules/Chip.astro';
+import type { CaseIndustry, CaseCard, FilterChip } from './CasesGrid.types';
+export type { CaseIndustry, CaseCard, FilterChip } from './CasesGrid.types';
+
+export interface Props {
+  heading: string;
+  eyebrow?: string;
+  lead?: string;
+  filters: ReadonlyArray<FilterChip>;
+  /** Активный фильтр (default 'all'). */
+  activeFilter?: CaseIndustry;
+  cases: ReadonlyArray<CaseCard>;
+  /** Текст empty-state когда в фильтре 0 кейсов. */
+  emptyText?: string;
+}
+
+const {
+  heading,
+  eyebrow,
+  lead,
+  filters,
+  activeFilter = 'all',
+  cases,
+  emptyText = 'Кейсы по этой отрасли публикуем по согласованию с клиентами. Запросите похожий расчёт под вашу задачу.',
+} = Astro.props;
+---
+
+<section class="cgrid" aria-labelledby="cgrid-h">
+  <div class="container">
+    {eyebrow && <p class="cgrid__eyebrow">{eyebrow}</p>}
+    <h2 id="cgrid-h" class="cgrid__h">{heading}</h2>
+    {lead && <p class="cgrid__lead">{lead}</p>}
+
+    <nav class="cgrid__filters" aria-label="Фильтр по отраслям">
+      <ul class="cgrid__filters-list" role="list" data-filter-active={activeFilter}>
+        {filters.map((f) => (
+          <li>
+            <a
+              class="cgrid__filter"
+              href={f.id === 'all' ? '#cases' : `#filter-${f.id}`}
+              data-filter={f.id}
+              aria-current={f.id === activeFilter ? 'page' : undefined}
+            >
+              {f.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <ul class="cgrid__list" id="cases" role="list" data-cases-grid>
+      {cases.map((c) => {
+        const href = c.slug ? `/cases/${c.slug}/` : `/cases/`;
+        return (
+          <li class="cgrid__item" data-industry={c.industry}>
+            <CardBase href={c.isComingSoon ? undefined : href}>
+              <div slot="eyebrow">
+                <Chip variant="default" size="sm">{c.industryLabel}</Chip>
+              </div>
+              <h3 slot="title" class="cgrid__title">{c.title}</h3>
+              <p class="cgrid__excerpt">{c.excerpt}</p>
+              {c.metrics.length > 0 && (
+                <ul class="cgrid__metrics" role="list" slot="meta">
+                  {c.metrics.map((m) => (
+                    <li class="cgrid__metric">
+                      <strong class="num">{m.value}</strong>
+                      <span class="cgrid__metric-label">{m.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {(c.isCalculatedExample || c.isComingSoon) && (
+                <p class="cgrid__note" slot="meta">
+                  {c.isComingSoon && (
+                    <span class="cgrid__note-tag cgrid__note-tag--soon">Готовится</span>
+                  )}
+                  {c.isCalculatedExample && !c.isComingSoon && (
+                    <span class="cgrid__note-tag">Расчётный пример</span>
+                  )}
+                  {c.isComingSoon
+                    ? 'Опубликуем после согласования с клиентом.'
+                    : 'Имя клиента не разглашается по NDA.'}
+                </p>
+              )}
+            </CardBase>
+          </li>
+        );
+      })}
+    </ul>
+
+    <p class="cgrid__empty" data-cases-empty hidden>
+      {emptyText}
+    </p>
+  </div>
+</section>
+
+<script>
+  function applyFilter(industry: string): void {
+    const grid = document.querySelector<HTMLUListElement>('[data-cases-grid]');
+    const empty = document.querySelector<HTMLParagraphElement>('[data-cases-empty]');
+    const filterList = document.querySelector<HTMLUListElement>('[data-filter-active]');
+    if (!grid || !filterList) return;
+
+    let visible = 0;
+    grid.querySelectorAll<HTMLLIElement>('.cgrid__item').forEach((item) => {
+      const ind = item.dataset['industry'];
+      const show = industry === 'all' || ind === industry;
+      item.hidden = !show;
+      if (show) visible += 1;
+    });
+
+    filterList.dataset['filterActive'] = industry;
+    filterList.querySelectorAll<HTMLAnchorElement>('.cgrid__filter').forEach((link) => {
+      if (link.dataset['filter'] === industry) {
+        link.setAttribute('aria-current', 'page');
+      } else {
+        link.removeAttribute('aria-current');
+      }
+    });
+
+    if (empty) empty.hidden = visible !== 0;
+  }
+
+  document.querySelectorAll<HTMLAnchorElement>('.cgrid__filter').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const ind = link.dataset['filter'];
+      if (!ind) return;
+      e.preventDefault();
+      applyFilter(ind);
+      // Обновим URL hash без перезагрузки
+      const newHash = ind === 'all' ? '' : `filter-${ind}`;
+      const url = new URL(window.location.href);
+      url.hash = newHash;
+      history.replaceState(null, '', url.toString());
+    });
+  });
+
+  // Если открыли по hash (#filter-retail) — применить
+  if (window.location.hash.startsWith('#filter-')) {
+    const ind = window.location.hash.replace('#filter-', '');
+    applyFilter(ind);
+  }
+</script>
+
+<style>
+  .cgrid {
+    padding-block: var(--spacing-8);
+    background: var(--color-bg-page);
+  }
+  .cgrid__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-3);
+  }
+  .cgrid__h {
+    max-width: 36ch;
+    margin-block-end: var(--spacing-3);
+  }
+  .cgrid__lead {
+    max-width: 64ch;
+    margin-block-end: var(--spacing-6);
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+
+  /* Filters */
+  .cgrid__filters {
+    margin-block-end: var(--spacing-6);
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+  .cgrid__filters-list {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--spacing-2);
+    margin: 0;
+    padding: var(--spacing-1) 0;
+    list-style: none;
+  }
+  .cgrid__filter {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--spacing-2) var(--spacing-4);
+    background: var(--color-bg-surface);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-default);
+    border-radius: var(--radius-pill);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color var(--duration-fast) var(--easing-standard),
+      color var(--duration-fast) var(--easing-standard),
+      border-color var(--duration-fast) var(--easing-standard);
+  }
+  .cgrid__filter:hover,
+  .cgrid__filter:focus-visible {
+    border-color: var(--color-action-primary);
+    color: var(--color-action-primary);
+  }
+  .cgrid__filter[aria-current='page'] {
+    background: var(--color-action-primary);
+    color: var(--color-text-on-brand);
+    border-color: var(--color-action-primary);
+  }
+
+  /* Grid */
+  .cgrid__list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+    margin: 0 0 var(--spacing-5);
+    padding: 0;
+    list-style: none;
+  }
+  .cgrid__item {
+    /* hidden управляется через [hidden] — браузер сам скроет */
+  }
+  .cgrid__title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+  }
+  .cgrid__excerpt {
+    color: var(--color-text-secondary);
+    line-height: var(--font-line-height-normal);
+  }
+  .cgrid__metrics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-4);
+    margin: 0;
+    padding-block-start: var(--spacing-3);
+    border-block-start: 1px solid var(--color-border-subtle);
+    list-style: none;
+  }
+  .cgrid__metric {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+  .cgrid__metric strong {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-action-primary);
+  }
+  .cgrid__metric-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+  }
+  .cgrid__note {
+    margin-block-start: var(--spacing-3);
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    line-height: 1.5;
+  }
+  .cgrid__note-tag {
+    display: inline-block;
+    margin-inline-end: var(--spacing-2);
+    padding: 2px var(--spacing-2);
+    background: var(--color-feedback-error-bg);
+    color: var(--color-feedback-error);
+    border-radius: var(--radius-xs);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-xs);
+    letter-spacing: var(--font-letter-spacing-wide);
+    text-transform: uppercase;
+  }
+  .cgrid__note-tag--soon {
+    background: var(--color-bg-surface-warm);
+    color: var(--color-action-primary);
+  }
+
+  .cgrid__empty {
+    margin: 0;
+    padding: var(--spacing-6);
+    background: var(--color-bg-surface);
+    border: 1px dashed var(--color-border-default);
+    border-radius: var(--radius-base);
+    color: var(--color-text-secondary);
+    text-align: center;
+    line-height: var(--font-line-height-normal);
+  }
+
+  @media (min-width: 768px)  { .cgrid__list { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .cgrid__list { grid-template-columns: repeat(3, 1fr); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cgrid__filter { transition: none; }
+  }
+</style>

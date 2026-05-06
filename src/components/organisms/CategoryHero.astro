@@ -1,0 +1,225 @@
+---
+/**
+ * CategoryHero — organism.
+ * Hero для category-страниц `/products/<cat>/`.
+ * Composition: Eyebrow + H1 + Lead + 2 CTA + Hero-chips (filter / подсерии / режимы) + 4 факта.
+ *
+ * Отличается от IndustryHero:
+ *   - product-focused (без mascot — здесь иконки/SKU);
+ *   - Hero-chips ряд (filter подсерии или температурные режимы), не интерактивный — anchor-ссылки.
+ *
+ * Источник:
+ * - 04_visuals/09-14-*.spec.md §Block: Hero
+ * - components_atomic.md §Organisms (Hero — category)
+ * - tone_of_voice.md §Hero CTA
+ */
+
+import Button from '@components/atoms/Button.astro';
+import Chip from '@components/molecules/Chip.astro';
+import Stat from '@components/molecules/Stat.astro';
+
+export interface CategoryChip {
+  label: string;
+  href: string;
+  active?: boolean;
+}
+
+export interface HeroFact {
+  value: string;
+  label: string;
+}
+
+export interface HeroImage {
+  src: string;
+  alt: string;
+}
+
+export interface Props {
+  /** Eyebrow (категория-маркер). */
+  eyebrow: string;
+  /** H1, ≤120 симв. */
+  h1: string;
+  /** Lead — что/сколько/какие размеры. */
+  lead: string;
+  primaryCta: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  /** Hero-chips (фильтр / подсерии / режимы). Опц. */
+  chips?: ReadonlyArray<CategoryChip>;
+  /** 4 факта (опц.). */
+  facts?: ReadonlyArray<HeroFact>;
+  /** Декоративная картинка справа (desktop). На mobile — скрыта. Опц. */
+  heroImage?: HeroImage;
+}
+
+const { eyebrow, h1, lead, primaryCta, secondaryCta, chips, facts, heroImage } = Astro.props;
+---
+
+<section class="chero" aria-labelledby="chero-h1">
+  <div class="chero__decor" aria-hidden="true"></div>
+  <div class="chero__inner container">
+    <div class="chero__text">
+      <p class="chero__eyebrow">{eyebrow}</p>
+      <h1 id="chero-h1" class="chero__h1">{h1}</h1>
+      <p class="chero__lead">{lead}</p>
+
+      <div class="chero__cta">
+        <Button variant="primary" size="lg" href={primaryCta.href}>{primaryCta.label}</Button>
+        {secondaryCta && (
+          <Button variant="secondary" size="lg" href={secondaryCta.href}>{secondaryCta.label}</Button>
+        )}
+      </div>
+
+      {chips && chips.length > 0 && (
+        <nav class="chero__chips" aria-label="Подсерии и режимы категории">
+          <ul class="chero__chips-list" role="list">
+            {chips.map((c) => (
+              <li>
+                <Chip variant={c.active ? 'active' : 'default'} size="base" href={c.href}>
+                  {c.label}
+                </Chip>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )}
+    </div>
+
+    {heroImage && (
+      <figure class="chero__media" aria-hidden="true">
+        <img
+          src={heroImage.src}
+          alt={heroImage.alt}
+          loading="eager"
+          decoding="async"
+          width="640"
+          height="640"
+        />
+      </figure>
+    )}
+
+    {facts && facts.length > 0 && (
+      <ul class="chero__facts" role="list">
+        {facts.map((f) => (
+          <li>
+            <Stat value={f.value} label={f.label} size="base" variant="surface" />
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</section>
+
+<style>
+  .chero {
+    position: relative;
+    overflow: clip;
+    padding-block: var(--spacing-6) var(--spacing-7);
+    background: var(--color-bg-page);
+    isolation: isolate;
+  }
+  .chero__decor {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(ellipse 60% 45% at top right, var(--color-overlay-brand-tint-low), transparent 70%);
+  }
+  .chero__inner {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-5);
+    max-width: var(--container-max);
+  }
+  .chero__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+  .chero__eyebrow {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+  }
+  .chero__h1 {
+    max-width: 22ch;
+    font-size: var(--font-size-h1-fluid);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--font-line-height-tight);
+    letter-spacing: var(--font-letter-spacing-tighter);
+  }
+  .chero__lead {
+    max-width: 56ch;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-md);
+    line-height: var(--font-line-height-normal);
+  }
+  .chero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-3);
+  }
+
+  .chero__chips {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-block-start: var(--spacing-2);
+  }
+  .chero__chips-list {
+    display: flex;
+    gap: var(--spacing-2);
+    padding: var(--spacing-1) 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .chero__facts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .chero__media {
+    display: none;
+    margin: 0;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-2xl, 1.5rem);
+    overflow: hidden;
+    background: var(--color-bg-surface);
+    box-shadow: var(--shadow-lg, 0 12px 32px rgba(0, 0, 0, 0.08));
+  }
+  .chero__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  @media (max-width: 767px) {
+    .chero__cta { flex-direction: column; align-items: stretch; }
+    .chero__cta :global(.btn) { width: 100%; }
+  }
+  @media (min-width: 768px) {
+    .chero { padding-block: var(--spacing-8) var(--spacing-9); }
+    .chero__inner {
+      grid-template-columns: 1.4fr 1fr;
+      gap: var(--spacing-7);
+      align-items: start;
+    }
+    .chero__media {
+      display: block;
+      grid-column: 2;
+      grid-row: 1;
+      align-self: start;
+    }
+    .chero__facts {
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(4, 1fr);
+      margin-block-start: var(--spacing-4);
+    }
+  }
+</style>
