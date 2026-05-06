@@ -2,35 +2,28 @@
 # Stage 1 (builder) — собирает dist/ через npm run build.
 # Stage 2 (runner)  — лёгкий образ с serve, отдаёт static-файлы.
 #
-# Образ оптимизирован под Railway / любой Docker-host (Fly.io, Render, etc).
+# ВАЖНО: используем node:20-bookworm-slim (Debian glibc), а НЕ alpine (musl libc).
+# Причина: sharp@0.34 не имеет prebuilt-binaries для musl, на alpine падает
+# с "Attempting to build from source via node-gyp / Please add node-addon-api".
+# На glibc Debian sharp ставится prebuilt мгновенно.
 
 # ─── Stage 1: BUILD ──────────────────────────────────────────────
-FROM node:20-alpine AS builder
-
-# vips-dev + build-essential нужны для нативной сборки `sharp` (image optimization в Astro).
-RUN apk add --no-cache \
-    vips-dev \
-    pkgconf \
-    python3 \
-    make \
-    g++
+FROM node:20-bookworm-slim AS builder
 
 WORKDIR /app
 
 # Сначала копируем только манифесты — для лучшего кеша слоёв.
 COPY package.json package-lock.json ./
-RUN npm ci
+
+# --include=optional нужен для optional-binaries sharp.
+RUN npm ci --include=optional
 
 # Теперь весь исходник + сборка.
 COPY . .
 RUN npm run build
 
 # ─── Stage 2: RUNTIME ────────────────────────────────────────────
-FROM node:20-alpine AS runner
-
-# vips нужен runtime если sharp используется на лету.
-# Здесь у нас pure static — но оставляем на случай SSR.
-RUN apk add --no-cache vips
+FROM node:20-bookworm-slim AS runner
 
 WORKDIR /app
 
