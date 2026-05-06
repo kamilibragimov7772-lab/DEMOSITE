@@ -6,7 +6,7 @@
   "description": "B2B-каталог-лидогенератор для производителя термоупаковки. Astro 5 + TypeScript strict + Tailwind v4 + Style Dictionary.",
   "scripts": {
     "dev": "astro dev --host 127.0.0.1 --port 4321",
-    "start": "astro dev",
+    "start": "serve dist -l tcp://0.0.0.0:${PORT:-4321} --no-clipboard",
     "build": "npm run tokens && astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
@@ -21,6 +21,7 @@
     "@tailwindcss/postcss": "^4.2.4",
     "astro": "^6.2.1",
     "astro-icon": "^1.1.5",
+    "serve": "^14.2.4",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.2.4",
     "typescript": "^5.9.3"

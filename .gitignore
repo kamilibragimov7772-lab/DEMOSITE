@@ -28,3 +28,22 @@ Thumbs.db
 
 # generated tokens (re-built via npm run tokens)
 src/styles/tokens.css
+
+# Playwright MCP test artifacts
+.playwright-mcp/
+test-results/
+playwright-report/
+
+# Top-level screenshot/asset dumps from dev tools
+/*.jpeg
+/*.png
+/*.json.old
+
+# Lighthouse / preview server logs
+/lh-*.json
+/preview*.log
+/*.log
+
+# Temp / OS
+*.tmp
+*.bak
