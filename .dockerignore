@@ -1,0 +1,32 @@
+# Не копировать в Docker build context — ускоряет сборку и уменьшает образ.
+
+node_modules/
+dist/
+.astro/
+.git/
+.github/
+.vscode/
+.idea/
+.playwright-mcp/
+*.log
+.env*
+!.env.example
+
+# Артефакты тестов и preview
+/cases*.jpeg
+/industries*.jpeg
+/homepage*.jpeg
+*.tmp
+*.bak
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Документация (не нужна в production-образе)
+README.md
+*.md
+
+# Конфиг разработки
+.editorconfig
+.npmrc
