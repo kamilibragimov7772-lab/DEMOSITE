@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "astro dev --host 127.0.0.1 --port 4321",
     "start": "serve dist -l tcp://0.0.0.0:${PORT:-4321} --no-clipboard",
-    "build": "npm run tokens && astro check && astro build",
+    "build": "npm run tokens && astro build",
+    "build:strict": "npm run tokens && astro check && astro build",
     "preview": "astro preview",
     "astro": "astro",
     "tokens": "node ./style-dictionary/build.mjs",

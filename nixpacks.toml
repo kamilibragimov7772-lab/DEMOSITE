@@ -1,8 +1,11 @@
 # Railway / Nixpacks конфиг для Astro static site.
 # Сборка через `npm run build` (генерит dist/), затем static-server `serve` слушает $PORT.
+#
+# vips — нативная либа для sharp (image-optimization в Astro v6).
+# Без неё `astro build` падает на любой странице с <Image> или getImage().
 
 [phases.setup]
-nixPkgs = ["nodejs_20", "npm"]
+nixPkgs = ["nodejs_20", "npm", "vips", "pkg-config"]
 
 [phases.install]
 cmds = ["npm ci"]
