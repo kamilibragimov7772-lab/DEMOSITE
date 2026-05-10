@@ -1,0 +1,85 @@
+---
+/**
+ * TeamGrid — organism (B-1, iter3 visual-b2b-audit-loop).
+ * Сетка карточек команды: фото или initials-аватар + имя + роль + опц. blurb.
+ * Используется на /about/ (4 карточки) и /contacts/ (1-2 карточки менеджеров).
+ *
+ * Tokens-only. Photo fallback — initials avatar с brand-градиентом.
+ */
+
+export interface TeamMember {
+  name: string;
+  role: string;
+  blurb?: string;
+  initials: string;  // 'КИ' для Камиль Ибрагимов
+  photoSrc?: string; // если есть фото — https path; иначе initials avatar
+}
+export interface Props {
+  eyebrow?: string;
+  heading: string;
+  members: TeamMember[];
+}
+const { eyebrow, heading, members } = Astro.props;
+---
+<section class="team" aria-labelledby="team-h">
+  <div class="container">
+    {eyebrow && <p class="team__eyebrow">{eyebrow}</p>}
+    <h2 id="team-h" class="team__heading">{heading}</h2>
+    <ul class="team__grid" role="list">
+      {members.map((m) => (
+        <li class="team__card">
+          {m.photoSrc ? (
+            <img class="team__photo" src={m.photoSrc} alt={`Фото ${m.name}`} loading="lazy" decoding="async" width="80" height="80" />
+          ) : (
+            <div class="team__avatar" aria-hidden="true">{m.initials}</div>
+          )}
+          <div class="team__info">
+            <p class="team__name">{m.name}</p>
+            <p class="team__role">{m.role}</p>
+            {m.blurb && <p class="team__blurb">{m.blurb}</p>}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .team { padding-block: var(--spacing-7); background: var(--color-bg-page); }
+  .team__eyebrow {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin: 0 0 var(--spacing-3);
+  }
+  .team__heading { font-size: var(--font-size-h2-fluid); margin: 0 0 var(--spacing-6); }
+  .team__grid { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--spacing-4); grid-template-columns: 1fr; }
+  .team__card {
+    display: flex; gap: var(--spacing-4); align-items: flex-start;
+    padding: var(--spacing-4);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+  }
+  .team__photo, .team__avatar { width: 80px; height: 80px; border-radius: 50%; flex: 0 0 80px; }
+  .team__photo { object-fit: cover; }
+  .team__avatar {
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--color-action-primary), var(--color-action-primary-hover));
+    color: var(--color-text-on-brand);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    letter-spacing: 0.05em;
+  }
+  .team__name { font-weight: var(--font-weight-semibold); margin: 0 0 var(--spacing-1); }
+  .team__role { color: var(--color-text-secondary); font-size: var(--font-size-sm); margin: 0 0 var(--spacing-1); }
+  .team__blurb { color: var(--color-text-tertiary); font-size: var(--font-size-sm); margin: 0; }
+  @media (min-width: 768px) {
+    .team__grid { grid-template-columns: repeat(2, 1fr); gap: var(--spacing-5); }
+  }
+  @media (min-width: 1024px) {
+    .team__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

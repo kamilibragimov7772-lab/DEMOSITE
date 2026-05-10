@@ -49,6 +49,10 @@ export interface Props {
   errorText?: string;
   /** Heading-level: section использует h2; внутри карточки — h3. */
   headingLevel?: 'h2' | 'h3';
+  /** SLA-подпись под submit-кнопкой (default — «Менеджер свяжется в течение 2 часов в рабочее время»). */
+  slaText?: string;
+  /** Шаги «Что произойдёт после заявки». */
+  nextSteps?: { number: string; title: string }[];
 }
 
 const {
@@ -62,6 +66,13 @@ const {
   successText = 'Спасибо! Менеджер свяжется в течение 2 часов.',
   errorText = 'Что-то пошло не так. Параллельный канал — WhatsApp +7 (800) 101-15-25.',
   headingLevel = 'h2',
+  slaText = 'Менеджер свяжется в течение 2 часов в рабочее время (Пн–Пт, 09:00–18:00 МСК)',
+  nextSteps = [
+    { number: '1', title: 'Получим заявку и свяжемся в течение 2 часов' },
+    { number: '2', title: 'Согласуем требования и объёмы' },
+    { number: '3', title: 'Бесплатно подготовим комплектацию + расчёт' },
+    { number: '4', title: 'Отгрузка от 24 ч с момента согласования' },
+  ],
 } = Astro.props;
 
 const Heading = headingLevel;
@@ -76,6 +87,17 @@ const STATUS_ID = `${id}-status`;
       <Heading id={HEADING_ID} class="formblock__h">{heading}</Heading>
       {description && <p class="formblock__desc">{description}</p>}
     </div>
+
+    {nextSteps && nextSteps.length > 0 && (
+      <ol class="formblock__steps" role="list" aria-label="Что произойдёт после заявки">
+        {nextSteps.map((s) => (
+          <li class="formblock__step">
+            <span class="formblock__step-num">{s.number}</span>
+            <span class="formblock__step-title">{s.title}</span>
+          </li>
+        ))}
+      </ol>
+    )}
 
     <form
       class="formblock__form"
@@ -215,6 +237,8 @@ const STATUS_ID = `${id}-status`;
 
       <Button type="submit" variant="primary" size="lg" fullWidth>{submitLabel}</Button>
 
+      {slaText && <p class="formblock__sla">{slaText}</p>}
+
       <p
         id={STATUS_ID}
         class="formblock__status"
@@ -346,6 +370,13 @@ const STATUS_ID = `${id}-status`;
   }
   .formblock__consent a { color: var(--color-action-primary); text-decoration: underline; text-underline-offset: 0.2em; }
 
+  .formblock__sla {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    line-height: var(--font-line-height-normal);
+  }
+
   .formblock__status {
     margin: 0;
     min-height: 1.5em;
@@ -378,5 +409,33 @@ const STATUS_ID = `${id}-status`;
 
   @media (min-width: 768px) {
     .formblock__row { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* B-2: NextStepsList — «Что произойдёт после заявки» (iter3 visual-b2b-audit-loop). */
+  .formblock__steps {
+    list-style: none; padding: 0; margin: 0 0 var(--spacing-6);
+    display: grid; gap: var(--spacing-3); grid-template-columns: 1fr;
+  }
+  .formblock__step {
+    display: flex; gap: var(--spacing-3); align-items: flex-start;
+    padding: var(--spacing-3);
+    background: color-mix(in srgb, var(--color-action-primary) 4%, var(--color-bg-surface));
+    border-left: 3px solid var(--color-action-primary);
+    border-radius: var(--radius-sm);
+  }
+  .formblock__step-num {
+    font-family: var(--font-family-monospace);
+    color: var(--color-action-primary);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-lg);
+    flex: 0 0 auto;
+  }
+  .formblock__step-title {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.45;
+  }
+  @media (min-width: 768px) {
+    .formblock__steps { grid-template-columns: repeat(4, 1fr); }
   }
 </style>

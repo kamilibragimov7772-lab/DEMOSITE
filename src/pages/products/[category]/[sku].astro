@@ -756,8 +756,15 @@ const schema = [
           (sku.category === 'akkumulyatory-holoda' && s.category === 'termopakety')
         )).slice(0, 4).map((r) => (
           <a class="rcard" href={`/products/${r.category}/${r.slug}/`}>
-            <div class="rcard__img">
-              <img src={r.image ?? `/products/_catalog/${r.slug}.webp`} alt={r.title} loading="lazy" />
+            <div class={`rcard__img ${!r.image ? 'rcard__img--fallback' : ''}`}>
+              {r.image ? (
+                <img src={r.image} alt={r.title} loading="lazy" />
+              ) : (
+                <>
+                  <span class="rcard__size" aria-hidden="true">{r.size ?? '—'}</span>
+                  <span class="rcard__series" aria-hidden="true">{(r.series ?? '').toUpperCase()}</span>
+                </>
+              )}
             </div>
             <h3>{r.title}</h3>
             <p class="rcard__meta">{r.size}{r.volumeL !== null ? ` · ${r.volumeL} л` : ''}</p>
@@ -1288,8 +1295,40 @@ const schema = [
   .rcard__img {
     aspect-ratio: 1; background: var(--paper-soft); border-radius: 8px;
     display: flex; align-items: center; justify-content: center; padding: var(--spacing-3);
+    position: relative; overflow: hidden;
   }
   .rcard__img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .rcard__img--fallback {
+    background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+    color: #fff;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .rcard__img--fallback::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(
+      45deg, transparent, transparent 9px,
+      rgba(255,255,255,0.07) 9px, rgba(255,255,255,0.07) 10px
+    );
+    pointer-events: none;
+  }
+  .rcard__size {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: clamp(18px, 3.2vw, 26px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    z-index: 1;
+  }
+  .rcard__series {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    opacity: 0.75;
+    text-transform: uppercase;
+    z-index: 1;
+  }
   .rcard h3 { font-size: 13px; font-weight: 600; margin: 0; line-height: 1.3; }
   .rcard__meta { font-size: 11px; color: var(--ink-soft); margin: 0; }
   .rcard__price { color: var(--primary-mid); font-weight: 700; font-size: 14px; margin-block-start: auto; }

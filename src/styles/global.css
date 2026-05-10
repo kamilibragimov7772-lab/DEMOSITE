@@ -262,6 +262,10 @@ code, kbd, pre, samp { font-family: var(--font-family-monospace); font-size: 0.9
    ========================================================================== */
 
 @media (max-width: 767px) {
+  /* P1-7: body font-size ≥16px на mobile — iOS не зумит при focus на input */
+  html { font-size: 100%; }
+  body { font-size: 1rem; }
+
   button,
   [role='button'],
   a.btn,

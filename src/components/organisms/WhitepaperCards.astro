@@ -1,0 +1,85 @@
+---
+/**
+ * WhitepaperCards — organism (B-3, iter3 visual-b2b-audit-loop).
+ * Lead-magnet секция: 3 PDF-гида под B1/B2/B5 (доставка/ритейл/фарма).
+ * Минимальная версия: ссылка-карточка → PDF (placeholder href, реальные PDF подключаются позже).
+ *
+ * Tokens-only.
+ */
+
+const items = [
+  {
+    icon: 'truck',
+    title: 'Гид: термоупаковка для доставки еды',
+    bullets: ['Какой формат под ваш короб', 'Сколько SHOCK на маршрут', 'Как считать ROI на возврат'],
+    pdfHref: '/assets/docs/wp-dostavka.pdf',
+  },
+  {
+    icon: 'shopping-bag',
+    title: 'Гид: термоупаковка для ритейла',
+    bullets: ['Брендирование от 100 шт: матрица методов', 'Цены и сроки полного цикла', 'Готовность к 44-ФЗ / 223-ФЗ'],
+    pdfHref: '/assets/docs/wp-retail.pdf',
+  },
+  {
+    icon: 'flask-conical',
+    title: 'Гид: термоупаковка для фарм-смежных',
+    bullets: ['Холодовая цепь +2…+8°C на 4 ч', 'Документы для tender (ТР ТС 005/2011)', 'Чем мы НЕ являемся (РУ Росздравнадзора)'],
+    pdfHref: '/assets/docs/wp-farma.pdf',
+  },
+];
+---
+<section class="whitepapers" aria-labelledby="wp-h">
+  <div class="container">
+    <p class="whitepapers__eyebrow">База знаний для закупщиков</p>
+    <h2 id="wp-h" class="whitepapers__heading">3 гида: как выбрать термоупаковку под вашу категорию</h2>
+    <ul class="whitepapers__grid" role="list">
+      {items.map((it) => (
+        <li class="whitepapers__card">
+          <h3 class="whitepapers__title">{it.title}</h3>
+          <ul class="whitepapers__bullets" role="list">
+            {it.bullets.map((b) => <li>{b}</li>)}
+          </ul>
+          <a class="whitepapers__cta" href={it.pdfHref} download>Скачать PDF →</a>
+        </li>
+      ))}
+    </ul>
+    <p class="whitepapers__note">PDF-гиды отправляются на email после короткой формы. Без спама.</p>
+  </div>
+</section>
+
+<style>
+  .whitepapers { padding-block: var(--spacing-7); background: color-mix(in srgb, var(--color-action-primary) 3%, var(--color-bg-page)); }
+  .whitepapers__eyebrow {
+    color: var(--color-action-primary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin: 0 0 var(--spacing-3);
+  }
+  .whitepapers__heading { font-size: var(--font-size-h2-fluid); margin: 0 0 var(--spacing-6); max-width: 30ch; }
+  .whitepapers__grid { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--spacing-4); grid-template-columns: 1fr; }
+  .whitepapers__card {
+    display: flex; flex-direction: column; gap: var(--spacing-3);
+    padding: var(--spacing-5);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-base);
+  }
+  .whitepapers__title { font-size: var(--font-size-lg); margin: 0; }
+  .whitepapers__bullets { list-style: disc; padding-left: var(--spacing-5); margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+  .whitepapers__bullets li { margin-bottom: var(--spacing-1); }
+  .whitepapers__cta {
+    margin-top: auto;
+    color: var(--color-action-primary);
+    font-weight: var(--font-weight-semibold);
+    text-decoration: none;
+    align-self: flex-start;
+  }
+  .whitepapers__cta:hover { text-decoration: underline; }
+  .whitepapers__cta:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+  .whitepapers__note { color: var(--color-text-tertiary); font-size: var(--font-size-xs); margin-top: var(--spacing-4); }
+  @media (min-width: 768px) {
+    .whitepapers__grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

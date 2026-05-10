@@ -13,6 +13,8 @@ import Chip from '@components/molecules/Chip.astro';
 export interface Advantage {
   title: string;
   description: string;
+  /** Optional SVG icon markup (24×24 viewBox). */
+  icon?: string;
 }
 
 export interface Props {
@@ -22,12 +24,14 @@ export interface Props {
   /** ≤12 фактоидов-пилюль (factoids). Из outline'а — 8 шт. */
   pills: ReadonlyArray<string>;
   eyebrow?: string;
+  /** Optional background image path — применяется как subtle texture. */
+  backgroundImage?: string;
 }
 
-const { heading, advantages, pills, eyebrow } = Astro.props;
+const { heading, advantages, pills, eyebrow, backgroundImage } = Astro.props;
 ---
 
-<section class="adv" aria-labelledby="adv-h2">
+<section class="adv" aria-labelledby="adv-h2" style={backgroundImage ? `--adv-bg: url('${backgroundImage}')` : undefined}>
   <div class="container">
     {eyebrow && <p class="adv__eyebrow">{eyebrow}</p>}
     <h2 id="adv-h2" class="adv__h2">{heading}</h2>
@@ -35,6 +39,11 @@ const { heading, advantages, pills, eyebrow } = Astro.props;
     <ul class="adv__grid" role="list">
       {advantages.map((a) => (
         <li class="adv__item">
+          {a.icon && (
+            <span class="adv__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" set:html={a.icon} />
+            </span>
+          )}
           <h3 class="adv__title">{a.title}</h3>
           <p class="adv__desc">{a.description}</p>
         </li>
@@ -52,6 +61,18 @@ const { heading, advantages, pills, eyebrow } = Astro.props;
 <style>
   .adv {
     padding-block: var(--spacing-8);
+    position: relative;
+    isolation: isolate;
+  }
+  .adv[style*="--adv-bg"]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--adv-bg);
+    background-size: cover;
+    background-position: center;
+    opacity: 0.06;
+    z-index: -1;
   }
   .adv__eyebrow {
     color: var(--color-text-tertiary);
@@ -82,7 +103,26 @@ const { heading, advantages, pills, eyebrow } = Astro.props;
     background: var(--color-bg-surface);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--radius-base);
+    transition: border-color var(--duration-fast) var(--easing-standard),
+                box-shadow var(--duration-fast) var(--easing-standard);
   }
+  .adv__item:hover {
+    border-color: var(--color-action-primary);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-action-primary) 30%, transparent);
+  }
+  .adv__icon {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--color-action-primary) 10%, var(--color-bg-page));
+    color: var(--color-action-primary);
+    flex-shrink: 0;
+    margin-block-end: var(--spacing-1);
+  }
+  .adv__icon svg { width: 22px; height: 22px; display: block; }
   .adv__title {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-semibold);

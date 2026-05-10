@@ -22,7 +22,6 @@
  * CSP: inline <script> без external dependencies. nonce-friendly: можно добавить позднее.
  */
 
-import { Icon } from 'astro-icon/components';
 ---
 
 <aside
@@ -34,68 +33,56 @@ import { Icon } from 'astro-icon/components';
   hidden
 >
   <div class="cookie-banner__inner">
-    <div class="cookie-banner__intro">
-      <h2 class="cookie-banner__title">Cookies на этом сайте</h2>
+    {/* V4-4 (iter4): «Настроить» теперь раскрывает реальный modal с 3 категориями. */}
+    <div class="cookie-banner__main">
       <p class="cookie-banner__text">
-        Сайт использует cookies для работы форм, аналитики и улучшения сервиса. Технические cookies нужны всегда, аналитические и маркетинговые — по вашему выбору.
-        Подробнее в <a href="/legal/cookies/">политике cookies</a> и <a href="/legal/privacy/">политике конфиденциальности</a> (152-ФЗ).
+        Мы используем cookies для аналитики и маркетинга.
+        <a href="/legal/cookies/">Подробнее в политике конфиденциальности.</a>
       </p>
+
+      <div class="cookie-banner__actions">
+        <button type="button" class="cookie-banner__btn cookie-banner__btn--primary" data-cookie-action="accept-all">
+          Принять
+        </button>
+        <button type="button" class="cookie-banner__btn cookie-banner__btn--ghost" data-cookie-action="toggle-settings" aria-expanded="false" aria-controls="cookie-settings">
+          Настроить
+        </button>
+        <button type="button" class="cookie-banner__btn cookie-banner__btn--ghost" data-cookie-action="reject">
+          Отклонить
+        </button>
+      </div>
     </div>
 
-    <details class="cookie-banner__settings" data-cookie-settings>
-      <summary class="cookie-banner__settings-summary">
-        <span>Настроить категории</span>
-        <Icon name="lucide:chevron-down" class="cookie-banner__chevron" aria-hidden="true" />
-      </summary>
-
-      <fieldset class="cookie-banner__categories">
-        <legend class="cookie-banner__legend">Категории cookies</legend>
-
-        <label class="cookie-banner__category cookie-banner__category--locked">
-          <input type="checkbox" checked disabled aria-describedby="cb-cat-necessary-desc" data-cat="necessary" />
-          <span class="cookie-banner__category-body">
-            <span class="cookie-banner__category-title">Необходимые</span>
-            <span id="cb-cat-necessary-desc" class="cookie-banner__category-desc">
-              Сессия, защита форм от CSRF, сохранение выбора cookies. Отключить нельзя — без них сайт не работает.
-            </span>
-          </span>
-        </label>
-
-        <label class="cookie-banner__category">
-          <input type="checkbox" aria-describedby="cb-cat-analytics-desc" data-cat="analytics" />
-          <span class="cookie-banner__category-body">
-            <span class="cookie-banner__category-title">Аналитика</span>
-            <span id="cb-cat-analytics-desc" class="cookie-banner__category-desc">
-              Яндекс.Метрика — анонимная статистика посещений и поведения на сайте. Помогает улучшать сервис.
-            </span>
-          </span>
-        </label>
-
-        <label class="cookie-banner__category">
-          <input type="checkbox" aria-describedby="cb-cat-marketing-desc" data-cat="marketing" />
-          <span class="cookie-banner__category-body">
-            <span class="cookie-banner__category-title">Маркетинг</span>
-            <span id="cb-cat-marketing-desc" class="cookie-banner__category-desc">
-              Яндекс.Директ (ретаргетинг рекламы) и Bitrix24 (онлайн-чат). Помогают показывать релевантные предложения.
-            </span>
-          </span>
-        </label>
-      </fieldset>
-
+    <div class="cookie-banner__settings" id="cookie-settings" data-cookie-settings hidden>
+      <p class="cookie-banner__settings-title">Категории cookies</p>
+      <ul class="cookie-cats" role="list">
+        <li class="cookie-cat">
+          <label class="cookie-cat__label">
+            <input type="checkbox" data-cat="necessary" checked disabled />
+            <span class="cookie-cat__name">Необходимые</span>
+            <span class="cookie-cat__desc">CSRF-токены, сессия. Всегда включены — без них сайт не работает.</span>
+          </label>
+        </li>
+        <li class="cookie-cat">
+          <label class="cookie-cat__label">
+            <input type="checkbox" data-cat="analytics" />
+            <span class="cookie-cat__name">Аналитика</span>
+            <span class="cookie-cat__desc">Yandex Metrica — анонимная статистика посещений, помогает улучшать сайт.</span>
+          </label>
+        </li>
+        <li class="cookie-cat">
+          <label class="cookie-cat__label">
+            <input type="checkbox" data-cat="marketing" />
+            <span class="cookie-cat__name">Маркетинг</span>
+            <span class="cookie-cat__desc">Yandex Direct + Bitrix24 chat — ретаргетинг и онлайн-консультант.</span>
+          </label>
+        </li>
+      </ul>
       <div class="cookie-banner__settings-actions">
-        <button type="button" class="cookie-banner__btn cookie-banner__btn--secondary" data-cookie-action="save">
+        <button type="button" class="cookie-banner__btn cookie-banner__btn--primary" data-cookie-action="save">
           Сохранить выбор
         </button>
       </div>
-    </details>
-
-    <div class="cookie-banner__actions">
-      <button type="button" class="cookie-banner__btn cookie-banner__btn--ghost" data-cookie-action="reject">
-        Только необходимые
-      </button>
-      <button type="button" class="cookie-banner__btn cookie-banner__btn--primary" data-cookie-action="accept-all">
-        Принять все
-      </button>
     </div>
   </div>
 </aside>
@@ -184,6 +171,22 @@ import { Icon } from 'astro-icon/components';
       }
     }
 
+    function toggleSettings() {
+      var settings = banner.querySelector('[data-cookie-settings]');
+      var btn = banner.querySelector('[data-cookie-action="toggle-settings"]');
+      if (!settings) return;
+      var isOpen = !settings.hasAttribute('hidden');
+      if (isOpen) {
+        settings.setAttribute('hidden', '');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+        banner.classList.remove('is-expanded');
+      } else {
+        settings.removeAttribute('hidden');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+        banner.classList.add('is-expanded');
+      }
+    }
+
     // Click-handler — делегирование от banner.
     banner.addEventListener('click', function (e) {
       var target = e.target;
@@ -199,6 +202,8 @@ import { Icon } from 'astro-icon/components';
         writeChoice({ analytics: false, marketing: false });
       } else if (action === 'save') {
         writeChoice(readCheckedCategories());
+      } else if (action === 'toggle-settings') {
+        toggleSettings();
       }
     });
 
@@ -221,8 +226,11 @@ import { Icon } from 'astro-icon/components';
       open: function () {
         var current = readChoice() || { analytics: false, marketing: false };
         setCategoryToggles(current);
-        var details = banner.querySelector('[data-cookie-settings]');
-        if (details) details.open = true;
+        var settings = banner.querySelector('[data-cookie-settings]');
+        var btn = banner.querySelector('[data-cookie-action="toggle-settings"]');
+        if (settings) settings.removeAttribute('hidden');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+        banner.classList.add('is-expanded');
         showBanner();
       },
       get: readChoice,
@@ -231,18 +239,23 @@ import { Icon } from 'astro-icon/components';
 </script>
 
 <style>
+  /* ── Slim-toast: sticky bottom strip ~52px desktop / ~64px mobile ── */
   .cookie-banner {
     position: fixed;
     inset-inline: 0;
     inset-block-end: 0;
-    z-index: var(--z-modal);
+    /* z-index ниже sticky header (--z-sticky обычно 100), выше обычного контента */
+    z-index: calc(var(--z-sticky, 100) - 10);
     background: var(--color-bg-page);
     border-block-start: 1px solid var(--color-border-default);
-    box-shadow: 0 -8px 32px rgba(20, 24, 28, 0.12);
-    padding: var(--spacing-4) var(--spacing-4) calc(var(--spacing-4) + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -4px 16px rgba(20, 24, 28, 0.08);
+    padding-block: var(--spacing-2);
+    padding-inline: var(--spacing-4);
+    padding-block-end: calc(var(--spacing-2) + env(safe-area-inset-bottom, 0px));
     opacity: 0;
-    transform: translateY(8px);
-    transition: opacity var(--duration-normal) var(--easing-standard), transform var(--duration-normal) var(--easing-standard);
+    transform: translateY(6px);
+    transition: opacity var(--duration-normal) var(--easing-standard),
+                transform var(--duration-normal) var(--easing-standard);
     will-change: opacity, transform;
   }
   .cookie-banner.is-visible {
@@ -255,28 +268,17 @@ import { Icon } from 'astro-icon/components';
     margin-inline: auto;
     max-width: 1100px;
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-3);
-  }
-
-  .cookie-banner__intro {
-    display: flex;
+    flex-wrap: wrap;
     flex-direction: column;
     gap: var(--spacing-2);
-  }
-
-  .cookie-banner__title {
-    margin: 0;
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-primary);
-    line-height: var(--font-line-height-snug);
+    min-height: 40px;
   }
 
   .cookie-banner__text {
+    flex: 1 1 220px;
     margin: 0;
+    font-size: var(--font-size-xs);
     color: var(--color-text-secondary);
-    font-size: var(--font-size-sm);
     line-height: var(--font-line-height-normal);
   }
   .cookie-banner__text a {
@@ -284,119 +286,29 @@ import { Icon } from 'astro-icon/components';
     text-decoration: underline;
     text-underline-offset: 0.2em;
   }
-  .cookie-banner__text a:hover,
-  .cookie-banner__text a:focus-visible {
-    text-decoration-thickness: 2px;
-  }
+  .cookie-banner__text a:hover { text-decoration-thickness: 2px; }
 
-  /* Settings — accordion */
-  .cookie-banner__settings {
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-base);
-    background: var(--color-bg-surface-warm);
-  }
-  .cookie-banner__settings-summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--spacing-3);
-    padding: var(--spacing-3) var(--spacing-4);
-    min-height: 44px;
-    cursor: pointer;
-    list-style: none;
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
-  }
-  .cookie-banner__settings-summary::-webkit-details-marker { display: none; }
-  .cookie-banner__settings[open] .cookie-banner__chevron { transform: rotate(180deg); }
-  .cookie-banner__chevron {
-    width: 16px;
-    height: 16px;
-    color: var(--color-text-tertiary);
-    transition: transform var(--duration-fast) var(--easing-standard);
-  }
-
-  .cookie-banner__categories {
-    margin: 0;
-    padding: 0 var(--spacing-4) var(--spacing-3);
-    border: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-3);
-  }
-  .cookie-banner__legend { position: absolute; left: -9999px; }
-
-  .cookie-banner__category {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: var(--spacing-3);
-    align-items: start;
-    padding: var(--spacing-3);
-    background: var(--color-bg-page);
-    border: 1px solid var(--color-border-subtle);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: border-color var(--duration-fast) var(--easing-standard);
-  }
-  .cookie-banner__category:hover { border-color: var(--color-border-default); }
-  .cookie-banner__category:focus-within { border-color: var(--color-border-focus); box-shadow: var(--shadow-focus-ring); }
-  .cookie-banner__category--locked { cursor: not-allowed; opacity: 0.85; }
-
-  .cookie-banner__category input[type='checkbox'] {
-    width: 20px;
-    height: 20px;
-    margin: 2px 0 0;
-    accent-color: var(--color-action-primary);
-    cursor: pointer;
-  }
-  .cookie-banner__category--locked input[type='checkbox'] { cursor: not-allowed; }
-
-  .cookie-banner__category-body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-1);
-  }
-  .cookie-banner__category-title {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
-  }
-  .cookie-banner__category-desc {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-secondary);
-    line-height: var(--font-line-height-normal);
-  }
-
-  .cookie-banner__settings-actions {
-    padding: 0 var(--spacing-4) var(--spacing-3);
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  /* Action buttons */
   .cookie-banner__actions {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: var(--spacing-2);
+    flex-shrink: 0;
   }
+
   .cookie-banner__btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--spacing-2);
-    min-height: 44px;
-    padding: var(--spacing-3) var(--spacing-5);
+    min-height: 36px;
+    padding: var(--spacing-1) var(--spacing-4);
     border-radius: var(--radius-base);
     font-family: inherit;
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
     line-height: 1;
     cursor: pointer;
     border: 1px solid transparent;
-    text-align: center;
     transition: background var(--duration-fast) var(--easing-standard),
-                border-color var(--duration-fast) var(--easing-standard),
                 color var(--duration-fast) var(--easing-standard);
   }
   .cookie-banner__btn--primary {
@@ -404,52 +316,115 @@ import { Icon } from 'astro-icon/components';
     color: var(--color-text-on-brand);
   }
   .cookie-banner__btn--primary:hover { background: var(--color-action-primary-hover); }
-  .cookie-banner__btn--secondary {
-    background: var(--color-bg-page);
-    color: var(--color-text-primary);
-    border-color: var(--color-border-default);
-  }
-  .cookie-banner__btn--secondary:hover { border-color: var(--color-border-strong); }
   .cookie-banner__btn--ghost {
     background: transparent;
-    color: var(--color-text-primary);
-    border-color: var(--color-border-default);
+    color: var(--color-text-secondary);
+    border-color: transparent;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    padding-inline: var(--spacing-2);
   }
-  .cookie-banner__btn--ghost:hover { background: var(--color-bg-surface); }
+  .cookie-banner__btn--ghost:hover { color: var(--color-text-primary); }
   .cookie-banner__btn:focus-visible {
     outline: 2px solid var(--color-border-focus);
     outline-offset: 2px;
   }
 
-  /* Tablet+ — растяжка по горизонтали */
+  /* V4-4 (iter4): main row — обычный slim-toast компактный layout. */
+  .cookie-banner__main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-3);
+    width: 100%;
+    min-height: 40px;
+  }
+  .cookie-banner__main .cookie-banner__text { flex: 1 1 220px; margin: 0; }
+
+  /* V4-4: expanded settings panel — раскрывается по «Настроить». */
+  .cookie-banner.is-expanded {
+    padding-block: var(--spacing-4);
+  }
+  .cookie-banner__settings {
+    width: 100%;
+    margin-block-start: var(--spacing-3);
+    padding-block-start: var(--spacing-3);
+    border-block-start: 1px solid var(--color-border-default);
+  }
+  .cookie-banner__settings[hidden] { display: none; }
+
+  .cookie-banner__settings-title {
+    margin: 0 0 var(--spacing-3);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  .cookie-cats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2);
+  }
   @media (min-width: 768px) {
-    .cookie-banner { padding: var(--spacing-5) var(--spacing-6) calc(var(--spacing-5) + env(safe-area-inset-bottom, 0px)); }
-    .cookie-banner__inner {
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: var(--spacing-5);
-    }
-    .cookie-banner__intro {
-      flex: 1 1 320px;
-      min-width: 280px;
-    }
-    .cookie-banner__settings {
-      flex: 1 1 100%;
-      order: 3;
-    }
-    .cookie-banner__actions {
-      flex-direction: row;
-      flex: 0 0 auto;
-      gap: var(--spacing-3);
-    }
+    .cookie-cats { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .cookie-cat__label {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    column-gap: var(--spacing-2);
+    row-gap: 2px;
+    align-items: start;
+    padding: var(--spacing-2) var(--spacing-3);
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border-subtle, var(--color-border-default));
+    border-radius: var(--radius-base);
+    cursor: pointer;
+    transition: border-color var(--duration-fast) var(--easing-standard);
+  }
+  .cookie-cat__label:hover { border-color: var(--color-action-primary); }
+  .cookie-cat__label input[type="checkbox"] {
+    grid-column: 1 / 2;
+    grid-row: 1 / 3;
+    margin-top: 3px;
+    accent-color: var(--color-action-primary);
+    cursor: pointer;
+  }
+  .cookie-cat__label input[type="checkbox"]:disabled { cursor: not-allowed; opacity: 0.7; }
+  .cookie-cat__name {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+  .cookie-cat__desc {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    line-height: 1.4;
+  }
+
+  .cookie-banner__settings-actions {
+    margin-block-start: var(--spacing-3);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 767px) {
+    .cookie-banner__inner { min-height: 52px; }
+    .cookie-banner__text { font-size: var(--font-size-xs); }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .cookie-banner,
-    .cookie-banner__chevron,
-    .cookie-banner__category,
-    .cookie-banner__btn { transition: none; }
+    .cookie-banner__btn,
+    .cookie-cat__label { transition: none; }
     .cookie-banner { transform: none; }
   }
 </style>

@@ -36,6 +36,34 @@ const colorSet = Array.from(new Set(SKUS.map((s) => s.color)));
 const featureSet = Array.from(new Set(SKUS.flatMap((s) => s.features)));
 
 const totalSku = SKUS.length;
+
+/* Featured SKU — первые 3 с badge 'hit', для featured-row вверху каталога */
+const featuredSkus = SKUS.filter((s) => s.badge === 'hit').slice(0, 3);
+
+/* V-2 (iter3 visual-b2b-audit-loop): SKU-card multi-badges в правом верхнем углу.
+   Возвращает максимум 2 бейджа — series-PRO, формат 42×50 уникальный для РФ,
+   LinerBox-маркер, SHOCK®-серия, hit/featured. Tokens-only через CSS. */
+function computeBadges(sku: typeof SKUS[number]) {
+  const badges: { type: string; label: string }[] = [];
+  if (sku.series === 'pro') badges.push({ type: 'pro', label: 'PRO' });
+  else if (sku.series === 'standart') badges.push({ type: 'series', label: 'Standart' });
+  else if (sku.series === 'light') badges.push({ type: 'series', label: 'Light' });
+  if (sku.size === '42×50' || /42x50/i.test(sku.slug || '')) badges.push({ type: 'unique', label: '42×50' });
+  if (sku.series === 'linerbox' || /linerbox/i.test(sku.slug || '')) badges.push({ type: 'linerbox', label: 'LinerBox' });
+  if (/shock/i.test(String(sku.series) + ' ' + String(sku.slug))) badges.push({ type: 'shock', label: 'SHOCK®' });
+  if (sku.badge === 'hit') badges.push({ type: 'hit', label: 'Хит' });
+  /* V4-3 (iter4): fallback — каждый SKU должен получить минимум 1 badge.
+     Если по основным признакам ничего не сработало — категориальный fallback. */
+  if (badges.length === 0) {
+    const idTokens = `${sku.slug || ''} ${sku.category || ''}`;
+    if (/sumka|shopper/i.test(idTokens)) badges.push({ type: 'series', label: 'Сумка' });
+    else if (/akku|hladoel|akkumulyatory|holoda/i.test(idTokens)) badges.push({ type: 'shock', label: 'Хладо' });
+    else if (/kruzhk|mug/i.test(idTokens)) badges.push({ type: 'series', label: 'Кружка' });
+    else if (/vkladysh|vkladis/i.test(idTokens)) badges.push({ type: 'series', label: 'Вкладыш' });
+    else badges.push({ type: 'series', label: 'Термопакет' });
+  }
+  return badges.slice(0, 2);
+}
 ---
 
 <section class="catalog" aria-labelledby="catalog-h1">
@@ -59,6 +87,45 @@ const totalSku = SKUS.length;
       ))}
     </nav>
   </div>
+
+  {/* ── Featured row — 3 hero-карточки над сеткой (P1-8) ── */}
+  {featuredSkus.length > 0 && (
+    <div class="cat-featured container" aria-label="Хиты продаж">
+      <p class="cat-featured__label">Хиты продаж</p>
+      <ul class="cat-featured__list" role="list">
+        {featuredSkus.map((s) => (
+          <li class="cat-feat-card">
+            <a class="cat-feat-card__link" href={`/products/${s.category}/${s.slug}/`}>
+              <div class="cat-feat-card__media">
+                <span class="cat-feat-card__badge">{LABELS.badge[s.badge!]?.label ?? 'ХИТ'}</span>
+                {s.image ? (
+                  <img
+                    src={s.image}
+                    alt={s.title}
+                    loading="eager"
+                    decoding="async"
+                    onerror="this.style.display='none'; this.nextElementSibling.hidden = false;"
+                  />
+                ) : null}
+                <span class="sku-card__placeholder" hidden={!!s.image}>
+                  <span class="sku-card__placeholder-size">{s.size}</span>
+                  <span class="sku-card__placeholder-series">{(s.series ?? '').toUpperCase()}</span>
+                </span>
+              </div>
+              <div class="cat-feat-card__body">
+                <h3 class="cat-feat-card__title">{s.title}</h3>
+                <p class="cat-feat-card__spec">{s.size} · {LABELS.color[s.color]}</p>
+                <p class="cat-feat-card__price">
+                  {s.priceFrom > 0 ? <>от <strong>{s.priceFrom} ₽</strong></> : 'под запрос'}
+                  <span class="cat-feat-card__moz">{s.mozLabel}</span>
+                </p>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
 
   <div class="catalog__layout container" data-layout>
     {/* ───────────────── SIDEBAR ───────────────── */}
@@ -179,7 +246,7 @@ const totalSku = SKUS.length;
       </header>
 
       <ul class="cat-grid" role="list" data-grid>
-        {SKUS.map((s) => (
+        {SKUS.map((s, idx) => (
           <li
             class="sku-card"
             data-sku-id={s.slug}
@@ -200,7 +267,17 @@ const totalSku = SKUS.length;
               href={`/products/${s.category}/${s.slug}/`}
             >
               <div class="sku-card__media">
-                {s.badge && (
+                {(() => {
+                  const skuBadges = computeBadges(s);
+                  return skuBadges.length > 0 ? (
+                    <div class="sku-card__badges" aria-hidden="true">
+                      {skuBadges.map((b) => (
+                        <span class={`sku-card__sbadge sku-card__sbadge--${b.type}`}>{b.label}</span>
+                      ))}
+                    </div>
+                  ) : null;
+                })()}
+                {s.badge && computeBadges(s).length === 0 && (
                   <span
                     class="sku-card__badge"
                     style={`background:${LABELS.badge[s.badge].bg};color:${LABELS.badge[s.badge].fg}`}
@@ -211,14 +288,19 @@ const totalSku = SKUS.length;
                 ) : (
                   <span class="sku-card__stock sku-card__stock--out">ПОД ЗАКАЗ</span>
                 )}
-                <img
-                  src={s.image ?? `/products/_catalog/${s.slug}.webp`}
-                  alt={s.title}
-                  loading="lazy"
-                  decoding="async"
-                  onerror="this.style.display='none'; this.nextElementSibling.hidden = false;"
-                />
-                <span class="sku-card__placeholder" hidden>PACKSHOT · {s.size} · {LABELS.color[s.color]}</span>
+                {s.image ? (
+                  <img
+                    src={s.image}
+                    alt={s.title}
+                    loading={idx < 6 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    onerror="this.style.display='none'; this.nextElementSibling.hidden = false;"
+                  />
+                ) : null}
+                <span class="sku-card__placeholder" hidden={!!s.image}>
+                  <span class="sku-card__placeholder-size">{s.size}</span>
+                  <span class="sku-card__placeholder-series">{(s.series ?? '').toUpperCase()}</span>
+                </span>
               </div>
               <div class="sku-card__body">
                 <h3 class="sku-card__title">{s.title}</h3>
@@ -768,15 +850,46 @@ const totalSku = SKUS.length;
     display: flex; align-items: center; justify-content: center;
     background: var(--color-bg-surface-warm);
     padding: var(--spacing-4);
+    overflow: hidden;
   }
   .sku-card__media img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  /* Placeholder больше не «PACKSHOT · 32×35» серым по серому, а brand-gradient
+     тайл с размером SKU крупно и серией мелко (как на PDP related). */
   .sku-card__placeholder {
-    color: var(--color-text-tertiary);
-    font-size: var(--font-size-xs);
-    font-family: var(--font-family-monospace);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 4px;
+    background: linear-gradient(135deg, #6428A0, #9466BB);
+    color: #fff;
     text-align: center;
+    text-transform: none;
+  }
+  .sku-card__placeholder::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(
+      45deg, transparent, transparent 9px,
+      rgba(255,255,255,0.07) 9px, rgba(255,255,255,0.07) 10px
+    );
+    pointer-events: none;
+  }
+  .sku-card__placeholder[hidden] { display: none; }
+  .sku-card__placeholder-size {
+    position: relative; z-index: 1;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: clamp(20px, 3.6vw, 32px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .sku-card__placeholder-series {
+    position: relative; z-index: 1;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    opacity: 0.75;
+    text-transform: uppercase;
   }
   .sku-card__badge {
     position: absolute; top: 8px; right: 8px;
@@ -794,6 +907,51 @@ const totalSku = SKUS.length;
   }
   .sku-card__stock--in { background: #d1fae5; color: #065f46; }
   .sku-card__stock--out { background: #fee2e2; color: #991b1b; }
+
+  /* V-2 (iter3): multi-badge стек в правом верхнем углу карточки.
+     Tokens + узнаваемые цвета для feature-маркеров (PRO/42×50/LinerBox/SHOCK/Хит). */
+  .sku-card__badges {
+    position: absolute; top: var(--spacing-2); right: var(--spacing-2);
+    display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end;
+    pointer-events: none; z-index: 1;
+    max-width: calc(100% - var(--spacing-4));
+  }
+  .sku-card__sbadge {
+    font-size: 10px;
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: var(--font-family-monospace);
+    line-height: 1.4;
+  }
+  .sku-card__sbadge--pro {
+    background: var(--color-action-primary);
+    color: var(--color-text-on-brand);
+  }
+  .sku-card__sbadge--unique {
+    background: var(--color-feedback-warning);
+    color: var(--color-text-on-brand);
+  }
+  .sku-card__sbadge--linerbox {
+    background: var(--color-feedback-info);
+    color: var(--color-text-on-brand);
+  }
+  .sku-card__sbadge--shock {
+    background: var(--color-feedback-success);
+    color: var(--color-text-on-brand);
+  }
+  .sku-card__sbadge--hit {
+    background: var(--color-feedback-error);
+    color: var(--color-text-on-brand);
+  }
+  /* V4-3 (iter4): нейтральный series-badge для fallback (Light / Standart / Сумка / Кружка / Термопакет). */
+  .sku-card__sbadge--series {
+    background: color-mix(in srgb, var(--color-text-secondary) 12%, var(--color-bg-surface));
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border-subtle, var(--color-border-default));
+  }
 
   .sku-card__body { padding: var(--spacing-4); display: flex; flex-direction: column; gap: var(--spacing-1); flex: 1; }
   .sku-card__title { font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); margin: 0; line-height: 1.3; }
@@ -831,6 +989,96 @@ const totalSku = SKUS.length;
     position: absolute; width: 1px; height: 1px;
     padding: 0; margin: -1px; overflow: hidden;
     clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+  }
+
+  /* ─── Featured row (P1-8) ─── */
+  .cat-featured {
+    margin-block: var(--spacing-5) var(--spacing-2);
+  }
+  .cat-featured__label {
+    margin: 0 0 var(--spacing-3);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+  }
+  .cat-featured__list {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+  @media (min-width: 600px) {
+    .cat-featured__list { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .cat-feat-card {
+    background: var(--color-bg-page);
+    border: 1.5px solid color-mix(in srgb, var(--color-action-primary) 25%, var(--color-border-default));
+    border-radius: var(--radius-base);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: border-color var(--duration-fast), box-shadow var(--duration-fast), transform var(--duration-fast);
+  }
+  .cat-feat-card:hover {
+    border-color: var(--color-action-primary);
+    box-shadow: var(--shadow-base);
+    transform: translateY(-3px);
+  }
+  .cat-feat-card__link {
+    display: flex; flex-direction: column; height: 100%;
+    color: inherit; text-decoration: none;
+  }
+  .cat-feat-card__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--color-bg-surface-warm);
+    padding: var(--spacing-5);
+    overflow: hidden;
+  }
+  .cat-feat-card__media img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  .cat-feat-card__badge {
+    position: absolute; top: 10px; right: 10px;
+    padding: 3px 10px;
+    background: var(--color-action-primary);
+    color: var(--color-text-on-brand);
+    border-radius: var(--radius-pill);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.05em;
+  }
+  .cat-feat-card__body {
+    padding: var(--spacing-4);
+    display: flex; flex-direction: column; gap: var(--spacing-1);
+    flex: 1;
+  }
+  .cat-feat-card__title {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    margin: 0; line-height: 1.3;
+  }
+  .cat-feat-card__spec {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm); margin: 0;
+  }
+  .cat-feat-card__price {
+    margin-block-start: auto;
+    padding-block-start: var(--spacing-2);
+    display: flex; flex-direction: column;
+    font-size: var(--font-size-md);
+  }
+  .cat-feat-card__price strong {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-action-primary);
+  }
+  .cat-feat-card__moz { color: var(--color-text-tertiary); font-size: var(--font-size-xs); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cat-feat-card { transition: none; }
   }
 </style>
 

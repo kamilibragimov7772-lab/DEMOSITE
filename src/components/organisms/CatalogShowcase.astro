@@ -69,6 +69,11 @@ const { heading, eyebrow, categories, products, hubCta } = Astro.props;
       {products.map((p) => (
         <li>
           <CardBase href={`/products/${p.category}/${p.slug}/`}>
+            {p.image && (
+              <div slot="media" class="cat__card-media">
+                <img class="cat__card-img" src={p.image} alt={p.title} loading="lazy" decoding="async" width="280" height="200" />
+              </div>
+            )}
             <h3 slot="title" class="cat__card-title">{p.title}</h3>
             <p slot="meta" class="cat__card-meta">{p.meta}</p>
             <p class="cat__card-desc">{p.description}</p>
@@ -114,6 +119,28 @@ const { heading, eyebrow, categories, products, hubCta } = Astro.props;
     padding: var(--spacing-1) 0;
     margin: 0;
     list-style: none;
+  }
+
+  .cat__card-media {
+    margin: calc(0px - var(--spacing-5)) calc(0px - var(--spacing-5)) var(--spacing-3);
+    border-radius: var(--radius-base) var(--radius-base) 0 0;
+    overflow: hidden;
+    background: var(--color-bg-surface-warm);
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cat__card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: var(--spacing-3);
+    transition: transform var(--duration-slow) var(--easing-decelerate);
+  }
+  .card--linked:hover .cat__card-img,
+  .card--linked:focus-within .cat__card-img {
+    transform: scale(1.04);
   }
 
   .cat__grid {

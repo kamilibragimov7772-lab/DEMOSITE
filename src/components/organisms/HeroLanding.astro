@@ -48,7 +48,7 @@ const { eyebrow, h1, lead, primaryCta, secondaryCta, stats } = Astro.props;
       <ul class="hero__stats stagger-child" style="--stagger-i: 4" role="list">
         {stats.map((s) => (
           <li>
-            <Stat value={s.value} label={s.label} size="base" variant="surface" />
+            <Stat value={s.value} label={s.label} size="base" variant="on-dark" />
           </li>
         ))}
       </ul>
@@ -115,6 +115,23 @@ const { eyebrow, h1, lead, primaryCta, secondaryCta, stats } = Astro.props;
     padding-block: var(--spacing-7) var(--spacing-8);
     background: var(--color-bg-page);
     isolation: isolate;
+  }
+
+  /* V4-2 (iter4): grain texture overlay (анти-AI 2026 trend).
+     Тонкий SVG turbulence noise поверх hero-фона — даёт «фотографичность»
+     и убирает «плоскость» AI-generated визуала. opacity 0.05, mix-blend overlay. */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero::after { display: none; }
   }
 
   /* Фон hero: фото склада/цеха + тёмный gradient-overlay для читаемости.

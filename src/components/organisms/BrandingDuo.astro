@@ -20,6 +20,8 @@ export interface BrandingCard {
   /** Уточнения по методам / срокам / тиражам. */
   details: ReadonlyArray<string>;
   ctaLabel: string;
+  /** Product image path (optional). */
+  image?: string;
 }
 
 export interface Props {
@@ -40,6 +42,11 @@ const { heading, eyebrow, cards } = Astro.props;
       {cards.map((card) => (
         <li>
           <CardBase variant="feature" padded>
+            {card.image && (
+              <div slot="media" class="brand__card-media">
+                <img class="brand__card-img" src={card.image} alt={card.title} loading="lazy" decoding="async" width="360" height="220" />
+              </div>
+            )}
             <h3 slot="title" class="brand__title">{card.title}</h3>
             <p class="brand__desc">{card.description}</p>
             <ul class="brand__details" role="list" slot="meta">
@@ -82,6 +89,23 @@ const { heading, eyebrow, cards } = Astro.props;
     padding: 0;
     list-style: none;
   }
+  .brand__card-media {
+    margin: calc(0px - var(--spacing-5)) calc(0px - var(--spacing-5)) var(--spacing-4);
+    border-radius: var(--radius-base) var(--radius-base) 0 0;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--color-bg-surface) 0%, var(--color-bg-surface-warm) 100%);
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .brand__card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: var(--spacing-4);
+  }
+
   .brand__title {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);

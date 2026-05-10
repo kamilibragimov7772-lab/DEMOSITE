@@ -16,6 +16,7 @@ import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
 import IndustryHero from '@components/organisms/IndustryHero.astro';
 import ContactsBlock from '@components/organisms/ContactsBlock.astro';
 import FormBlock from '@components/organisms/FormBlock.astro';
+import TeamGrid from '@components/organisms/TeamGrid.astro';
 import DocumentsList from '@components/organisms/DocumentsList.astro';
 import FaqAccordion from '@components/organisms/FaqAccordion.astro';
 import PreFooterCta from '@components/organisms/PreFooterCta.astro';
@@ -85,6 +86,11 @@ const map = {
   yandexUrl: 'https://yandex.ru/maps/?ll=37.493955%2C55.546812&z=17&pt=37.493955,55.546812',
   coords: '55.546812, 37.493955',
 };
+
+const managers = [
+  { name: 'Старший аккаунт-менеджер', role: 'Тендеры, крупные сети, СТМ', initials: 'АМ', blurb: 'Ответ в течение 1 рабочего часа' },
+  { name: 'Менеджер по доставке', role: 'B1 / B5 — доставка еды, фарма', initials: 'МД', blurb: 'WhatsApp 24/7, расчёт за 2 ч' },
+];
 
 const docs = [
   {
@@ -165,6 +171,8 @@ const schema = [
     channels={channels}
     map={map}
   />
+
+  <TeamGrid eyebrow="Ваш менеджер" heading="Ваш менеджер" members={managers} />
 
   <section class="rec" aria-labelledby="rec-h2">
     <div class="container">

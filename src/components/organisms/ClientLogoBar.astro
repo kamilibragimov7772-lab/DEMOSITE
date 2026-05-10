@@ -1,0 +1,132 @@
+---
+/**
+ * ClientLogoBar — organism.
+ * Typographic logo-bar: 17 клиентов-wordmark в 2 ряда (desktop) + horizontal scroll (mobile).
+ * Без реальных SVG-логотипов (legal/NDA) — имена как wordmark в JetBrains Mono.
+ *
+ * Источник: 04_visuals/01-homepage.spec.md §clients-strip (iter2 upgrade P0-1).
+ */
+
+export interface Props {
+  heading?: string;
+  clients?: ReadonlyArray<string>;
+}
+
+const {
+  heading = '17 федеральных сетей нам доверяют',
+  clients = [
+    'Самокат', 'ВкусВилл', 'Купер', 'X5 Group', 'Ozon Fresh',
+    'Сбермаркет', 'Мираторг', 'Fix Price', 'Азбука вкуса', 'Ашан',
+    'Lindt', 'Гемотест', 'Додо Пицца', 'Деловые Линии', 'Комус',
+    'Метро', 'Шеф-Маркет',
+  ],
+} = Astro.props;
+---
+
+<section class="clogobar" aria-label="Клиенты компании Termy">
+  <div class="container">
+    <p class="clogobar__heading">{heading}</p>
+    <ul class="clogobar__list" role="list" aria-label="Клиенты Termy">
+      {clients.map((name) => (
+        <li class="clogobar__item">{name}</li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .clogobar {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-action-primary) 6%, var(--color-bg-surface-warm)),
+      var(--color-bg-surface-warm)
+    );
+    border-block: 1px solid var(--color-border-subtle);
+    padding-block: var(--spacing-5) var(--spacing-6);
+    overflow: hidden;
+  }
+
+  .clogobar .container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  .clogobar__heading {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    text-align: center;
+  }
+
+  /* Mobile: горизонтальный scroll с snap */
+  .clogobar__list {
+    list-style: none;
+    margin: 0;
+    padding: var(--spacing-2) 0;
+    display: flex;
+    gap: var(--spacing-3);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .clogobar__list::-webkit-scrollbar { display: none; }
+
+  .clogobar__item {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    padding: var(--spacing-2) var(--spacing-4);
+    border: 1.5px solid var(--color-border-default);
+    border-radius: var(--radius-pill);
+    font-family: var(--font-family-monospace);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--color-text-primary);
+    background: var(--color-bg-page);
+    white-space: nowrap;
+    box-shadow: var(--shadow-sm);
+    transition:
+      border-color var(--duration-fast) var(--easing-standard),
+      box-shadow var(--duration-fast) var(--easing-standard),
+      color var(--duration-fast) var(--easing-standard);
+  }
+  .clogobar__item:hover {
+    border-color: var(--color-action-primary);
+    box-shadow: 0 0 0 1.5px var(--color-action-primary), var(--shadow-sm);
+    color: var(--color-action-primary);
+  }
+
+  /* Desktop: 2 строки, wrap-сетка */
+  @media (min-width: 768px) {
+    .clogobar .container {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: var(--spacing-6);
+    }
+    .clogobar__heading {
+      flex: 0 0 auto;
+      max-width: 14ch;
+      text-align: left;
+      align-self: center;
+    }
+    .clogobar__list {
+      flex: 1 1 auto;
+      overflow-x: visible;
+      flex-wrap: wrap;
+      scroll-snap-type: none;
+    }
+    .clogobar__item {
+      flex-shrink: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .clogobar__item { transition: none; }
+  }
+</style>

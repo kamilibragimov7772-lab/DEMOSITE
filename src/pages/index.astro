@@ -31,16 +31,20 @@
 
 import BaseLayout from '@layouts/BaseLayout.astro';
 import HeroLanding from '@components/organisms/HeroLanding.astro';
+import ClientLogoBar from '@components/organisms/ClientLogoBar.astro';
 import TrustStrip from '@components/organisms/TrustStrip.astro';
 import AdvantagesGrid from '@components/organisms/AdvantagesGrid.astro';
+import WarehouseImmersion from '@components/organisms/WarehouseImmersion.astro';
 import IndustryCardsGrid from '@components/organisms/IndustryCardsGrid.astro';
 import CatalogShowcase from '@components/organisms/CatalogShowcase.astro';
 import JourneyTimeline from '@components/organisms/JourneyTimeline.astro';
 import CaseCardsGrid from '@components/organisms/CaseCardsGrid.astro';
 import BrandingDuo from '@components/organisms/BrandingDuo.astro';
+import WhitepaperCards from '@components/organisms/WhitepaperCards.astro';
 import FormBlock from '@components/organisms/FormBlock.astro';
 import FaqAccordion from '@components/organisms/FaqAccordion.astro';
 import PreFooterCta from '@components/organisms/PreFooterCta.astro';
+import InlineCtaRibbon from '@components/organisms/InlineCtaRibbon.astro';
 import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
 import { webSite, breadcrumbList, faqPage } from '@lib/schema';
 
@@ -52,18 +56,18 @@ const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
    (iter2 CN1 closure: «Термоупаковка от производителя в РФ — TERMY»).
    ================================================================ */
 
-// Block 2: Hero
+// Block 2: Hero (P0-2: quantified ICP-benefit copy — iter2 visual-b2b-audit-loop)
 const hero = {
-  eyebrow: 'Производитель термоупаковки · Москва',
-  h1: 'Термоупаковка от производителя в РФ',
-  lead: 'Термопакеты, аккумуляторы холода SHOCK®, термосумки большие и термошопперы — от 1 коробки, с отгрузкой за 24 часа. Брендирование от 100 шт.',
+  eyebrow: '17 федеральных сетей · 1 млн ед/мес · ISO 9001:2015',
+  h1: 'Термоупаковка от производителя — для ритейла, доставки и фармы',
+  lead: 'Поставляем X5 Group, Самокату, ВкусВиллу. Формат 42×50 — единственные в РФ. LinerBox держит холод 72 ч, SHOCK® выдерживает 30+ циклов. Отгрузка за 24 ч от 1 коробки.',
   primaryCta: { label: 'Получить расчёт', href: '#cta' },
   secondaryCta: { label: 'Заказать образец', href: '#cta' },
   stats: [
-    { value: 'от 49 ₽',     label: 'минимальная цена за единицу' },
-    { value: 'от 1 коробки', label: 'минимальный заказ (МОЗ)' },
-    { value: '24 ч',         label: 'отгрузка со склада' },
-    { value: 'от 100 шт',    label: 'брендирование с лого' },
+    { value: 'от 49 ₽',      label: 'минимальная цена за единицу' },
+    { value: 'от 1 коробки',  label: 'минимальный заказ (МОЗ)' },
+    { value: '24 ч',          label: 'отгрузка серийных позиций' },
+    { value: '30+ циклов',    label: 'ресурс SHOCK® по ГОСТ' },
   ],
 };
 
@@ -99,26 +103,34 @@ const trustItems = [
 const advantages = [
   {
     title: 'Собственное производство',
-    description: '~2 000 м² производственной площади в Подмосковье, проектная мощность ~1 млн ед/мес.',
+    description: '~2 000 м² производственной площади в Подмосковье. Проектная мощность ~1 млн ед/мес, >10 млн ед/год. Выручка 2025 — ~310 млн ₽.',
+    icon: `<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`,
   },
   {
     title: 'Экспертиза и подбор',
-    description: 'Бесплатный расчёт комплектации (пакет + SHOCK + LinerBox / термосумка) под ваш груз и маршрут.',
+    description: 'Бесплатный расчёт комплектации под ваш груз и маршрут: пакет + SHOCK® + LinerBox / термосумка. Ответ за 2 ч.',
+    icon: `<circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6"/><path d="M8 11h6"/>`,
   },
   {
-    title: 'Гарантия качества',
-    description: '3 стадии контроля на потоке: входящее сырьё → производство → отгрузка. Сертификаты — в блоке выше.',
+    title: 'Контроль качества',
+    description: 'ISO 9001:2015 и ГОСТ Р 50962-96. 3 стадии ОТК: входящее сырьё → производство → отгрузка. ПВХ-миграция в 10× ниже нормы ТР ТС 005/2011.',
+    icon: `<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>`,
   },
   {
     title: 'Масштаб и надёжность',
-    description: '~10+ млн шт/год серийной отгрузки. Доставка по СНГ через ТК.',
+    description: 'Отгружаем по всему СНГ через ТК. 100 000+ шт на складе. 17 федеральных клиентов — от Самоката до X5 Group.',
+    icon: `<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>`,
   },
 ];
 
 const pills = [
+  'ISO 9001:2015',
+  'ГОСТ Р 50962-96',
+  '>10 млн шт/год',
   '100 000 шт на складе',
   'доставка по СНГ ТК',
-  '3 стадии контроля',
+  '3 стадии ОТК',
+  'ПВХ-миграция ×10 ниже нормы',
   '100% перерабатываемость',
 ];
 
@@ -129,7 +141,7 @@ const industries = [
     segment: 'B1',
     segmentLabel: 'Доставка еды',
     title: 'Курьерская доставка еды',
-    description: 'Удержание +3…+7°C при вручении до 4 часов; формат 42×50 для коробов курьеров и складных боксов.',
+    description: 'Удержание +3…+7°C до 6 ч в комплекте. Формат 42×50 — первый в РФ, создан под стандартный короб курьера. Самокат, ВкусВилл, Купер — наши клиенты.',
     ctaLabel: 'Открыть решения для доставки еды →',
     recommended: 'Standart 42×50 + 2× SHOCK 450',
   },
@@ -137,8 +149,8 @@ const industries = [
     slug: 'retail',
     segment: 'B2',
     segmentLabel: 'Крупный ритейл',
-    title: 'Крупный ритейл',
-    description: 'Тендерные требования, документация, СТМ под закупочные стандарты сетей. ТУ + протоколы испытаний.',
+    title: 'Крупный ритейл и сети',
+    description: 'Тендерная документация, СТМ-брендирование под стандарты сети, паллетные отгрузки. Опыт с X5 Group, Ашан, Fix Price, Метро. ТУ + ПИ на запрос.',
     ctaLabel: 'Открыть решения для ритейла →',
     recommended: 'PRO 42×50 + LinerBox 24 л',
   },
@@ -147,16 +159,16 @@ const industries = [
     segment: 'B3',
     segmentLabel: 'Дистрибьюторы',
     title: 'Дистрибьюторы упаковки',
-    description: 'Регулярные отгрузки, объёмные склады, гибкие графики выпуска под сезонные пики.',
+    description: 'Регулярные поставки на склад с гибким графиком, паллетная отгрузка, расширенный ассортимент по договору. Приоритетная очередь в пиковые сезоны.',
     ctaLabel: 'Открыть решения для дистрибьюторов →',
-    recommended: 'Light 42×50 палетная отгрузка',
+    recommended: 'Light 42×50 паллетная отгрузка',
   },
   {
     slug: 'proizvoditeli',
     segment: 'B4',
     segmentLabel: 'Скоропорт',
     title: 'Производители скоропорта',
-    description: 'Доставка 300+ км при 0…−15°C. Глубокая заморозка через PRO + Термосумка большая 50 л + SHOCK Freeze.',
+    description: 'Маршруты 300+ км при 0…−15°C. Комплект PRO (в 10× толще стандарта) + Термосумка 50 л + SHOCK Freeze. Мираторг, Шеф-Маркет — работаем.',
     ctaLabel: 'Открыть решения для производителей →',
     recommended: 'PRO 42×45 + Термосумка 50 л + 4× SHOCK Freeze',
   },
@@ -165,9 +177,9 @@ const industries = [
     segment: 'B5',
     segmentLabel: 'Фарм-смежные',
     title: 'Фарм-смежные сегменты',
-    description: 'Бьюти, БАДы, диагностика — холодовая цепь +2…+8°C на 48 часов. Email-gate на протоколы испытаний.',
+    description: 'Бьюти, БАДы, диагностика — холодовая цепь +2…+8°C на 48 ч. LinerBox обеспечивает до 72 ч пассивного удержания. Гемотест — в числе клиентов.',
     ctaLabel: 'Открыть решения для фарм-смежных →',
-    recommended: 'Термопакет с дном 40 л + 3× SHOCK 1000',
+    recommended: 'LinerBox 24 л + 3× SHOCK 1000 gel',
   },
 ];
 
@@ -190,6 +202,7 @@ const products = [
     meta: '28 SKU · от 49 ₽',
     description: 'Базовая серия для доставки еды. Удержание режима до 7 часов в комплекте с SHOCK.',
     ctaLabel: 'Открыть карточку Standart 42×50 →',
+    image: '/products/_catalog/standart-42x50-met.webp',
   },
   {
     slug: 'shock-450',
@@ -198,6 +211,7 @@ const products = [
     meta: '12 SKU · 3 режима · от 53 ₽',
     description: 'Многоразовый аккумулятор холода 450 мл. ГОСТ Р 50962-96. До 30+ циклов.',
     ctaLabel: 'Открыть карточку SHOCK® 450 →',
+    image: '/products/_catalog/shock-450-cool.webp',
   },
   {
     slug: 'liquid-cooling-pack',
@@ -206,6 +220,7 @@ const products = [
     meta: 'По запросу',
     description: 'Мягкие пакетики с гелем — лёгкие, формоприлегающие. Для нестандартных грузов.',
     ctaLabel: 'Запросить КП на жидкие хладоэлементы →',
+    image: '/products/_catalog/liquid-cooling-pack.webp',
   },
   {
     slug: 'bablpak',
@@ -214,6 +229,7 @@ const products = [
     meta: '13 SKU',
     description: 'Воздушно-пузырьковая плёнка под собственным брендом. Защита при ТК-отгрузках.',
     ctaLabel: 'Открыть карточку БаблПак →',
+    image: '/products/_catalog/bablpak.webp',
   },
   {
     slug: 'termosumka-50l',
@@ -222,6 +238,7 @@ const products = [
     meta: 'По запросу',
     description: 'Для длинных маршрутов и крупных партий. Комплектуется с PRO + SHOCK Freeze.',
     ctaLabel: 'Запросить КП на термосумку 50 л →',
+    image: '/products/_catalog/termosumka-50l.webp',
   },
   {
     slug: 'termoshopper-zip',
@@ -230,6 +247,7 @@ const products = [
     meta: '5 SKU',
     description: 'Фольгированный пакет с клейкой полоской. Одноразовый формат для FMCG.',
     ctaLabel: 'Открыть карточку Термошоппер Zip →',
+    image: '/products/_catalog/zip-lock-25x40.webp',
   },
 ];
 
@@ -290,7 +308,7 @@ const brandingCards = [
   {
     slug: 'termopakety' as const,
     title: 'Термопакеты с вашим логотипом',
-    description: 'Премиальная упаковка как маркетинговый инструмент. Pantone, до 4 цветов.',
+    description: 'Каждый термопакет — это ваш бренд в руках покупателя. Pantone, до 4 цветов. Додо Пицца, Азбука вкуса — так работают наши клиенты.',
     details: [
       'Шелкография — от 100 шт, 2-4 недели',
       'Флексография — от 10 000 шт, 2-3 недели',
@@ -298,42 +316,61 @@ const brandingCards = [
       'Согласование макета — 1-2 дня',
     ],
     ctaLabel: 'Запросить макет на термопакете →',
+    image: '/products/_hero/termopaket-42x45.webp',
   },
   {
     slug: 'akkumulyatory' as const,
     title: 'Аккумуляторы SHOCK® с вашим брендом',
-    description: 'Многоразовая упаковка с лого — ваша айдентика в кармане курьера. Pantone, фирменные цвета.',
+    description: 'Многоразовый хладоэлемент 30+ циклов с вашим лого — айдентика в кармане курьера на каждом рейсе. 3 температурных режима.',
     details: [
-      'Наклейки — от 1 000 шт',
-      'Выбивка (тиснение) — от 3 000 шт',
-      '3 режима хладоэлемента — cool / gel / freeze',
+      'Наклейки — от 1 000 шт, 1-2 нед',
+      'Выбивка / тиснение — от 3 000 шт, 2-3 нед',
+      '3 режима: cool (+4°C) / gel (−6°C) / freeze (−20°C)',
       'Согласование макета — 1-2 дня',
     ],
     ctaLabel: 'Запросить макет на SHOCK® →',
+    image: '/products/_hero/shock-450-gel.webp',
+  },
+  {
+    slug: 'termoshoppery' as const,
+    title: 'Термошопперы с вашим брендом',
+    description: 'Фольгированный пакет-шоппер с логотипом — премиум-формат для FMCG и e-grocery. Удерживает температуру до 4 ч без хладоэлемента.',
+    details: [
+      'Флексопечать до 4 цветов',
+      'Форматы 25×40, 30×50, 35×60 см',
+      'Тираж от 1 000 шт',
+      'Тиснение фольгой — опция',
+    ],
+    ctaLabel: 'Запросить макет на термошоппере →',
+    image: '/products/_hero/termoshopper.webp',
   },
 ];
 
 // Block 11: FAQ
 const faqs = [
   {
-    question: 'Какой минимальный заказ (МОЗ)?',
-    answer: 'От 1 коробки на серийные позиции (Standart, SHOCK 450). На брендирование — см. блок «Брендирование» выше. На нестандартные размеры — обсуждаем под задачу.',
+    question: 'Какой минимальный заказ (МОЗ) и как он считается?',
+    answer: 'На серийные позиции (Standart, SHOCK 450, БаблПак) — от 1 коробки, без минимума по сумме. Термосумки большие и LinerBox — под заказ, МОЗ от 10 шт. Брендирование: шелкография от 100 шт, тампопечать от 1 000 шт, флексография от 10 000 шт. На нестандартные размеры и спецификации — обсуждаем индивидуально.',
   },
   {
-    question: 'Какие сроки отгрузки?',
-    answer: 'Со склада в Подмосковье — 24 часа после оплаты на серийные позиции. Производство нестандартного размера — 2-5 дней. Брендирование — 2-4 недели в зависимости от метода печати и тиража.',
+    question: 'Какие сроки отгрузки и как организована доставка?',
+    answer: 'Серийные позиции — 24 ч после оплаты со склада в Подмосковье. Нестандартный размер — 2-5 дней. Брендирование — 2-4 недели в зависимости от метода. Доставку организуем по всему СНГ через ТК (СДЭК, Деловые Линии, ПЭК и партнёрские сети) — отгружаем транзитом или через региональные хабы.',
   },
   {
-    question: 'Можно ли использовать SHOCK® повторно?',
-    answer: 'Да. Аккумулятор холода SHOCK® рассчитан на 30+ полных циклов заморозки и применения. Корпус из пищевой ПВХ-плёнки, миграция 0,001 мг/л — в 10× ниже нормы.',
+    question: 'Работаете ли вы с НДС? Какие документы при отгрузке?',
+    answer: 'Да, работаем на общей системе налогообложения с НДС 20%. При отгрузке предоставляем: счёт-фактуру, УПД (товарная накладная + счёт-фактура), товарную накладную ТОРГ-12, CMR при экспорте. Договор поставки, спецификация, ТТН — по запросу.',
   },
   {
-    question: 'Какие сертификаты есть?',
-    answer: 'Полный список — в блоке «Сертификаты и документы» выше (PDF на скачивание). Протоколы испытаний — по запросу через email-gate. РУ Росздравнадзора нет — для лекарств с обязательным РУ рекомендуем профильных поставщиков.',
+    question: 'Можно ли использовать SHOCK® повторно и сколько циклов выдерживает?',
+    answer: 'Да. Аккумулятор холода SHOCK® рассчитан на 30+ полных циклов заморозки и применения по ГОСТ Р 50962-96. Корпус из пищевой ПВХ-плёнки, миграция 0,001 мг/л — в 10× ниже нормы ТР ТС 005/2011. Режимы: cool (+4°C), gel (−6°C), freeze (−20°C).',
   },
   {
-    question: 'Можно ли брендировать аккумуляторы SHOCK®?',
-    answer: 'Да. Два метода: наклейка (от 1 000 шт, 1-2 нед) и выбивка / тиснение (от 3 000 шт, 2-3 нед). Согласование макета — 1-2 дня. Поддерживаем Pantone и фирменные цвета клиента.',
+    question: 'Возможна ли работа по тендеру / 44-ФЗ / 223-ФЗ?',
+    answer: 'Да. Участвуем в закупках по 44-ФЗ и 223-ФЗ, имеем опыт работы с госзаказчиками и аккредитованными площадками (Сбербанк-АСТ, Росэлторг, ЕЭТП). Готовим полный пакет документов для тендерных комиссий: ТУ, протоколы испытаний, сертификаты, ТКП.',
+  },
+  {
+    question: 'Какие сертификаты есть и как их получить?',
+    answer: 'Полный список — в блоке «Сертификаты и документы» выше (PDF на скачивание). Дополнительные протоколы испытаний (режимы удержания температуры, ресурс циклов) — по запросу через форму. РУ Росздравнадзора нет — для лекарств с обязательным РУ рекомендуем профильных поставщиков.',
   },
 ];
 
@@ -357,6 +394,8 @@ const schema = [
 >
   <HeroLanding {...hero} />
 
+  <ClientLogoBar />
+
   <TrustStrip
     eyebrow="Сертификаты и документы"
     heading="Сертификаты и документы — всё под рукой"
@@ -368,6 +407,36 @@ const schema = [
     heading="Своё производство в Подмосковье"
     advantages={advantages}
     pills={pills}
+    backgroundImage="/assets/splash/factory-bg.jpg"
+  />
+
+  <WarehouseImmersion
+    eyebrow="Внутри производства"
+    heading="Зайдите на склад вместе с нами"
+    videoSrc="/media/warehouse-walk.mp4"
+    videoSrcWebm="/media/warehouse-walk.webm"
+    videoSrcMobile="/media/warehouse-walk-mobile.mp4"
+    poster="/media/warehouse-poster.jpg"
+    captions={[
+      {
+        from: 0,
+        to: 0.34,
+        eyebrow: '~2 000 м²',
+        text: 'Производственная площадь в Подмосковье — собираем партии и держим запас.',
+      },
+      {
+        from: 0.34,
+        to: 0.67,
+        eyebrow: '100 000+ шт на складе',
+        text: 'Серийные позиции отгружаем за 24 ч — от 1 коробки до паллеты.',
+      },
+      {
+        from: 0.67,
+        to: 1,
+        eyebrow: '1 млн ед/мес',
+        text: 'Проектная мощность завода — конвейер не останавливается.',
+      },
+    ]}
   />
 
   <IndustryCardsGrid
@@ -376,6 +445,8 @@ const schema = [
     cards={industries}
     hubCta={{ label: 'Все решения по отраслям →', href: '/solutions/' }}
   />
+
+  <InlineCtaRibbon />
 
   <CatalogShowcase
     eyebrow="Каталог продукции"
@@ -399,11 +470,15 @@ const schema = [
     hubCta={{ label: 'Все кейсы →', href: '/cases/' }}
   />
 
+  <InlineCtaRibbon />
+
   <BrandingDuo
     eyebrow="Брендирование"
     heading="Упаковка и хладоэлементы с вашим логотипом"
     cards={brandingCards}
   />
+
+  <WhitepaperCards />
 
   <FaqAccordion
     id="faq"
@@ -411,6 +486,8 @@ const schema = [
     heading="Что обычно спрашивают B2B-закупщики"
     items={faqs}
   />
+
+  <InlineCtaRibbon />
 
   <FormBlock
     id="cta"
@@ -430,3 +507,6 @@ const schema = [
 
   <StickyWhatsApp />
 </BaseLayout>
+
+<style>
+</style>

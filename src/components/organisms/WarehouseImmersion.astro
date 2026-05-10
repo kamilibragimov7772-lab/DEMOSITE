@@ -1,0 +1,371 @@
+---
+/**
+ * WarehouseImmersion — organism.
+ * Scroll-driven video секция «прохождение вглубь склада».
+ *
+ * Механика:
+ * - Внешний `.warehouse` высотой 300vh (3 экрана скролла = 3 «шага» вглубь).
+ * - Внутренний `.warehouse__sticky` — sticky 100vh с видео и оверлеем.
+ * - Прогресс скролла секции [0..1] отображается на video.currentTime.
+ * - 3 подписи fade-in на progress: 0-33% / 33-66% / 66-100%.
+ *
+ * Fallback / a11y:
+ * - prefers-reduced-motion → показываем poster, скролл-синк отключён.
+ * - Mobile (< 768px) → видео в loop autoplay, без scroll-sync (слишком тяжело
+ *   декодировать кадры на мобильных, дёрганый UX); подписи статичны.
+ * - JS отключён → poster + подписи как обычная секция.
+ *
+ * Источник: задача Камиля 2026-05-08 — оживить hero-склад на главной,
+ * вставить между Block 4 (AdvantagesGrid) и Block 5 (IndustryCardsGrid).
+ */
+
+export interface Caption {
+  /** Прогресс [0..1], в котором подпись активна и видна. */
+  from: number;
+  to: number;
+  /** Малый верх (eyebrow). */
+  eyebrow?: string;
+  /** Главная фраза. */
+  text: string;
+}
+
+export interface Props {
+  /** Путь к MP4 (H.264). Обязателен. */
+  videoSrc: string;
+  /** Опциональный путь к WebM (VP9) — отдаётся в первом <source>. */
+  videoSrcWebm?: string;
+  /** Mobile-версия видео (опц., меньшая). */
+  videoSrcMobile?: string;
+  /** Постер для prefers-reduced-motion + lazy. */
+  poster: string;
+  /** 3 подписи на разных стадиях скролла. */
+  captions?: ReadonlyArray<Caption>;
+  /** Высота секции в vh (длина скролла). По умолчанию 300. */
+  scrollHeight?: number;
+  /** Доп. eyebrow над всем блоком. */
+  eyebrow?: string;
+  /** Заголовок над всем блоком (если задан, рендерится перед sticky). */
+  heading?: string;
+}
+
+const {
+  videoSrc,
+  videoSrcWebm,
+  videoSrcMobile,
+  poster,
+  captions = [],
+  scrollHeight = 300,
+  eyebrow,
+  heading,
+} = Astro.props;
+---
+
+<section
+  class="warehouse"
+  style={`--warehouse-scroll-height: ${scrollHeight}vh;`}
+  aria-labelledby={heading ? 'warehouse-h2' : undefined}
+>
+  {(eyebrow || heading) && (
+    <div class="container warehouse__intro">
+      {eyebrow && <p class="warehouse__eyebrow">{eyebrow}</p>}
+      {heading && <h2 id="warehouse-h2" class="warehouse__h2">{heading}</h2>}
+    </div>
+  )}
+
+  <div class="warehouse__sticky">
+    <video
+      class="warehouse__video"
+      data-warehouse-video
+      poster={poster}
+      muted
+      playsinline
+      preload="auto"
+      aria-hidden="true"
+    >
+      {videoSrcWebm && <source src={videoSrcWebm} type="video/webm" />}
+      <source src={videoSrc} type="video/mp4" />
+    </video>
+
+    {videoSrcMobile && (
+      <video
+        class="warehouse__video warehouse__video--mobile"
+        data-warehouse-video-mobile
+        poster={poster}
+        muted
+        playsinline
+        loop
+        autoplay
+        preload="metadata"
+        aria-hidden="true"
+      >
+        <source src={videoSrcMobile} type="video/mp4" />
+      </video>
+    )}
+
+    <div class="warehouse__overlay">
+      {captions.map((c, idx) => (
+        <div
+          class="warehouse__caption"
+          data-caption
+          data-from={c.from}
+          data-to={c.to}
+          aria-hidden={idx === 0 ? 'false' : 'true'}
+        >
+          {c.eyebrow && <p class="warehouse__caption-eyebrow">{c.eyebrow}</p>}
+          <p class="warehouse__caption-text">{c.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  /**
+   * Scroll-sync для warehouse-видео.
+   * - currentTime = clamp01(progress) * duration
+   * - rAF-throttled
+   * - prefers-reduced-motion → выходим
+   * - mobile (< 768px) → выходим (там mobile-видео в loop autoplay)
+   */
+  function initWarehouseScroll() {
+    const sections = document.querySelectorAll<HTMLElement>('.warehouse');
+    if (sections.length === 0) return;
+
+    const reduceMotion =
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+
+    sections.forEach((section) => {
+      const video = section.querySelector<HTMLVideoElement>(
+        '[data-warehouse-video]'
+      );
+      const mobileVideo = section.querySelector<HTMLVideoElement>(
+        '[data-warehouse-video-mobile]'
+      );
+      const captions = Array.from(
+        section.querySelectorAll<HTMLElement>('[data-caption]')
+      );
+
+      // Mobile: используем mobile-видео в loop autoplay, desktop-видео скрыто CSS.
+      if (isMobile) {
+        if (mobileVideo) {
+          mobileVideo
+            .play()
+            .catch(() => {
+              /* iOS Low Power — нет звука всё равно */
+            });
+        }
+        return;
+      }
+
+      if (!video) return;
+
+      // Reduced motion: показываем poster, не дёргаем currentTime.
+      if (reduceMotion) {
+        video.removeAttribute('preload');
+        return;
+      }
+
+      let rafId: number | null = null;
+
+      const update = () => {
+        rafId = null;
+        const rect = section.getBoundingClientRect();
+        const range = rect.height - window.innerHeight;
+        if (range <= 0) return;
+
+        const raw = -rect.top / range;
+        const progress = Math.max(0, Math.min(1, raw));
+
+        const dur = video.duration;
+        if (Number.isFinite(dur) && dur > 0) {
+          // Сдвигаем currentTime только если разница значимая, чтобы не
+          // прерывать decode постоянными микро-сидами.
+          const target = progress * dur;
+          if (Math.abs(video.currentTime - target) > 0.03) {
+            video.currentTime = target;
+          }
+        }
+
+        captions.forEach((cap) => {
+          const from = parseFloat(cap.dataset.from || '0');
+          const to = parseFloat(cap.dataset.to || '1');
+          const active = progress >= from && progress <= to;
+          cap.dataset.active = active ? 'true' : 'false';
+          cap.setAttribute('aria-hidden', active ? 'false' : 'true');
+        });
+      };
+
+      const onScroll = () => {
+        if (rafId !== null) return;
+        rafId = requestAnimationFrame(update);
+      };
+
+      // Стартовое позиционирование, как только metadata загружена.
+      const start = () => {
+        update();
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll, { passive: true });
+      };
+
+      if (video.readyState >= 1) {
+        start();
+      } else {
+        video.addEventListener('loadedmetadata', start, { once: true });
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initWarehouseScroll, {
+      once: true,
+    });
+  } else {
+    initWarehouseScroll();
+  }
+</script>
+
+<style>
+  .warehouse {
+    position: relative;
+    height: var(--warehouse-scroll-height, 300vh);
+    background: var(--color-bg-page);
+  }
+
+  .warehouse__intro {
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    padding-block-start: var(--spacing-6);
+    z-index: 2;
+    pointer-events: none;
+  }
+  .warehouse__intro > * {
+    pointer-events: auto;
+  }
+  .warehouse__eyebrow {
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-2);
+  }
+  .warehouse__h2 {
+    color: var(--color-text-on-dark, #fff);
+    max-width: 24ch;
+    margin: 0;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
+  }
+
+  .warehouse__sticky {
+    position: sticky;
+    inset-block-start: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .warehouse__video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    /* На скролл-синке desktop-версии звук не нужен и `loop` тоже. */
+  }
+  .warehouse__video--mobile {
+    display: none;
+  }
+
+  .warehouse__overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: end center;
+    padding-block-end: clamp(var(--spacing-6), 12vh, var(--spacing-9));
+    padding-inline: var(--spacing-4);
+    pointer-events: none;
+    /* Лёгкий градиент снизу — читаемость подписей. */
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.55) 0%,
+      rgba(0, 0, 0, 0.15) 30%,
+      transparent 55%
+    );
+  }
+  .warehouse__caption {
+    grid-area: 1 / 1;
+    text-align: center;
+    color: var(--color-text-on-dark, #fff);
+    max-width: 36ch;
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity var(--duration-normal) var(--easing-standard),
+      transform var(--duration-normal) var(--easing-standard);
+  }
+  .warehouse__caption[data-active='true'] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .warehouse__caption-eyebrow {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--font-letter-spacing-widest);
+    text-transform: uppercase;
+    margin-block-end: var(--spacing-2);
+    opacity: 0.85;
+  }
+  .warehouse__caption-text {
+    font-size: clamp(
+      var(--font-size-lg),
+      4vw,
+      var(--font-size-2xl)
+    );
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--font-line-height-tight, 1.15);
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65);
+  }
+
+  /* Mobile: scroll-sync отключён, показываем mobile-видео в loop. */
+  @media (max-width: 767px) {
+    .warehouse {
+      height: auto;
+    }
+    .warehouse__sticky {
+      position: relative;
+      height: 70vh;
+      min-height: 380px;
+    }
+    .warehouse__video:not(.warehouse__video--mobile) {
+      display: none;
+    }
+    .warehouse__video--mobile {
+      display: block;
+    }
+    .warehouse__intro {
+      position: relative;
+      padding-block: var(--spacing-6);
+    }
+    .warehouse__h2 {
+      color: var(--color-text-primary);
+      text-shadow: none;
+    }
+    .warehouse__caption[data-active='false'] {
+      /* На мобиле первая подпись всегда видна, остальные скрыты. */
+      display: none;
+    }
+    .warehouse__caption:first-child {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .warehouse__caption {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>

@@ -125,10 +125,17 @@ const schema = [
   </section>
 
   <ProductionGallery
-    eyebrow="Фотогалерея"
+    eyebrow="Производство в цифрах"
     heading="Производство в кадре"
-    lead="6 фотографий производственной линии: флексопечать, шелкография, сборка SHOCK, контроль качества, склад."
-    items={photos}
+    lead="Реальные фотографии производственной линии — по запросу в tender-package."
+    items={[]}
+    metricCards={[
+      { metric: '2 000 м²', label: 'производственная площадь',   icon: 'factory' },
+      { metric: '1 млн ед/мес', label: 'мощность производства',  icon: 'package-check' },
+      { metric: '3 стадии ОТК', label: 'контроль качества',       icon: 'scale' },
+      { metric: 'ISO 9001:2015', label: 'система менеджмента',    icon: 'shield-check' },
+    ]}
+    tenderNote="Реальные фото производства — по запросу в составе tender-package."
   />
 
   <TimelineCompany

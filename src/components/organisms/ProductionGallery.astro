@@ -25,15 +25,42 @@ export interface PhotoItem {
   fullSrc?: string;
 }
 
+/** Fallback-карточка при отсутствии реального фото. */
+export interface MetricCard {
+  metric: string;
+  label: string;
+  icon: 'factory' | 'package-check' | 'scale' | 'shield-check';
+}
+
 export interface Props {
   heading: string;
   eyebrow?: string;
   lead?: string;
   items: ReadonlyArray<PhotoItem>;
   id?: string;
+  /** Если задан — рендерится вместо (или дополнительно к) items при отсутствии фото. */
+  metricCards?: ReadonlyArray<MetricCard>;
+  /** Подпись под галереей для tender-buyer. */
+  tenderNote?: string;
 }
 
-const { heading, eyebrow, lead, items, id = 'gallery' } = Astro.props;
+const {
+  heading,
+  eyebrow,
+  lead,
+  items,
+  id = 'gallery',
+  metricCards,
+  tenderNote,
+} = Astro.props;
+
+/* SVG-иконки Lucide (inline, без внешних зависимостей) */
+const ICONS: Record<MetricCard['icon'], string> = {
+  factory: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="48" height="48"><path d="M2 20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8l-7 5V8l-7 5V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v16z"/><path d="M17 20v-5a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v5"/></svg>`,
+  'package-check': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="48" height="48"><path d="m16 16 2 2 4-4"/><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 1 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/><path d="m7.5 4.27 9 5.15"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" x2="12" y1="22" y2="12"/></svg>`,
+  scale: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="48" height="48"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>`,
+  'shield-check': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="48" height="48"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>`,
+};
 ---
 
 <section class="gal" id={id} aria-labelledby={`${id}-h2`}>
@@ -42,18 +69,29 @@ const { heading, eyebrow, lead, items, id = 'gallery' } = Astro.props;
     <h2 id={`${id}-h2`} class="gal__h2">{heading}</h2>
     {lead && <p class="gal__lead">{lead}</p>}
 
-    <ul class="gal__grid" role="list">
-      {items.map((item) => (
-        <li>
-          <figure class="gal__figure">
-            {item.fullSrc ? (
-              <a
-                class="gal__link"
-                href={item.fullSrc}
-                target="_blank"
-                rel="noopener"
-                aria-label={`${item.alt} — открыть в полном размере (новая вкладка)`}
-              >
+    {/* Реальные фото — если переданы items */}
+    {items.length > 0 && (
+      <ul class="gal__grid" role="list">
+        {items.map((item) => (
+          <li>
+            <figure class="gal__figure">
+              {item.fullSrc ? (
+                <a
+                  class="gal__link"
+                  href={item.fullSrc}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label={`${item.alt} — открыть в полном размере (новая вкладка)`}
+                >
+                  <img
+                    class="gal__img"
+                    src={item.src}
+                    alt={item.alt}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </a>
+              ) : (
                 <img
                   class="gal__img"
                   src={item.src}
@@ -61,21 +99,30 @@ const { heading, eyebrow, lead, items, id = 'gallery' } = Astro.props;
                   loading="lazy"
                   decoding="async"
                 />
-              </a>
-            ) : (
-              <img
-                class="gal__img"
-                src={item.src}
-                alt={item.alt}
-                loading="lazy"
-                decoding="async"
-              />
-            )}
-            {item.caption && <figcaption class="gal__caption">{item.caption}</figcaption>}
-          </figure>
-        </li>
-      ))}
-    </ul>
+              )}
+              {item.caption && <figcaption class="gal__caption">{item.caption}</figcaption>}
+            </figure>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {/* Brand-themed metric cards — fallback при отсутствии реальных фото */}
+    {metricCards && metricCards.length > 0 && (
+      <ul class="gal__metric-grid" role="list">
+        {metricCards.map((card) => (
+          <li class="gal__metric-card">
+            <div class="gal__metric-icon" set:html={ICONS[card.icon]} />
+            <strong class="gal__metric-value">{card.metric}</strong>
+            <span class="gal__metric-label">{card.label}</span>
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {tenderNote && (
+      <p class="gal__tender-note">{tenderNote}</p>
+    )}
   </div>
 </section>
 
@@ -156,5 +203,94 @@ const { heading, eyebrow, lead, items, id = 'gallery' } = Astro.props;
   @media (prefers-reduced-motion: reduce) {
     .gal__img { transition: none; }
     .gal__link:hover .gal__img { transform: none; }
+  }
+
+  /* ── Brand-themed metric cards (V-1: production placeholder) ── */
+  .gal__metric-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+  @media (min-width: 600px) {
+    .gal__metric-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 1024px) {
+    .gal__metric-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .gal__metric-card {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--spacing-3);
+    aspect-ratio: 4 / 3;
+    padding: var(--spacing-5);
+    background: linear-gradient(
+      135deg,
+      var(--color-action-primary) 0%,
+      var(--color-action-primary-hover) 100%
+    );
+    border-radius: var(--radius-base);
+    color: var(--color-text-on-brand);
+    border: 1.5px solid color-mix(in srgb, var(--color-action-primary) 80%, white 20%);
+    isolation: isolate;
+  }
+  /* V4-5 (iter4): тонкий diagonal-stripe pattern поверх gradient — добавляет
+     текстуру и убирает «плоскость» brand-purple карточек. */
+  .gal__metric-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      color-mix(in srgb, white 8%, transparent) 10px,
+      color-mix(in srgb, white 8%, transparent) 11px
+    );
+    opacity: 0.5;
+    border-radius: inherit;
+  }
+  .gal__metric-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .gal__metric-icon {
+    opacity: 0.85;
+    flex-shrink: 0;
+  }
+
+  .gal__metric-value {
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    line-height: 1;
+    color: var(--color-text-on-brand);
+    font-family: var(--font-family-monospace);
+    font-feature-settings: 'tnum';
+  }
+
+  .gal__metric-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-on-brand);
+    opacity: 0.85;
+    line-height: 1.35;
+  }
+
+  .gal__tender-note {
+    margin-block-start: var(--spacing-5);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    font-style: italic;
+    max-width: 60ch;
   }
 </style>

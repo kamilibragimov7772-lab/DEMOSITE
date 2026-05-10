@@ -14,9 +14,9 @@ import Breadcrumbs from '@components/molecules/Breadcrumbs.astro';
 import IndustryHero from '@components/organisms/IndustryHero.astro';
 import Stat from '@components/molecules/Stat.astro';
 import TimelineCompany from '@components/organisms/TimelineCompany.astro';
-import CardBase from '@components/molecules/CardBase.astro';
-import Button from '@components/atoms/Button.astro';
 import DocumentsList from '@components/organisms/DocumentsList.astro';
+import TeamGrid from '@components/organisms/TeamGrid.astro';
+import BentoGrid from '@components/organisms/BentoGrid.astro';
 import PreFooterCta from '@components/organisms/PreFooterCta.astro';
 import StickyWhatsApp from '@components/organisms/StickyWhatsApp.astro';
 import { webPage, breadcrumbList } from '@lib/schema';
@@ -52,6 +52,13 @@ const milestones = [
   { year: '2026', title: 'Приоритеты — экспорт и NPS',   description: 'Новая китайская линия, экспорт в Казахстан, программа NPS.' },
 ];
 
+const team = [
+  { name: 'Камиль Ибрагимов', role: 'Основатель и CEO', initials: 'КИ', blurb: '13 лет в производстве термоупаковки' },
+  { name: 'Руководитель производства', role: '3 стадии ОТК на 2000 м²', initials: 'РП', blurb: 'ISO 9001:2015, ГОСТ Р 50962-96' },
+  { name: 'Старший аккаунт-менеджер', role: 'Тендеры 44-ФЗ / 223-ФЗ', initials: 'АМ', blurb: 'Опыт работы с X5, ВкусВилл, Lindt' },
+  { name: 'Логистика', role: 'Отгрузки по СНГ за 24 ч', initials: 'ЛГ', blurb: '17 регионов, ТК-партнёры' },
+];
+
 const certificates = [
   {
     title: 'ТР ТС 005/2011 — безопасность упаковки',
@@ -80,6 +87,37 @@ const certificates = [
     ctaLabel: 'Скачать патент TERMY →',
     href: '/assets/docs/patent-shock.pdf',
     size: 'PDF, 720 КБ',
+  },
+];
+
+/* V4-1: Bento-grid «Заглянуть глубже» — заменяет старый equal-grid из 2 callouts.
+   1 large (Производство, с metric ~2000 м²) + 3 small (Преимущества / Документы / Контакты). */
+const aboutBento = [
+  {
+    title: 'Наше производство',
+    description: '~2 000 м² в Подмосковье. Проектная мощность ~1 млн ед/мес. Линия SHOCK®, термопакеты, LinerBox.',
+    href: '/about/production/',
+    metric: '2 000',
+    metricLabel: 'м² · собственный цех',
+    iconSvg: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  },
+  {
+    title: 'Преимущества',
+    description: '4 ключевых: масштаб, экспертиза, ОТК, надёжность.',
+    href: '/about/advantages/',
+    iconSvg: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  },
+  {
+    title: 'Документы',
+    description: 'ТУ, ГОСТ, протоколы, миграция ПВХ — всё в один клик.',
+    href: '/about/#documents',
+    iconSvg: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+  },
+  {
+    title: 'Контакты',
+    description: 'Менеджер ответит за 2 часа. WhatsApp, телефон, email.',
+    href: '/contacts/',
+    iconSvg: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
   },
 ];
 
@@ -112,6 +150,8 @@ const schema = [
 
   <IndustryHero {...hero} />
 
+  <TeamGrid eyebrow="Команда TERMY" heading="Кто стоит за вашей упаковкой" members={team} />
+
   <TimelineCompany
     eyebrow="История"
     heading="История бренда TERMY"
@@ -119,27 +159,12 @@ const schema = [
     items={milestones}
   />
 
-  <section class="callouts" aria-labelledby="callouts-h2">
-    <div class="container">
-      <h2 id="callouts-h2" class="callouts__h2">Загляните глубже</h2>
-      <ul class="callouts__grid" role="list">
-        <li>
-          <CardBase variant="feature">
-            <h3 slot="title" class="callouts__title">Производство в Люберцах</h3>
-            <p>2000 м², ~1 млн ед/мес, 3 стадии контроля качества. Видео и фото с производства.</p>
-            <Button slot="cta" variant="secondary" size="base" href="/about/production/">Открыть страницу производства →</Button>
-          </CardBase>
-        </li>
-        <li>
-          <CardBase variant="feature">
-            <h3 slot="title" class="callouts__title">8 преимуществ TERMY</h3>
-            <p>Формат 42×50 PRO впервые в РФ, МОЗ от 1 коробки, бесплатный макет, патент-защищённый SHOCK®.</p>
-            <Button slot="cta" variant="secondary" size="base" href="/about/advantages/">Открыть преимущества →</Button>
-          </CardBase>
-        </li>
-      </ul>
-    </div>
-  </section>
+  {/* V4-1 (iter4): Bento-grid вместо старого equal-grid 2 callouts. */}
+  <BentoGrid
+    eyebrow="Заглянуть глубже"
+    heading="Что внутри Termy"
+    cards={aboutBento}
+  />
 
   <DocumentsList
     eyebrow="Сертификаты"

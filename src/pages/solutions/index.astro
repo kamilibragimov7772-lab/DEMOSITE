@@ -29,10 +29,18 @@ const siteUrl = Astro.site?.toString() ?? 'https://termybrand.com/';
 
 // Hero (хаб — без CTA в hero per outline; CTA уезжает в Block 5)
 const hero = {
-  eyebrow: 'Под отрасль',
+  eyebrow: '17 федеральных сетей · 5 отраслевых решений',
   h1: 'Решения для вашего бизнеса',
   lead: 'TERMY помогает пяти ключевым B2B-сегментам: от курьерских сервисов до фарм-смежных. Выберите свой и узнайте, как мы экономим вам деньги.',
 };
+
+// Stats-row для визуальной плотности hero
+const stats = [
+  { value: '1 млн ед/мес', label: 'мощность производства' },
+  { value: '24 ч',          label: 'отгрузка серийных позиций' },
+  { value: '72 ч',          label: 'LinerBox удержание холода' },
+  { value: 'от 1 кор.',     label: 'минимальный заказ' },
+];
 
 // Block 2: 5 industry cards + bonus брендирование (по outline §H2: 5 отраслевых направлений)
 const industries = [
@@ -140,6 +148,14 @@ const schema = [
       <p class="hub-hero__eyebrow">{hero.eyebrow}</p>
       <h1 id="hub-hero-h1" class="hub-hero__h1">{hero.h1}</h1>
       <p class="hub-hero__lead">{hero.lead}</p>
+      <ul class="hub-hero__stats" role="list">
+        {stats.map((s, i) => (
+          <li class={`hub-hero__stat ${i === 0 ? 'hub-hero__stat--accent' : ''}`}>
+            <strong class="hub-hero__stat-value">{s.value}</strong>
+            <span class="hub-hero__stat-label">{s.label}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   </section>
 
@@ -201,5 +217,41 @@ const schema = [
     color: var(--color-text-secondary);
     font-size: var(--font-size-md);
     line-height: var(--font-line-height-normal);
+  }
+
+  .hub-hero__stats {
+    list-style: none;
+    margin: var(--spacing-6) 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-4);
+  }
+  .hub-hero__stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+  }
+  .hub-hero__stat-value {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: 1;
+    font-family: var(--font-mono, 'JetBrains Mono', ui-monospace, monospace);
+    font-feature-settings: 'tnum';
+  }
+  .hub-hero__stat--accent .hub-hero__stat-value {
+    color: var(--color-action-primary);
+    font-family: inherit;
+  }
+  .hub-hero__stat-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    line-height: var(--font-line-height-normal);
+  }
+
+  @media (min-width: 768px) {
+    .hub-hero__stats { grid-template-columns: repeat(4, 1fr); }
+    .hub-hero__stat-value { font-size: var(--font-size-2xl); }
   }
 </style>
